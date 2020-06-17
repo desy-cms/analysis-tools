@@ -213,11 +213,7 @@ void Jet::jerInfo(const JetResolutionInfo & jerinfo, const float & drmin)
 void Jet::applyJER(const JetResolutionInfo & jerinfo, const float & drmin)
 {
    this -> jerInfo(jerinfo,drmin);
-   float pt  = p4_.Pt()*this->jerCorrection();
-   float eta = p4_.Eta();
-   float phi = p4_.Phi();
-   float e   = p4_.E();
-   p4_.SetPtEtaPhiE(pt,eta,phi,e);
+   p4_ = p4_ *this->jerCorrection();
 }
       
 
