@@ -2,7 +2,7 @@
 
 **Core Analysis Framework of the DESY CMS Higgs -> bb group**
 
-See also the code documentation [Doxygen](https://www.desy.de/~walsh/analysis-framework/doxygen/pro) page
+See also the code documentation [Doxygen](https://www.desy.de/~walsh/docs/analysis-framework/doxygen/latest) page
 
 
 :warning: This package is supposed to contain only general codes to be used for analysis.
@@ -54,7 +54,7 @@ git clone https://github.com/desy-cms/analysis-calibrations.git calibrations
 The lists of ntuples files can be obtained from the [analysis-ntuples](https://github.com/desy-cms/analysis-ntuples.git) repository (see also the README.md in each run period directory). The repository can be installed in a directory of your convenience, e.g.
 
 ```bash
-cd $CMSSW_BASE/src/Analysis/Tools/test
+cd $CMSSW_BASE/src/Analysis/Tools/data
 git clone https://github.com/desy-cms/analysis-ntuples.git ntuples
 ```
 

@@ -28,6 +28,7 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
 {
    std::string toolspath = Form("%s/src/Analysis/Tools",getenv("CMSSW_BASE"));
    std::string datapath = Form("%s/src/Analysis/Tools/data",getenv("CMSSW_BASE"));
+   std::string ntuplepath = datapath+"/ntuples";
    argc_ = argc;
    argv_ = argv;
    // read configuration options
@@ -238,7 +239,10 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          std::transform(btagalgo_.begin(), btagalgo_.end(), btagalgo_.begin(), ::tolower);
          
 //         inputlist_ = Form("%s/test/%s", toolspath.c_str(), inputlist_.c_str());
-         
+         if ( inputlist_.rfind("tools:",0) == 0 )
+         {
+            inputlist_.replace(0,6,ntuplepath+"/");
+         }
          if ( json_     != "no_json.txt" ) json_ = Form("%s/%s", datapath.c_str(), json_.c_str());
          if ( jerptres_ != "" )  jerptres_ = Form("%s/%s", datapath.c_str(), jerptres_.c_str());
          if ( jersf_    != "" )  jersf_    = Form("%s/%s", datapath.c_str(), jersf_.c_str()   );
