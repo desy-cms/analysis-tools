@@ -61,8 +61,6 @@ namespace analysis {
             // Actions
             virtual bool event(const int &);
          
-            void generatorWeight();
-               
             virtual bool muonJet(const int & );
 
       };

@@ -54,7 +54,7 @@ bool Analyser::event(const int & i)
 
    if (! config_->isMC() ) 
    {
-       auto json = basename(config_->json_);
+       auto json = basename(config_->json());
        ++cutflow_;
        if ( std::string(h1_["cutflow"] -> GetXaxis()-> GetBinLabel(cutflow_+1)) == "" )
        {
@@ -90,25 +90,6 @@ bool Analyser::event(const int & i)
       
     
    return ok;
-   
-}
-
-void Analyser::generatorWeight()
-{
-   if ( ! config_->isMC() ) return;
-   
-   ++cutflow_;
-   float weight = analysis_->genWeight();
-   if ( config_->fullGenWeight() )
-   {
-      weight_ *= weight;
-   }
-   else
-   {
-      float sign =  (weight > 0) ? 1 : ((weight < 0) ? -1 : 0);
-      weight_ *= sign;
-   }
-   h1_["cutflow"] -> Fill(cutflow_,weight_);
    
 }
 

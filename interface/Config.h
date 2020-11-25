@@ -203,8 +203,8 @@ namespace analysis {
             int nlumis_;
             int runmin_;
             int runmax_;
-            std::string outputRoot_;
-            std::string json_;
+            std::string outputRoot() const;
+            std::string json() const;
             
 
             //
@@ -393,6 +393,9 @@ namespace analysis {
             bool histjets_rsplit_;
             bool histjets_flavour_;
 
+         // analysis control
+            std::string outputRoot_;
+            std::string json_;
                         
          private:
                

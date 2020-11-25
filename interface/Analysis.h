@@ -24,7 +24,7 @@
 #include <vector>
 #include <string>
 #include <typeinfo>
-#include <boost/any.hpp>
+#include <any>
 #include <boost/core/demangle.hpp>
 #include <boost/algorithm/string.hpp>
 #include "stdlib.h"
@@ -242,11 +242,11 @@ namespace analysis {
             std::map<std::string, TChain*> tree_;
 
             // Framework trees and types
-            std::map<std::string, boost::any  > t_any_;
+            std::map<std::string, std::any  > t_any_;
             std::map<std::string, std::string > t_type_;
             
             // Collections
-            std::map<std::string, boost::any > c_any_;
+            std::map<std::string, std::any > c_any_;
             
             // Luminosity
             float mylumi_;
@@ -279,17 +279,17 @@ namespace analysis {
          std::vector<std::string> tmp;
          boost::split( tmp, type, boost::is_any_of("::"));
          t_type_[unique_name] = tmp.back();
-         return boost::any_cast< std::shared_ptr< PhysicsObjectTree<Object> > > (t_any_[unique_name]);
+         return std::any_cast< std::shared_ptr< PhysicsObjectTree<Object> > > (t_any_[unique_name]);
       }
       // --
       template <class Object>
       std::shared_ptr< PhysicsObjectTree<Object> >  Analysis::tree(const std::string & unique_name)
       {
          // If tree does not exist, return NULL
-         std::map<std::string, boost::any >::iterator it = t_any_.find(unique_name);
+         std::map<std::string, std::any >::iterator it = t_any_.find(unique_name);
          if ( it == t_any_.end() )
             return nullptr;
-         return boost::any_cast< std::shared_ptr< PhysicsObjectTree<Object> > > (t_any_[unique_name]);
+         return std::any_cast< std::shared_ptr< PhysicsObjectTree<Object> > > (t_any_[unique_name]);
       }
 // -------------------------------------------------------
       // COLLECTIONS
@@ -300,13 +300,13 @@ namespace analysis {
          // e.g. a selected jets collection from the ntuple jets collection.
          
          // If tree does not exist, return NULL
-         std::map<std::string, boost::any >::iterator it = t_any_.find(unique_name);
+         std::map<std::string, std::any >::iterator it = t_any_.find(unique_name);
          if ( it == t_any_.end() )
             return nullptr;
          
-         auto tree = boost::any_cast< std::shared_ptr< PhysicsObjectTree<Object> > > (t_any_[unique_name]);
+         auto tree = std::any_cast< std::shared_ptr< PhysicsObjectTree<Object> > > (t_any_[unique_name]);
          c_any_[unique_name] = std::shared_ptr< Collection<Object> > ( new Collection<Object>(tree -> collection()));
-         std::shared_ptr< Collection<Object> > ret = boost::any_cast< std::shared_ptr< Collection<Object> > > (c_any_[unique_name]);
+         std::shared_ptr< Collection<Object> > ret = std::any_cast< std::shared_ptr< Collection<Object> > > (c_any_[unique_name]);
          
          return ret;
       }
@@ -317,7 +317,7 @@ namespace analysis {
          std::string unique_name = collection.name();
          t_any_[unique_name] = nullptr;
          c_any_[unique_name] = std::shared_ptr< Collection<Object> > ( new Collection<Object>(collection) );
-         std::shared_ptr< Collection<Object> > ret = boost::any_cast< std::shared_ptr< Collection<Object> > > (c_any_[unique_name]);
+         std::shared_ptr< Collection<Object> > ret = std::any_cast< std::shared_ptr< Collection<Object> > > (c_any_[unique_name]);
          
          return ret;
       }
@@ -328,14 +328,14 @@ namespace analysis {
          Collection<Object> collection(objects,unique_name);
          t_any_[unique_name] = nullptr;
          c_any_[unique_name] = std::shared_ptr< Collection<Object> > ( new Collection<Object>(collection) );
-         std::shared_ptr< Collection<Object> > ret = boost::any_cast< std::shared_ptr< Collection<Object> > > (c_any_[unique_name]);
+         std::shared_ptr< Collection<Object> > ret = std::any_cast< std::shared_ptr< Collection<Object> > > (c_any_[unique_name]);
          return ret;
       }
       
       template <class Object>
       std::shared_ptr< Collection<Object> >  Analysis::collection(const std::string & unique_name)
       {
-         std::shared_ptr< Collection<Object> > ret = boost::any_cast< std::shared_ptr< Collection<Object> > > (c_any_[unique_name]);
+         std::shared_ptr< Collection<Object> > ret = std::any_cast< std::shared_ptr< Collection<Object> > > (c_any_[unique_name]);
          return ret;
       }
       //--
@@ -343,8 +343,8 @@ namespace analysis {
       void Analysis::match(const std::string & collection, const std::string & match_collection, const float & deltaR)
       {
          if ( match_collection == "" ) return;
-         auto o1 = boost::any_cast< std::shared_ptr< Collection<Object1> > > (c_any_[collection]);
-         auto o2 = boost::any_cast< std::shared_ptr< Collection<Object2> > > (c_any_[match_collection]);
+         auto o1 = std::any_cast< std::shared_ptr< Collection<Object1> > > (c_any_[collection]);
+         auto o2 = std::any_cast< std::shared_ptr< Collection<Object2> > > (c_any_[match_collection]);
          o1->matchTo(o2->vectorCandidates(),o2->name(), deltaR);
       }
       //--

@@ -28,6 +28,7 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
 {
    std::string toolspath = Form("%s/src/Analysis/Tools",getenv("CMSSW_BASE"));
    std::string datapath = Form("%s/src/Analysis/Tools/data",getenv("CMSSW_BASE"));
+   std::string calibpath = datapath+"/calibrations";
    std::string ntuplepath = datapath+"/ntuples";
    argc_ = argc;
    argv_ = argv;
@@ -243,12 +244,13 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          {
             inputlist_.replace(0,6,ntuplepath+"/");
          }
-         if ( json_     != "no_json.txt" ) json_ = Form("%s/%s", datapath.c_str(), json_.c_str());
-         if ( jerptres_ != "" )  jerptres_ = Form("%s/%s", datapath.c_str(), jerptres_.c_str());
-         if ( jersf_    != "" )  jersf_    = Form("%s/%s", datapath.c_str(), jersf_.c_str()   );
-         if ( btagsf_   != "" )  btagsf_   = Form("%s/%s", datapath.c_str(), btagsf_.c_str()  );
-         if ( btageff_  != "" )  btageff_  = Form("%s/%s", datapath.c_str(), btageff_.c_str() );
-         if ( puweight_ != "" )  puweight_ = Form("%s/%s", datapath.c_str(), puweight_.c_str());
+         if ( json_     != "no_json.txt" && json_.rfind("tools:",0) == 0     )    json_.replace(0,6,calibpath+"/");
+         if ( jerptres_ != ""            && jerptres_.rfind("tools:",0) == 0 )    jerptres_.replace(0,6,calibpath+"/");
+         if ( jersf_    != ""            && jersf_.rfind("tools:",0) == 0    )    jersf_.replace(0,6,calibpath+"/");
+         if ( btagsf_   != ""            && btagsf_.rfind("tools:",0) == 0   )    btagsf_.replace(0,6,calibpath+"/");
+         if ( btageff_  != ""            && btageff_.rfind("tools:",0) == 0  )    btageff_.replace(0,6,calibpath+"/");
+         if ( puweight_ != ""            && puweight_.rfind("tools:",0) == 0 )    puweight_.replace(0,6,calibpath+"/");
+         
          eventinfo_     =  Form("%s/%s/%s" , process_.c_str(), eventsdir_.c_str() , eventinfo_.c_str()      );
          triggerCol_    =  Form("%s/%s/%s" , process_.c_str(), eventsdir_.c_str() , triggerCol_.c_str()     );
          triggerObjDir_ =  Form("%s/%s/%s" , process_.c_str(), eventsdir_.c_str() , triggerObjDir_.c_str()  );
@@ -461,3 +463,7 @@ float Config::max()        const { return max_; }
 // Histograms
 bool  Config::histogramJetsRegionSplit() const { return histjets_rsplit_ ; }
 bool  Config::histogramJetsPerFlavour()  const { return histjets_flavour_ ; }
+
+
+std::string Config::outputRoot() const { return outputRoot_ ; }
+std::string Config::json() const { return json_ ; }

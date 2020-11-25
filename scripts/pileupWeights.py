@@ -35,12 +35,14 @@ except TypeError as error:
 h_mc.Scale(1./h_mc.Integral())
 
 h_weight = TH1D(h_data.Clone("weight"));
+h_weight.SetTitle("pileup weight")
 h_weight.Divide(h_mc);
 
 if args.up1:
    f_up1 = TFile(args.up1,"old")
    h_up1 = TH1D(f_up1.Get("pileup"))
    h_up1.SetName("weight_1up")
+   h_up1.SetTitle("pileup weight +1#sigma")
    h_up1.Scale(1./h_up1.Integral())
    h_up1.Divide(h_mc)
 
@@ -48,6 +50,7 @@ if args.down1:
    f_down1 = TFile(args.down1,"old")
    h_down1 = TH1D(f_down1.Get("pileup"))
    h_down1.SetName("weight_1down")
+   h_down1.SetTitle("pileup weight -1#sigma")
    h_down1.Scale(1./h_down1.Integral())
    h_down1.Divide(h_mc)
 
@@ -55,6 +58,7 @@ if args.up2:
    f_up2 = TFile(args.up2,"old")
    h_up2 = TH1D(f_up2.Get("pileup"))
    h_up2.SetName("weight_2up")
+   h_up2.SetTitle("pileup weight +2#sigma")
    h_up2.Scale(1./h_up2.Integral())
    h_up2.Divide(h_mc)
 
@@ -62,6 +66,7 @@ if args.down2:
    f_down2 = TFile(args.down2,"old")
    h_down2 = TH1D(f_down2.Get("pileup"))
    h_down2.SetName("weight_2down")
+   h_down2.SetTitle("pileup weight -2#sigma")
    h_down2.Scale(1./h_down2.Integral())
    h_down2.Divide(h_mc)
 

@@ -20,6 +20,9 @@ int main(int argc, char ** argv)
    {
       if ( ! analyser.event(i)                  )   continue;
       
+// PILEUP RE-WEIGHT
+      analyser.actionApplyPileupWeight();  
+       
    }  //end event loop
 } // end main
       

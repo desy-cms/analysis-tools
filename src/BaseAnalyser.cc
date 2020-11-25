@@ -5,6 +5,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <stdlib.h>
 #include "TString.h"
 // 
 // user include files
@@ -43,9 +44,9 @@ BaseAnalyser::BaseAnalyser(int argc, char * argv[])
    analysis_ = std::make_shared<Analysis>(config_->ntuplesList(),config_->eventInfo());
    
    // output file
-   if ( config_->outputRoot_ != "" )
+   if ( config_->outputRoot() != "" )
    {
-      hout_= std::make_shared<TFile>(config_->outputRoot_.c_str(),"recreate",Form("%s %s %s",argv[0],argv[1],argv[2]));
+      hout_= std::make_shared<TFile>(config_->outputRoot().c_str(),"recreate",Form("%s %s %s",argv[0],argv[1],argv[2]));
       hout_ -> cd();
    }
    
@@ -57,7 +58,6 @@ BaseAnalyser::BaseAnalyser(int argc, char * argv[])
          h1_["cutflow"] -> GetXaxis()-> SetBinLabel(1,"Total events read");
       
    
-//   isMC_ = config_->isMC();
    isMC_ = analysis_->isMC();
    isData_ = !isMC_;
    
@@ -83,7 +83,7 @@ BaseAnalyser::BaseAnalyser(int argc, char * argv[])
    }
    
    // JSON for data   
-   if( isData_ && config_->json_ != "" ) analysis_->processJsonFile(config_->json_);
+   if( isData_ && config_->json() != "" ) analysis_->processJsonFile(config_->json());
    
    // btag efficiencies
    if ( config_->btagEfficiencies() != "" )
@@ -143,19 +143,6 @@ BaseAnalyser::~BaseAnalyser()
       h1_["cutflow"] -> Fill(lastbin,fevts*scale);
    }
     
-//    // scale to luminosity
-//    if ( config_->isMC() && config_ -> luminosity() > 0. && config_ -> scale() < 0. )
-//    {
-//       float nwevts = h1_["cutflow"] -> GetBinContent(2);
-//       float genlumi = nwevts/xsection_;
-//       scale = config_->luminosity()/genlumi;
-//       if ( std::string(h1_["cutflow"] -> GetXaxis()-> GetBinLabel(lastbin+1)) == "" )
-//       {
-//          h1_["cutflow"] -> GetXaxis()-> SetBinLabel(lastbin+1,Form("Number of events after scaling to luminosity = %8.3f/pb",config_->luminosity()));
-//       }
-//       h1_["cutflow"] -> Fill(lastbin,fevts*scale);
-//    }
-   
    
    for ( auto h : h1_ )
    {
@@ -172,19 +159,26 @@ BaseAnalyser::~BaseAnalyser()
       bool is_empty =  ( h.second -> GetEntries() != 0 || h.second -> GetSumOfWeights() != 0 );
       if ( is_empty ) continue;
    }
-   workflow();
+   
    if ( hout_ )
    {
-      std::cout << std::endl;
-      std::cout << "output root file: " << config_->outputRoot_ << std::endl;
+//      std::cout << std::endl;
+//      std::cout << "output root file: " << config_->outputRoot() << std::endl;
       hout_ -> cd();
       hout_ -> Write();
-//      hout_->Close();
+      hout_->Close();
+      // print workflow using the Workflow macro
+      try
+      {
+         system(Form("Workflow %s",config_->outputRoot().c_str()));
+      }
+      catch(...)
+      {
+         std::cout << "Problems with Workflow macro or the output file, no summary printed" << std::endl;
+      }
    }   
    
-//   std::string cutflow = "Cutflow " + config_->outputRoot_;
-//   std::system(cutflow.c_str());
-   
+   std::cout << std::endl;
    std::cout << exe_ << " finished!" << std::endl;
    printf("%s\n", std::string(100,'_').c_str());
    std::cout << std::endl;
@@ -193,6 +187,7 @@ BaseAnalyser::~BaseAnalyser()
    finished.open("finished.txt");
    finished << exe_ << "\n";
    finished.close();
+   
 }
 
 
@@ -237,38 +232,6 @@ std::map<std::string, std::shared_ptr<TH1F> > BaseAnalyser::histograms()
    return h1_;
 }
 
-
-void BaseAnalyser::workflow()
-{
-   printf("+%s+\n", std::string(170,'-').c_str());
-   printf("| %-108s |    %10s |   %16s |   %16s |\n",h1_["cutflow"] -> GetTitle(),"n events","ratio wrt first","ratio wrt previous");
-   printf("+%s+\n", std::string(170,'-').c_str());
-   int firstbin = 2;
-   for ( int i = 1; i <= h1_["cutflow"] ->GetNbinsX(); ++i )
-   {
-      std::string label = std::string(h1_["cutflow"]->GetXaxis()->GetBinLabel(i));
-      if ( label == "" ) continue;
-//      if ( firstbin < 0 ) firstbin = i;
-      float n = h1_["cutflow"]->GetBinContent(i);
-      float rn1 = h1_["cutflow"]->GetBinContent(i)/h1_["cutflow"]->GetBinContent(firstbin);
-      float rni = 0;
-      if ( i == 1 )
-      {
-         printf("| %2d - %-103s |    %10.1f |   %16s |  %19s |\n",i-1,label.c_str(),n,"-","-");
-      }
-      else if ( i == 2 )
-      {
-         printf("| %2d - %-103s |    %10.1f |   %16.4f |  %19s |\n",i-1,label.c_str(),n,rn1,"-");
-      }
-      else
-      {
-         rni = h1_["cutflow"]-> GetBinContent(i)/h1_["cutflow"]->GetBinContent(i-1);
-         printf("| %2d - %-103s |    %10.1f |   %16.4f |     %16.4f |\n",i-1,label.c_str(),n,rn1,rni);
-      }
-   }
-   printf("+%s+\n", std::string(170,'-').c_str());
-   
-}
 
 int  BaseAnalyser::seed()
 {
@@ -422,3 +385,24 @@ std::map<std::string, std::shared_ptr<TGraphAsymmErrors> > BaseAnalyser::btagEff
 {
    return btageff_;
 }
+
+
+void BaseAnalyser::generatorWeight()
+{
+   if ( ! config_->isMC() ) return;
+   
+   ++cutflow_;
+   float weight = analysis_->genWeight();
+   if ( config_->fullGenWeight() )
+   {
+      weight_ *= weight;
+   }
+   else
+   {
+      float sign =  (weight > 0) ? 1 : ((weight < 0) ? -1 : 0);
+      weight_ *= sign;
+   }
+   h1_["cutflow"] -> Fill(cutflow_,weight_);
+   
+}
+
