@@ -19,6 +19,10 @@ def getConfigParameter( config, parameter ):
             par = line.split("=")[1]
             exist = True
             p = [parameter,par]
+            if parameter=="ntuplesList" and "tools:" in p[1]:
+               ntp_path = os.getenv('CMSSW_BASE')
+               ntp_path += "/src/Analysis/Tools/data/ntuples/"
+               p[1] = p[1].replace("tools:",ntp_path)
             break
             
    return p
