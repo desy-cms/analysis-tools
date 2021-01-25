@@ -114,6 +114,8 @@ root -l ntuple.root
 # it will show
 KEY: TDirectoryFile	MssmHbb;1	MssmHbb
 ```
+Where `ntuple.root` is any input ntuple file, such as the ones in your `roorFileList.txt` or in the [analysis-ntuples](https://github.com/desy-cms/analysis-ntuples).
+
 Hopefully the other names of the config parameters are self-explanatory.
 
 In **data** one must specify the json file with certified lumis, e.g.
