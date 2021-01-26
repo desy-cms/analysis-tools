@@ -124,6 +124,8 @@ namespace analysis {
             virtual bool selectionJetQGlikelihood(const int &);
 //            virtual void actionApplyBtagEfficiencyWeight(const int &);
 //            virtual float btagEfficiency(const int &);
+            /// multiple actions: apply JER and b-tag regression corrections
+            virtual bool jetCorrections();
 
       };
    }

@@ -1455,3 +1455,15 @@ bool JetAnalyser::selectionBJetProbLight(const int & r )
 //    weight_ *= btagEfficiency(r);
 //    
 // }
+
+bool JetAnalyser::jetCorrections()
+{
+// CORRECTIONS
+   // b energy regression
+      if ( this->config()->bRegression() )  this->actionApplyBjetRegression();
+   // Jet energy resolution smearing
+      this->actionApplyJER();
+      
+      return true;
+      
+}

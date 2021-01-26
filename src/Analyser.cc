@@ -88,7 +88,9 @@ bool Analyser::event(const int & i)
    analysisWithJets();
    analysisWithMuons();
       
-    
+   // PILEUP RE-WEIGHT
+   this->actionApplyPileupWeight(); 
+
    return ok;
    
 }
@@ -115,3 +117,20 @@ bool Analyser::muonJet(const int & r)
    
 }
 
+bool Analyser::preselection()
+{
+// IDENTIFICATIONS
+      if ( ! this->selectionMuonId()         )   return false;
+      if ( ! this->selectionJetId()          )   return false;
+      if ( ! this->selectionJetPileupId()    )   return false;
+      return true;
+      
+}
+bool Analyser::triggerSelection()
+{
+// TRIGGER selection
+      if ( ! this->selectionHLT()           )   return false;      
+      if ( ! this->selectionL1 ()           )   return false;  // to be used mainly in case of "OR" of seeds
+      return true;
+      
+}
