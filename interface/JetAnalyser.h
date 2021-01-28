@@ -111,8 +111,11 @@ namespace analysis {
             virtual bool selectionNonBJet(const int &);
             virtual bool onlineJetMatching(const int &);
             virtual bool onlineBJetMatching(const int &);
+            /// Creates pre-defined histograms in directory 'label' for analysis with 'n' jets
             virtual void jetHistograms(const int & n, const std::string & label = "x");
+            /// Creates pre-defined histograms in directory 'label' for analysis with config->nJetsMin()
             virtual void jetHistograms(const std::string & label = "x");
+            /// Fill the pre-defined histograms created by the jetHistograms() method
             virtual void fillJetHistograms(const std::string & label = "x");
             virtual void fillJetHistograms(const int & r = -1, const std::string & label = "x", const float & sf = 1.,const bool & workflow = false);
             virtual void actionApplyJER();
