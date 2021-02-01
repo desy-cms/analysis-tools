@@ -122,6 +122,11 @@ if config:
          print "*error* You must define the parameter ntuplesList in your configuration."
          quit()
    configJson    = getConfigParameter( config, "json" )
+   if 'tools:' in configJson[1]:
+      ntp_path = os.getenv('CMSSW_BASE')
+      ntp_path += "/src/Analysis/Tools/data/calibrations/"
+      configJson[1] = configJson[1].replace("tools:",ntp_path)
+      
    if not json:
       if configJson:
          json = configJson[1]

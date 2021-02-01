@@ -117,6 +117,7 @@ namespace analysis {
             virtual void jetHistograms(const std::string & label = "x");
             /// Fill the pre-defined histograms created by the jetHistograms() method
             virtual void fillJetHistograms(const std::string & label = "x");
+            /// For experts only (fills pre-defined histograms for a specific jet, applying weights)
             virtual void fillJetHistograms(const int & r = -1, const std::string & label = "x", const float & sf = 1.,const bool & workflow = false);
             virtual void actionApplyJER();
             virtual float actionApplyBtagSF(const int &, const bool & global_weight = true);

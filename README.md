@@ -76,6 +76,31 @@ cd Analysis/Tools/test
 AnalyserSimpleExample -c analyser_example_semilep_2018.cfg
 ```
 
+### NAF Submission
+
+A python script to submit to NAF condor queue, `naf_submit.py`, is available. 
+
+
+```
+naf_submit.py [-h] [-e EXE] [-n NTUPLES] [-x NFILES] [-c CONFIG] [-j JSON]
+
+optional arguments:
+  -h,         --help              show this help message and exit
+  -e EXE,     --exe     EXE       Executable
+  -n NTUPLES, --ntuples NTUPLES   List of ntuples file
+  -x NFILES,  --nfiles  NFILES    Number of ntuple files per job [default=1]
+  -c CONFIG,  --config  CONFIG    Configuration file
+  -j JSON,    --json    JSON      Json file with certified data
+```
+
+**If you provide a configuration file with the NTUPLES and JSON parameters, you do not need to parse them, the script will read out that information from the configuration file.**
+
+e.g.
+```bash
+naf_submit.py -e AnalyserSimpleExample -c analyser_example_semilep_2018.cfg -x 2
+```
+
+
 ### Detailed Description
 
 #### Creating a macro
