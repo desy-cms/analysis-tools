@@ -80,6 +80,7 @@ AnalyserSimpleExample -c analyser_example_semilep_2018.cfg
 
 A python script to submit to NAF condor queue, `naf_submit.py`, is available. 
 
+**N.B.: So far the script does not make a single submission of multiple jobs. So be careful not to make too many submissions.**
 
 ```
 naf_submit.py [-h] [-e EXE] [-n NTUPLES] [-x NFILES] [-c CONFIG] [-j JSON]
