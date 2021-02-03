@@ -16,7 +16,8 @@ which is currently under construction.
 * [Calibrations](#calibrations)
 * [Ntuples](#ntuples)
 * [Example](#example)
-* [Detailed description](#detailed-description)
+* [NAF Submission](#naf-submission)
+* [Example Detailed Description](#example-detailed-description)
 
 
 
@@ -76,7 +77,7 @@ cd Analysis/Tools/test
 AnalyserSimpleExample -c analyser_example_semilep_2018.cfg
 ```
 
-### NAF Submission
+## NAF Submission
 
 A python script to submit to NAF condor queue, `naf_submit.py`, is available. 
 
@@ -96,7 +97,7 @@ optional arguments:
 
 **If you provide a configuration file with the NTUPLES and JSON parameters, you do not need to parse them, the script will read out that information from the configuration file.**
 
-e.g.
+Using the example above to be submitted to the naf using [HTCondor](https://confluence.desy.de/display/ITPublic/HTCondor%3A+Job+Submission)
 ```bash
 naf_submit.py -e AnalyserSimpleExample -c analyser_example_semilep_2018.cfg -x 2
 ```
@@ -109,11 +110,11 @@ After the jobs were submitted there will be a directory called `Condor_AnalyserS
 condor_submit job.submit
 ```
 
-### Detailed Description
+## Example Detailed Description
 
-#### Creating a macro
+### Creating a macro
 
-##### Main
+#### Main
 
 In the macro the first thing done is the main `Analyser` instantiation
 
@@ -159,7 +160,7 @@ isMC = false
 json = certified_json.txt
 ```
 
-##### Event loop
+#### Event loop
 
 The event loop must start like this
 ```cpp
@@ -171,11 +172,11 @@ for ( int i = 0 ; i < analyser.nEvents() ; ++i )
 ```
 where the `analyser.event(i)` reads the event from the ntuple and performs some actions, such as applying generator event weights in MC and JSON certified lumis selection in data.
 
-##### Selections
+#### Selections
 
 The `Analyser` has several predefined selection methods that reads parameters from the configuration file and apply to the event. The selections must be within the event loop.
 
-###### Jets
+##### Jets
 
 For example, if the analysis involves jets, one must define which collection to be used, the minimum number of jets, the jet identification, the jet pT etc. In the configuration there is a block for jets with the relevant parameters
 ```
@@ -209,7 +210,7 @@ This will prepare a list of jets containing only jets passing the required ident
 ```
 In the `Analyser::selectionJet` method the argument is the jet rank, i.e., `1` refers to the leading jets, `2` refers to the second leading jet. the method will select the jet according to its pt and eta criteria defined in the configuration.
 
-###### b-tag
+##### b-tag
 
 For the b-tagging there is a block in the configuration file, where one defines the algorithm, working points etc.
 
@@ -234,7 +235,7 @@ To perform the selection in the event loop:
 ```
 where the argument of the `Analyser::selectionBJet` is the jet rank as in the jet kinematic selection above.
 
-###### Muons
+##### Muons
 
 Muon selection has its own configuration block and the procedure works in a similar way as jets
 
@@ -265,7 +266,7 @@ If one wants to select muons depending on their ranking, then one can use, like 
 ```
 
 
-##### Histograms
+#### Histograms
 
 Histograms can be predefined in the `Analyser`, e.g. for jets one can use the method `jetHistograms`, which receives the arguments `number of jets`, which must be at most the minimum number of jets required, and a name of a directory. One can create as many directories as needed and fill the histograms at different steps of the analysis workflow, e.g. before the event loop:
 ```cpp
