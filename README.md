@@ -101,6 +101,13 @@ e.g.
 naf_submit.py -e AnalyserSimpleExample -c analyser_example_semilep_2018.cfg -x 2
 ```
 
+After the jobs were submitted there will be a directory called `Condor_AnalyserSimpleExample_analyser_example_semilep_2018` containing several subdirectories called `job_xxxx`. In each of this subdirectory there will be several files. Files to take note will be:
+* `<output>.root` - the output file containing histograms etc of your analysis
+* `finished.txt` - a file that indicates whether the executable ran until the end (only if you are using the framework)
+* `job.submit` - HTCondor submit configuration file. If a job is not finished you can resubmit that job manually by issuing the command
+```bash
+condor_submit job.submit
+```
 
 ### Detailed Description
 
