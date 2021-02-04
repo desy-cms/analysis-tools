@@ -3,6 +3,7 @@ import os
 import glob
 import re
 from argparse import ArgumentParser
+from argparse import HelpFormatter
 from shutil import copyfile, rmtree, move
 from time import sleep
 
@@ -93,12 +94,15 @@ def basenameConfigParameter( config, name ):
 # --- main code ---
 
 # parsing arguments
-parser = ArgumentParser()
+parser = ArgumentParser(prog='naf_submit.py', formatter_class=lambda prog: HelpFormatter(prog,indent_increment=6,max_help_position=80,width=280), description='Prepare and submit jobs to NAF HTCondor batch system')
 parser.add_argument("-e", "--exe", dest="exe", help="Executable")
 parser.add_argument("-n", "--ntuples", dest="ntuples", help="List of ntuples file")
 parser.add_argument("-x", "--nfiles", dest="nfiles", type=int, default=1, help="Number of ntuple files per job")
 parser.add_argument("-c", "--config", dest="config", help="Configuration file")
 parser.add_argument("-j", "--json", dest="json", help="JSON file with certified data")
+parser.add_argument("-l", "--label", dest="label", help="user label for the submission")
+parser.add_argument("--events", dest="events_max", help="override eventsMax in the config file")
+parser.add_argument("--test", dest="njobs", help="produce njobs, no automatic submission")
 args = parser.parse_args()
 if not args.exe:
    print "nothing to be done" 
@@ -107,6 +111,11 @@ if not args.exe:
 ntuples = args.ntuples
 json = args.json
 config = args.config
+events_max = args.events_max
+test = args.njobs
+
+if test:
+   print('TEST MODE:', test, 'jobs')
 
 configNtuples = None
 # get parameter from configuration 
@@ -122,11 +131,12 @@ if config:
          print "*error* You must define the parameter ntuplesList in your configuration."
          quit()
    configJson    = getConfigParameter( config, "json" )
-   if 'tools:' in configJson[1]:
-      ntp_path = os.getenv('CMSSW_BASE')
-      ntp_path += "/src/Analysis/Tools/data/calibrations/"
-      configJson[1] = configJson[1].replace("tools:",ntp_path)
-      
+   if configJson:
+      if 'tools:' in configJson[1]:
+         ntp_path = os.getenv('CMSSW_BASE')
+         ntp_path += "/src/Analysis/Tools/data/calibrations/"
+         configJson[1] = configJson[1].replace("tools:",ntp_path)
+
    if not json:
       if configJson:
          json = configJson[1]
@@ -145,6 +155,8 @@ if json:
 maindir = "Condor_"+os.path.basename(args.exe)
 if config:
    maindir = maindir+"_"+ os.path.splitext(os.path.basename(config))[0]
+if args.label:
+   maindir += '_'+args.label
 cwd = os.getcwd()
 if os.path.exists(cwd+"/"+maindir):
    print maindir + "already exists. Rename or remove it and then resubmit"
@@ -170,6 +182,9 @@ if ntuples:
       # ntuples list
       createConfigParameter(os.path.basename(config),'ntuplesList')
       replaceConfigParameter(os.path.basename(config), 'ntuplesList', os.path.basename(ntuples))
+      if events_max:
+         replaceConfigParameter(os.path.basename(config), 'eventsMax', events_max)
+
    
    splitcmd = "split.csh" + " " + str(args.nfiles) + " " + os.path.basename(ntuples)
    os.system(splitcmd)
@@ -179,7 +194,12 @@ if ntuples:
    os.chdir(cwd)
 
    # loop over the splitted files, each will correspond to a job on the NAF
-   for f in files:
+   
+   for i,f in enumerate(files):
+      if test:
+         if i >= int(test):
+            os.chdir(cwd)
+            break
       jobnum = os.path.splitext(f)[0][-4:]
       jobid = "job_"+jobnum
       exedir = maindir+"/"+jobid
@@ -190,16 +210,18 @@ if ntuples:
          copyfile(json, exedir+"/"+os.path.basename(json))
       if config:
          copyfile(tmpdir+"/"+os.path.basename(config),exedir+"/"+os.path.basename(config))      
-         condorcmd = "condor_submit.csh" + " " + jobid + " " + args.exe + " " + os.path.basename(config)
+         condorcmd = "condor_scripts.csh" + " " + jobid + " " + args.exe + " " + os.path.basename(config)
       else:
-         condorcmd = "condor_submit.csh" + " " + jobid + " " + args.exe
+         condorcmd = "condor_scripts.csh" + " " + jobid + " " + args.exe
       # make the submissions
       os.chdir(exedir)
       jobf = open('./seed.txt', 'w+')
       print >> jobf, int(jobnum)+1
       jobf.close()
-      print "Submitting ",jobid,"..."
+      print "Creating ",jobid,"..."
       os.system(condorcmd)
+      if not test:
+         os.system('condor_submit job.submit')
       sleep(0.2)
       # back to original directory
       os.chdir(cwd)
@@ -213,8 +235,10 @@ else:
    jobf = open('./seed.txt', 'w+')
    print >> jobf, 1
    jobf.close()
-   condorcmd = "condor_submit.csh job_0000" + " " + os.path.basename(args.exe)
+   condorcmd = "condor_scripts.csh job_0000" + " " + os.path.basename(args.exe)
    os.system(condorcmd)
+   if not test:
+      os.system('condor_submit job.submit')
    os.chdir(cwd)
          
 # remove the temporary directory

@@ -84,15 +84,19 @@ A python script to submit to NAF condor queue, `naf_submit.py`, is available.
 **N.B.: So far the script does not make a single submission of multiple jobs. So be careful not to make too many submissions.**
 
 ```
-naf_submit.py [-h] [-e EXE] [-n NTUPLES] [-x NFILES] [-c CONFIG] [-j JSON]
+usage: naf_submit.py [-h] [-e EXE] [-n NTUPLES] [-x NFILES] [-c CONFIG] [-j JSON] [--events EVENTS_MAX] [--test NJOBS]
+
+Prepare and submit jobs to NAF HTCondor batch system
 
 optional arguments:
-  -h,         --help              show this help message and exit
-  -e EXE,     --exe     EXE       Executable
-  -n NTUPLES, --ntuples NTUPLES   List of ntuples file
-  -x NFILES,  --nfiles  NFILES    Number of ntuple files per job [default=1]
-  -c CONFIG,  --config  CONFIG    Configuration file
-  -j JSON,    --json    JSON      Json file with certified data
+      -h, --help                     show this help message and exit
+      -e EXE, --exe EXE              Executable
+      -n NTUPLES, --ntuples NTUPLES  List of ntuples file
+      -x NFILES, --nfiles NFILES     Number of ntuple files per job
+      -c CONFIG, --config CONFIG     Configuration file
+      -j JSON, --json JSON           JSON file with certified data
+      --events EVENTS_MAX            override eventsMax in the config file
+      --test NJOBS                   produce njobs, no automatic submission
 ```
 
 **If you provide a configuration file with the NTUPLES and JSON parameters, you do not need to parse them, the script will read out that information from the configuration file.**
