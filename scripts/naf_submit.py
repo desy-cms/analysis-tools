@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import os
 import glob
 import re
@@ -90,6 +90,50 @@ def basenameConfigParameter( config, name ):
          f.write(re.sub(name, os.path.basename(name), line))
 
 
+def createCondorDirsSubmit(maindir):
+   libpath = os.environ['LD_LIBRARY_PATH']
+   condor_submit = """
+Requirements = ( OpSysAndVer == "CentOS7" )
+getenv      = True
+executable  = $(jobdir)/job.sh
+log         = $(jobdir)/xjob_$(Cluster)_$(Process).log
+output      = $(jobdir)/xjob_$(Cluster)_$(Process).out
+error       = $(jobdir)/xjob_$(Cluster)_$(Process).err
+environment = "LD_LIBRARY_PATH_STORED=$ENV(LD_LIBRARY_PATH)"
+
+queue jobdir matching dirs job_*
+   """
+   with open(f'{maindir}/jobs.submit', 'w') as condor_file:
+      print(condor_submit,file=condor_file)
+
+def createCondorSubmit(jobdir):
+   libpath = os.environ['LD_LIBRARY_PATH']
+   condor_submit = """
+Requirements = ( OpSysAndVer == "CentOS7" )
+getenv      = True
+executable  = job.sh
+log         = xjob_$(Cluster)_$(Process).log
+output      = xjob_$(Cluster)_$(Process).out
+error       = xjob_$(Cluster)_$(Process).err
+environment = "LD_LIBRARY_PATH_STORED=$ENV(LD_LIBRARY_PATH)"
+
+queue
+   """
+   with open(f'{jobdir}/job.submit', 'w') as condor_file:
+      print(condor_submit,file=condor_file)
+
+def createJobScript(exedir,jobid, exe, cfg):
+   js = """
+if [[ ! -e "{}" ]]; then
+   cd {}
+fi
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH_STORED
+{} -c {}
+   """.format(cfg,jobid,exe,cfg)
+   js_name  = f'{exedir}/job.sh'
+   with open(js_name, 'w') as job_script:
+      print(js,file=job_script)
+   os.chmod(js_name, 0o744)
 
 # --- main code ---
 
@@ -101,17 +145,19 @@ parser.add_argument("-x", "--nfiles", dest="nfiles", type=int, default=1, help="
 parser.add_argument("-c", "--config", dest="config", help="Configuration file")
 parser.add_argument("-j", "--json", dest="json", help="JSON file with certified data")
 parser.add_argument("-l", "--label", dest="label", help="user label for the submission")
-parser.add_argument("--events", dest="events_max", help="override eventsMax in the config file")
+parser.add_argument("--events", dest="events_max", default="-1", help="override eventsMax in the config file (default = -1)")
 parser.add_argument("--test", dest="njobs", help="produce njobs, no automatic submission")
 args = parser.parse_args()
 if not args.exe:
-   print "nothing to be done" 
+   print("nothing to be done")
    quit()
    
 ntuples = args.ntuples
 json = args.json
 config = args.config
-events_max = args.events_max
+events_max = -1
+if args.events_max:
+   events_max = args.events_max
 test = args.njobs
 
 configMC = getConfigParameter( config, "isMC" )
@@ -124,14 +170,14 @@ configNtuples = None
 # get parameter from configuration 
 if config:
    if not os.path.isfile(config):
-      print "Configuration file does not exist"
+      print ("Configuration file does not exist")
       quit()
    configNtuples = getConfigParameter( config, "ntuplesList" )
    if not ntuples:
       if configNtuples:
          ntuples = configNtuples[1]
       if not ntuples:
-         print "*error* You must define the parameter ntuplesList in your configuration."
+         print ("*error* You must define the parameter ntuplesList in your configuration.")
          quit()
    if not isMC:
       configJson    = getConfigParameter( config, "json" )
@@ -144,11 +190,11 @@ if config:
 # checking if require files exist
 if ntuples:
    if not os.path.isfile(ntuples):      
-      print "Ntuples list file does not exist"
+      print ("Ntuples list file does not exist")
       quit()
 if json:
    if (not 'tools:' in json) and (not os.path.isfile(json)):      
-      print "Json  file does not exist"
+      print ("Json  file does not exist")
       quit()
       
 # directory where the jobs will be stored
@@ -159,7 +205,7 @@ if args.label:
    maindir += '_'+args.label
 cwd = os.getcwd()
 if os.path.exists(cwd+"/"+maindir):
-   print maindir + "already exists. Rename or remove it and then resubmit"
+   print (maindir,"already exists. Rename or remove it and then resubmit")
    quit()
 os.mkdir(maindir)
 
@@ -212,20 +258,29 @@ if ntuples:
       if config:
          copyfile(tmpdir+"/"+os.path.basename(config),exedir+"/"+os.path.basename(config))      
          condorcmd = "condor_scripts.csh" + " " + jobid + " " + args.exe + " " + os.path.basename(config)
+         createCondorSubmit(cwd+'/'+exedir)
+         createJobScript(exedir,jobid,args.exe,os.path.basename(config))
       else:
          condorcmd = "condor_scripts.csh" + " " + jobid + " " + args.exe
       # make the submissions
-      os.chdir(exedir)
-      jobf = open('./seed.txt', 'w+')
-      print >> jobf, int(jobnum)+1
+#      os.chdir(exedir)
+      jobf = open(f'{exedir}/seed.txt', 'w+')
+      jobf.write(str(int(jobnum)+1))
+#      print >> jobf, int(jobnum)+1
       jobf.close()
-      print "Creating ",jobid,"..."
-      os.system(condorcmd)
-      if not test:
-         os.system('condor_submit job.submit')
-      sleep(0.2)
+      print ("Creating ",jobid,"...")
+#      os.system(condorcmd)
+#      if not test:
+#         os.chdir(exedir)
+#         os.system('condor_submit job.submit')
+#         sleep(0.2)
       # back to original directory
-      os.chdir(cwd)
+#      os.chdir(cwd)
+      
+   createCondorDirsSubmit(cwd+'/'+maindir)
+   if not test:
+      os.chdir(cwd+'/'+maindir)
+      os.system('condor_submit jobs.submit')
 
 else:
    exedir = maindir+"/job_0000"
