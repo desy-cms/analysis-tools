@@ -95,27 +95,39 @@ A python script to submit to NAF condor queue, `naf_submit.py`, is available.
 **N.B.: So far the script does not make a single submission of multiple jobs. So be careful not to make too many submissions.**
 
 ```
-usage: naf_submit.py [-h] [-e EXE] [-n NTUPLES] [-x NFILES] [-c CONFIG] [-j JSON] [-l LABEL] [--events EVENTS_MAX] [--test NJOBS]
+usage: naf_submit.py [-h] [--exe EXE] [--config CONFIG] [--ntuples NTUPLES] [--nfiles NFILES] [--json JSON] [--label LABEL] [--events EVENTS_MAX] [--test NJOBS] [--dir DIR] [--status] [--resubmit] [--expert]
 
-Prepare and submit jobs to NAF HTCondor batch system
+Prepare, submit and check jobs to NAF HTCondor batch system
 
 optional arguments:
       -h, --help                     show this help message and exit
-      -e EXE, --exe EXE              Executable
-      -n NTUPLES, --ntuples NTUPLES  List of ntuples file
-      -x NFILES, --nfiles NFILES     Number of ntuple files per job
-      -c CONFIG, --config CONFIG     Configuration file
-      -j JSON, --json JSON           JSON file with certified data
-      -l LABEL, --label LABEL        user label for the submission
-      --events EVENTS_MAX            override eventsMax in the config file
-      --test NJOBS                   produce njobs, no automatic submission
+
+submission:
+      prepare and submit jobs
+
+      --exe EXE, -e EXE              Executable (REQUIRED)
+      --config CONFIG, -c CONFIG     Configuration file (REQUIRED)
+      --ntuples NTUPLES, -n NTUPLES  List of ntuples file
+      --nfiles NFILES, -x NFILES     Number of ntuple files per job
+      --json JSON, -j JSON           JSON file with certified data
+      --label LABEL, -l LABEL        user label for the submission
+      --events EVENTS_MAX            override eventsMax in the config file (default = -1)
+      --test NJOBS                   *** expert only ***:produce njobs, no automatic submission
+
+status:
+      show and modify status
+
+      --dir DIR                      an existing condor directory (REQUIRED)
+      --status                       -> returns the status of the jobs in --dir
+      --resubmit                     -> resubmits aborted and finished-with-error jobs in --dir
+      --expert                       -> *** expert mode ***
 ```
 
 **If you provide a configuration file with the NTUPLES and JSON parameters, you do not need to parse them, the script will read out that information from the configuration file.**
 
 Using the example above to be submitted to the naf using [HTCondor](https://confluence.desy.de/display/ITPublic/HTCondor%3A+Job+Submission)
 ```bash
-naf_submit.py -e AnalyserSimpleExample -c analyser_example_semilep_2018.cfg -x 2
+naf_submit.py --exe AnalyserSimpleExample --config analyser_example_semilep_2018.cfg -nfiles 2
 ```
 
 After the jobs were submitted there will be a directory called `Condor_AnalyserSimpleExample_analyser_example_semilep_2018` containing several subdirectories called `job_xxxx`. In each of this subdirectory there will be several files. Files to take note will be:
@@ -125,6 +137,49 @@ After the jobs were submitted there will be a directory called `Condor_AnalyserS
 ```bash
 condor_submit job.submit
 ```
+
+Once the directory `Condor_AnalyserSimpleExample_analyser_example_semilep_2018`
+is created, one can use the status options, e.g.
+
+```bash
+naf_submit.py --dir Condor_AnalyserSimpleExample_analyser_example_semilep_2018 --status
+```
+
+will display a table like this
+
+
+```
+ 
+                          ***  STATUS OF JOBS  ***
+
+   Condor_AnalyserSimpleExample_analyser_example_semilep_2018
+ 
+  ----------------------------------------------------------------------------------------------------------
+     job        finished       running       submitted       aborted       error       condor_id (latest)
+  ----------------------------------------------------------------------------------------------------------
+   job_0000        v                                                         v             15962854.0
+   job_0001        v                                                         v             15962854.1
+   job_0002                       v                                                        15962854.2
+   job_0003                                       v                                        15968568.0
+   job_0004                                                      X                         15962854.4
+   job_0005        v                                                         X             15962854.5
+  ----------------------------------------------------------------------------------------------------------
+
+  N.B.: Good *finished* jobs will no longer appear in future "--status" calls
+
+```
+
+where `v` will appear as a green tick mark and `x` as a red X.
+
+
+If jobs were aborted or finished with error, you can resubmit all of those jobs with the command 
+
+```bash
+naf_submit.py --dir Condor_AnalyserSimpleExample_analyser_example_semilep_2018 --resubmit
+```
+
+which, in the example above, will resubmit the jobs `job_0004` and `job_0005`.
+
 
 ## Example Detailed Description
 
