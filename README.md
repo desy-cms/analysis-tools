@@ -59,6 +59,17 @@ cd $CMSSW_BASE/src
 git clone https://github.com/desy-cms/analysis-ntuples.git Analysis/Tools/data/ntuples
 ```
 
+The ntuples path name is the global one for general grid access. If you are running your jobs on the NAF, it should
+be faster to use the `/pnfs/...` path name. To make the conversion simply issue the following command once for each
+installation of the analysis-ntuples as described above
+
+```bash
+ntuples_at_pnfs.sh
+```
+
+The script will modify all the files in `$CMSSW_BASE/src/Analysis/Tools/data/ntuples`.
+
+
 ## Example
 
 A simple example macro can be found in [Analysis/Tools/bin/AnalyserSimpleExample.cc](bin/AnalyserSimpleExample.cc).
