@@ -25,9 +25,6 @@ int main(int argc, char ** argv)
    {
       if ( ! analyser.event(i)                  )   continue;
       
-// PILEUP RE-WEIGHT
-      analyser.actionApplyPileupWeight();   
-         
 // MUONS pre-selection
       // muon identification selection
       if ( ! analyser.selectionMuonId()         )   continue;
