@@ -212,7 +212,7 @@ std::shared_ptr<Config> BaseAnalyser::config()
 int BaseAnalyser::nEvents()
 {
    int maxevt = config_->nEventsMax();
-   if ( maxevt < 0 ) maxevt = analysis_->size();
+   if ( maxevt < 0 || maxevt > analysis_->size() ) maxevt = analysis_->size();
    return maxevt;
 }
 
