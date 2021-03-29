@@ -84,10 +84,10 @@ bool JetAnalyser::analysisWithJets()
    
    
    
-   analysis_->match<Jet,TriggerObject>("Jets",config_->triggerObjectsL1Jets(),0.3);
-   analysis_->match<Jet,TriggerObject>("Jets",config_->triggerObjectsCaloJets(),0.3);
-   analysis_->match<Jet,TriggerObject>("Jets",config_->triggerObjectsPFJets(),0.3);
-   analysis_->match<Jet,TriggerObject>("Jets",config_->triggerObjectsBJets(),0.3);
+   analysis_->match<Jet,TriggerObject>("Jets",config_->triggerObjectsL1Jets(),config_-> triggerMatchL1JetsDrMax());
+   analysis_->match<Jet,TriggerObject>("Jets",config_->triggerObjectsCaloJets(),config_-> triggerMatchCaloJetsDrMax());
+   analysis_->match<Jet,TriggerObject>("Jets",config_->triggerObjectsPFJets(),config_-> triggerMatchPFJetsDrMax());
+   analysis_->match<Jet,TriggerObject>("Jets",config_->triggerObjectsBJets(),config_-> triggerMatchCaloBJetsDrMax());
 
    // std::shared_ptr< Collection<Jet> >
    auto jets = analysis_->collection<Jet>("Jets");
@@ -752,7 +752,7 @@ bool JetAnalyser::onlineJetMatching(const int & r)
    
    ++cutflow_;
    if ( std::string(h1_["cutflow"] -> GetXaxis()-> GetBinLabel(cutflow_+1)) == "" ) 
-      h1_["cutflow"] -> GetXaxis()-> SetBinLabel(cutflow_+1,Form("Jet %d: online jet match",r));
+      h1_["cutflow"] -> GetXaxis()-> SetBinLabel(cutflow_+1,Form("Jet %d: online jet match (deltaR: L1 < %4.3f, Calo < %4.3f, PF < %4.3f)",r,config_-> triggerMatchL1JetsDrMax(),config_-> triggerMatchCaloJetsDrMax(),config_-> triggerMatchPFJetsDrMax()));
       
    
    if ( r > config_->nJetsMin() )
@@ -784,7 +784,7 @@ bool JetAnalyser::onlineBJetMatching(const int & r)
    
    ++cutflow_;
    if ( std::string(h1_["cutflow"] -> GetXaxis()-> GetBinLabel(cutflow_+1)) == "" ) 
-      h1_["cutflow"] -> GetXaxis()-> SetBinLabel(cutflow_+1,Form("Jet %d: online b jet match",r));
+      h1_["cutflow"] -> GetXaxis()-> SetBinLabel(cutflow_+1,Form("Jet %d: online b jet match (deltaR < %4.3f)",r,config_-> triggerMatchCaloBJetsDrMax()));
    
    
    if ( r > config_->nJetsMin() )

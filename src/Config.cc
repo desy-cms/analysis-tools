@@ -133,7 +133,13 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          ("Trigger.Objects.Jets.Calo"    , po::value<std::string>                (&trgObjsCaloJets_) -> default_value("")                 , "Trigger objects for Calo jets")
          ("Trigger.Objects.Jets.PF"      , po::value<std::string>                (&trgObjsPFJets_)   -> default_value("")                 , "Trigger objects for PF jets")
          ("Trigger.Objects.Muons.L1"     , po::value<std::string>                (&trgObjsL1Muons_)  -> default_value("")                 , "Trigger objects for L1 muons")
-         ("Trigger.Objects.Muons.L3"     , po::value<std::string>                (&trgObjsL3Muons_)  -> default_value("")                 , "Trigger objects for L3 muons");
+         ("Trigger.Objects.Muons.L3"     , po::value<std::string>                (&trgObjsL3Muons_)  -> default_value("")                 , "Trigger objects for L3 muons")
+         ("Trigger.Objects.BTag.Calo.MatchDeltaR"    , po::value<float>    (&matchTrgCaloBJetsDrMax_)    -> default_value(0.3)                 , "Max deltaR for btag jets")
+         ("Trigger.Objects.Jets.L1.MatchDeltaR"      , po::value<float>    (&matchTrgL1JetsDrMax_)       -> default_value(0.3)                 , "Max deltaR for L1 jets")
+         ("Trigger.Objects.Jets.Calo.MatchDeltaR"    , po::value<float>    (&matchTrgCaloJetsDrMax_)     -> default_value(0.3)                 , "Max deltaR for Calo jets")
+         ("Trigger.Objects.Jets.PF.MatchDeltaR"      , po::value<float>    (&matchTrgPFJetsDrMax_)       -> default_value(0.3)                 , "Max deltaR for PF jets")
+         ("Trigger.Objects.Muons.L1.MatchDeltaR"     , po::value<float>    (&matchTrgL1MuonsDrMax_)      -> default_value(0.3)                 , "Max deltaR for L1 muons match")
+         ("Trigger.Objects.Muons.L3.MatchDeltaR"     , po::value<float>    (&matchTrgL3MuonsDrMax_)      -> default_value(0.3)                 , "Max deltaR for L3 muons match");
                                                                                                                                           
       // L1 trigger                                                                                                                       
       opt_cfg_.add_options()                                                                                                              
@@ -412,6 +418,16 @@ std::string        Config::triggerObjectsBJets()    const { return trgObjsBJets_
 std::string        Config::triggerObjectsL1Jets()   const { return trgObjsL1Jets_; }
 std::string        Config::triggerObjectsCaloJets() const { return trgObjsCaloJets_; }
 std::string        Config::triggerObjectsPFJets()   const { return trgObjsPFJets_; }
+
+float         Config::triggerMatchL1MuonsDrMax()       const { return matchTrgL1MuonsDrMax_;      }
+float         Config::triggerMatchL3MuonsDrMax()       const { return matchTrgL3MuonsDrMax_;      }              
+float         Config::triggerMatchL1JetsDrMax()        const { return matchTrgL1JetsDrMax_;       }
+float         Config::triggerMatchCaloJetsDrMax()      const { return matchTrgCaloJetsDrMax_;     }
+float         Config::triggerMatchPFJetsDrMax()        const { return matchTrgPFJetsDrMax_;       }
+float         Config::triggerMatchCaloBJetsDrMax()     const { return matchTrgCaloBJetsDrMax_;    }
+
+
+
 // generator level
 std::string        Config::genJetsCollection()       const { return genjetsCol_; }
 std::string        Config::genParticlesCollection()  const { return genpartsCol_; }

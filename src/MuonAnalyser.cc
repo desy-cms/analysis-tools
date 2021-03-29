@@ -57,9 +57,9 @@ bool MuonAnalyser::analysisWithMuons()
    
    
    if ( config_->triggerObjectsL1Muons() != "" )
-      analysis_->match<Muon,TriggerObject>("Muons",config_->triggerObjectsL1Muons(),0.3);
+      analysis_->match<Muon,TriggerObject>("Muons",config_->triggerObjectsL1Muons(),config_->triggerMatchL1MuonsDrMax());
    if ( config_->triggerObjectsL3Muons() != "" )
-      analysis_->match<Muon,TriggerObject>("Muons",config_->triggerObjectsL3Muons(),0.3);
+      analysis_->match<Muon,TriggerObject>("Muons",config_->triggerObjectsL3Muons(),config_->triggerMatchL3MuonsDrMax());
 
    auto muons = analysis_->collection<Muon>("Muons");
    for ( int j = 0 ; j < muons->size() ; ++j )  muons_.push_back(std::make_shared<Muon>(muons->at(j)));
@@ -227,7 +227,7 @@ bool MuonAnalyser::onlineMuonMatching()
    
    ++cutflow_;
    if ( std::string(h1_["cutflow"] -> GetXaxis()-> GetBinLabel(cutflow_+1)) == "" ) 
-      h1_["cutflow"] -> GetXaxis()-> SetBinLabel(cutflow_+1,"Muons selected: Online muon matching (L1 and L3)");
+      h1_["cutflow"] -> GetXaxis()-> SetBinLabel(cutflow_+1,Form("Muons selected: Online muon matching: L1 (deltaR < %4.3f) and L3 (deltaR < %4.3f)",config_-> triggerMatchL1MuonsDrMax(),config_-> triggerMatchL3MuonsDrMax()));
    
    auto muon = std::begin(selectedMuons_);
    while ( muon != std::end(selectedMuons_) )
@@ -266,7 +266,7 @@ bool MuonAnalyser::onlineL1MuonMatching(const int & r)
    if ( ! selectedMuons_[j]->matched(config_->triggerObjectsL1Muons()) ) return false;
 
    if ( std::string(h1_["cutflow"] -> GetXaxis()-> GetBinLabel(cutflow_+1)) == "" ) 
-      h1_["cutflow"] -> GetXaxis()-> SetBinLabel(cutflow_+1,Form("L1MuonTriggerMatch_%d",r));
+      h1_["cutflow"] -> GetXaxis()-> SetBinLabel(cutflow_+1,Form("Muon %d: L1 muon match (deltaR < %4.3f)",r,config_-> triggerMatchL1MuonsDrMax()));
       
    h1_["cutflow"] -> Fill(cutflow_,weight_);
    
@@ -294,7 +294,7 @@ bool MuonAnalyser::onlineL3MuonMatching(const int & r)
    if ( ! selectedMuons_[j]->matched(config_->triggerObjectsL3Muons()) ) return false;
 
    if ( std::string(h1_["cutflow"] -> GetXaxis()-> GetBinLabel(cutflow_+1)) == "" ) 
-      h1_["cutflow"] -> GetXaxis()-> SetBinLabel(cutflow_+1,Form("L3MuonTriggerMatch_%d",r));
+      h1_["cutflow"] -> GetXaxis()-> SetBinLabel(cutflow_+1,Form("Muon %d: L3 muon match  (deltaR < %4.3f)",r,config_-> triggerMatchL3MuonsDrMax()));
       
    h1_["cutflow"] -> Fill(cutflow_,weight_);
    

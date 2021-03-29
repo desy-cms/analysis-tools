@@ -212,8 +212,9 @@ def submission():
       if config:
          # replace json and ntuples in the local exe config by their basenames
          if json:
-            createConfigParameter(os.path.basename(config),'json')
-            replaceConfigParameter(os.path.basename(config), 'json', os.path.basename(json))
+            if (not 'tools:' in json):
+               createConfigParameter(os.path.basename(config),'json')
+               replaceConfigParameter(os.path.basename(config), 'json', os.path.basename(json))
          else:
             removeConfigParameter(os.path.basename(config),'json')
          # ntuples list

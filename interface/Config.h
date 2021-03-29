@@ -160,7 +160,17 @@ namespace analysis {
             std::string triggerObjectsBJets()    const;
             std::string triggerObjectsL1Jets()   const;
             std::string triggerObjectsCaloJets() const;
-            std::string triggerObjectsPFJets()   const;            
+            std::string triggerObjectsPFJets()   const;  
+            
+            
+         // matching trigger objects
+            float triggerMatchL1MuonsDrMax()       const;
+            float triggerMatchL3MuonsDrMax()       const;              
+            float triggerMatchL1JetsDrMax()        const;
+            float triggerMatchCaloJetsDrMax()      const;
+            float triggerMatchPFJetsDrMax()        const;
+            float triggerMatchCaloBJetsDrMax()     const;
+            
          // generator level
             std::string genJetsCollection() const;
             std::string genParticlesCollection() const;
@@ -356,6 +366,13 @@ namespace analysis {
             std::string trgObjsL1Jets_;
             std::string trgObjsCaloJets_;
             std::string trgObjsPFJets_;
+            
+            float matchTrgL1MuonsDrMax_;
+            float matchTrgL3MuonsDrMax_;
+            float matchTrgL1JetsDrMax_;
+            float matchTrgCaloJetsDrMax_;
+            float matchTrgPFJetsDrMax_;
+            float matchTrgCaloBJetsDrMax_;
             
          // generator level collections
             std::string genjetsCol_;
