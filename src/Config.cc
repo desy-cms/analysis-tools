@@ -124,6 +124,20 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          ("Trigger.hltPath"              , po::value <std::string>               (&hltPath_)         -> default_value("")                 , "HLT path name")
          ("Trigger.l1Seed"               , po::value <std::string>               (&l1Seed_)          -> default_value("")                 , "L1 seed name")
          ("Trigger.results"              , po::value <std::string>               (&triggerCol_)      -> default_value("TriggerResults")   , "Name of the trigger results collection");
+      
+      // L1 muontrigger emulation
+      opt_cfg_.add_options()
+         ("Trigger.Emulate.Muons.L1.seed"         , po::value <std::string>               (&l1muonemul_)       -> default_value("")                 , "Name of emulated L1 muon trigger")            
+         ("Trigger.Emulate.Muons.L1.nMin"         , po::value <int>                       (&l1muonemulnmin_)   -> default_value(-1)                 , "Minimum number of emulated L1 muon trigger objects")
+         ("Trigger.Emulate.Muons.L1.ptMin"        , po::value <float>                     (&l1muonemulptmin_)  -> default_value(0)                  , "Minimum pt of emulated L1 muon trigger objects")
+         ("Trigger.Emulate.Muons.L1.etaMax"       , po::value <float>                     (&l1muonemuletamax_) -> default_value(10)                 , "Maximum |eta|s of emulated L1 muon trigger objects");
+                                                                                                                                          
+      // L3 muontrigger emulation
+      opt_cfg_.add_options()
+         ("Trigger.Emulate.Muons.L3.path"         , po::value <std::string>               (&l3muonemul_)       -> default_value("")                 , "Name of emulated L3 muon trigger")            
+         ("Trigger.Emulate.Muons.L3.nMin"         , po::value <int>                       (&l3muonemulnmin_)   -> default_value(-1)                 , "Minimum number of emulated L3 muon trigger objects")
+         ("Trigger.Emulate.Muons.L3.ptMin"        , po::value <float>                     (&l3muonemulptmin_)  -> default_value(0)                  , "Minimum pt of emulated L3 muon trigger objects")
+         ("Trigger.Emulate.Muons.L3.etaMax"       , po::value <float>                     (&l3muonemuletamax_) -> default_value(10)                 , "Maximum |eta|s of emulated L3 muon trigger objects");
                                                                                                                                           
       // trigger objects                                                                                                                  
       opt_cfg_.add_options()                                                                                                              
@@ -483,3 +497,16 @@ bool  Config::histogramJetsPerFlavour()  const { return histjets_flavour_ ; }
 
 std::string Config::outputRoot() const { return outputRoot_ ; }
 std::string Config::json() const { return json_ ; }
+
+
+// L1 muon trigger emulation
+std::string  Config::triggerEmulateL1Muons()       const { return l1muonemul_       ; }
+int          Config::triggerEmulateL1MuonsNMin()   const { return l1muonemulnmin_   ; }
+float        Config::triggerEmulateL1MuonsPtMin()  const { return l1muonemulptmin_  ; }
+float        Config::triggerEmulateL1MuonsEtaMax() const { return l1muonemuletamax_ ; }
+
+// L3 muon trigger emulation
+std::string  Config::triggerEmulateL3Muons()       const { return l3muonemul_       ; }
+int          Config::triggerEmulateL3MuonsNMin()   const { return l3muonemulnmin_   ; }
+float        Config::triggerEmulateL3MuonsPtMin()  const { return l3muonemulptmin_  ; }
+float        Config::triggerEmulateL3MuonsEtaMax() const { return l3muonemuletamax_ ; }
