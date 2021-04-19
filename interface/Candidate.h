@@ -47,7 +47,7 @@ namespace analysis {
             Candidate(const float & px, const float & py, const float & pz, const float & q);
             /// destructor
            virtual ~Candidate();
-            
+
            // Get
            /// returns the x component of the momentum
            float px()          const;
@@ -73,7 +73,7 @@ namespace analysis {
            TLorentzVector p4() const;
            /// returns the 4-momentum (TVector3)
            TVector3       p3() const;
-           
+
            // Set
            /// sets the 4-momentum (TLorentzVector)
            void p4  (const TLorentzVector &);
@@ -87,12 +87,12 @@ namespace analysis {
            void e   (const float &);
            /// sets the charge
            void q   (const float &);
-           
+
            /// returns the deltaR between this and another candidate
            float deltaR(const Candidate & ) const;
            /// returns the deltaPhi between this and another candidate
            float deltaPhi(const Candidate & ) const;
-           
+
 
            // made below virtual as this may be different for MET, or vertex
            /// function to match this candidate to another object from a list of pointers with a name
@@ -102,6 +102,8 @@ namespace analysis {
            const Candidate * matched(const std::string & name);
            /// returns the pointer to the matched candidate object
            const Candidate * matched(const std::string & name) const;
+           /// unmatch a matched candidate object, i.e. set it to nullptr, useful to remove possible duplicated matching
+           void unmatch(const std::string &);
          protected:
             // ----------member data ---------------------------
 

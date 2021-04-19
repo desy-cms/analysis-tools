@@ -24,14 +24,17 @@ TriggerAnalyser::TriggerAnalyser()
 
 TriggerAnalyser::TriggerAnalyser(int argc, char * argv[]) : BaseAnalyser(argc,argv)
 {
+
    triggeranalysis_ = false;
+   
    if ( config_->triggerResults() != "" )
       triggeranalysis_  = analysis_->triggerResults(config_->triggerResults());
    
    if ( config_->triggerObjectsDir() != "" )
    {
       // online jets
-      analysis_->addTree<TriggerObject> (config_->triggerObjectsL1Jets()  ,Form("%s/%s", config_->triggerObjectsDir().c_str(),config_->triggerObjectsL1Jets().c_str()));
+      if ( config_->triggerObjectsL1Jets() != "l1tJets")
+         analysis_->addTree<TriggerObject> (config_->triggerObjectsL1Jets()  ,Form("%s/%s", config_->triggerObjectsDir().c_str(),config_->triggerObjectsL1Jets().c_str()));
       analysis_->addTree<TriggerObject> (config_->triggerObjectsCaloJets(),Form("%s/%s", config_->triggerObjectsDir().c_str(),config_->triggerObjectsCaloJets().c_str()));
       analysis_->addTree<TriggerObject> (config_->triggerObjectsPFJets()  ,Form("%s/%s", config_->triggerObjectsDir().c_str(),config_->triggerObjectsPFJets().c_str()));
       // online b jets
@@ -40,7 +43,15 @@ TriggerAnalyser::TriggerAnalyser(int argc, char * argv[]) : BaseAnalyser(argc,ar
       analysis_->addTree<TriggerObject> (config_->triggerObjectsL1Muons(),Form("%s/%s",config_->triggerObjectsDir().c_str(),config_->triggerObjectsL1Muons().c_str()));
       analysis_->addTree<TriggerObject> (config_->triggerObjectsL3Muons(),Form("%s/%s",config_->triggerObjectsDir().c_str(),config_->triggerObjectsL3Muons().c_str()));
    }
-   
+   if ( config_ -> l1tJetsCollection() != "")
+   {
+      l1tjetsanalysis_ = ( analysis_ -> addTree<L1TJet> ("l1tJets",config_ -> l1tJetsCollection()) != nullptr );
+   }
+   if ( config_ -> l1tMuonsCollection() != "")
+   {
+      l1tmuonsanalysis_ = ( analysis_ -> addTree<L1TMuon> ("l1tMuons",config_ -> l1tMuonsCollection()) != nullptr );
+   }
+
 }
 
 TriggerAnalyser::~TriggerAnalyser()
@@ -80,8 +91,40 @@ bool TriggerAnalyser::selectionTrigger() // Maybe not use this, use selectionHLT
       float etamax = config_->triggerEmulateL3MuonsEtaMax();
       l3muon = selectionTriggerEmulated(l1,hlt,config_->triggerEmulateL3Muons(),nmin,ptmin,etamax);
    }
+      
+   // L1 jet trigger
+   bool l1jet = true;
+   if ( config_->triggerEmulateL1Jets() != "" &&  config_->triggerEmulateL1JetsNMin() > 0 && config_->triggerObjectsL1Jets() != "" )
+   {
+      int nmin = config_->triggerEmulateL1JetsNMin();
+      float ptmin = config_->triggerEmulateL1JetsPtMin();
+      float etamax = config_->triggerEmulateL1JetsEtaMax();
+      l1jet = selectionTriggerEmulated(l1,hlt,config_->triggerEmulateL1Jets(),nmin,ptmin,etamax);
+   }
    
-   bool emul = l1muon && l3muon;
+   // Calo jet trigger
+   bool calojet = true;
+   if ( config_->triggerEmulateCaloJets() != "" &&  config_->triggerEmulateCaloJetsNMin() > 0 && config_->triggerObjectsCaloJets() != "" )
+   {
+      int nmin = config_->triggerEmulateCaloJetsNMin();
+      float ptmin = config_->triggerEmulateCaloJetsPtMin();
+      float etamax = config_->triggerEmulateCaloJetsEtaMax();
+      calojet = selectionTriggerEmulated(l1,hlt,config_->triggerEmulateCaloJets(),nmin,ptmin,etamax);
+   }
+   
+   
+   // PF jet trigger
+   bool pfjet = true;
+   if ( config_->triggerEmulatePFJets() != "" &&  config_->triggerEmulatePFJetsNMin() > 0 && config_->triggerObjectsPFJets() != "" )
+   {
+      int nmin = config_->triggerEmulatePFJetsNMin();
+      float ptmin = config_->triggerEmulatePFJetsPtMin();
+      float etamax = config_->triggerEmulatePFJetsEtaMax();
+      pfjet = selectionTriggerEmulated(l1,hlt,config_->triggerEmulatePFJets(),nmin,ptmin,etamax);
+   }
+   
+   
+   bool emul = l1muon && l3muon && l1jet && calojet && pfjet;
    
    return (hlt && l1 && emul);
    
@@ -189,3 +232,12 @@ std::vector< std::shared_ptr<TriggerObject> > TriggerAnalyser::triggerObjectsL3M
    return objects;
 }
 
+bool  TriggerAnalyser::l1tJetsAnalysis() const
+{
+   return l1tjetsanalysis_;
+}
+
+bool  TriggerAnalyser::l1tMuonsAnalysis() const
+{
+   return l1tmuonsanalysis_;
+}

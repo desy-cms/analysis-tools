@@ -54,8 +54,6 @@ BaseAnalyser::BaseAnalyser(int argc, char * argv[])
    
    // Workflow
    h1_["cutflow"] = std::make_shared<TH1F>("workflow",Form("Workflow #%d",config_->workflow()), 100,0,100);
-      if ( std::string(h1_["cutflow"] -> GetXaxis()-> GetBinLabel(1)) == "" ) 
-         h1_["cutflow"] -> GetXaxis()-> SetBinLabel(1,"Total events read");
       
    
    isMC_ = analysis_->isMC();
@@ -69,16 +67,19 @@ BaseAnalyser::BaseAnalyser(int argc, char * argv[])
          xsection_ = analysis_->crossSection(config_->crossSectionType());
       // Pileup weights
       if ( config_->pileupWeights() != "" )
+      {
          puweights_ = analysis_->pileupWeights(config_->pileupWeights());
+         puw_label_ = basename(config_->pileupWeights());
+      }
+      else
+      {
+         puw_label_ = "*** missing *** assuming puweight = 1";
+      }
+
       // gen part analysis
       genpartsanalysis_  = ( analysis_->addTree<GenParticle> ("GenParticles",config_->genParticlesCollection()) != nullptr );
       // gen jets analysis
       genjetsanalysis_  = ( analysis_->addTree<GenJet> ("GenJets",config_->genJetsCollection()) != nullptr );
-      // cutflow init for MC
-      std::string genweight_type = "sign of weights";
-      if ( config_->fullGenWeight() ) genweight_type = "full weights";
-      if ( std::string(h1_["cutflow"] -> GetXaxis()-> GetBinLabel(2)) == "" )
-         h1_["cutflow"] -> GetXaxis()-> SetBinLabel(2,Form("Generated weighted events (%s)",genweight_type.c_str()));
       
    }
    
@@ -300,28 +301,14 @@ float BaseAnalyser::trueInteractions() const
 void BaseAnalyser::actionApplyPileupWeight(const int & var)
 {
    if ( ! config_->isMC() ) return;
-   
-   ++cutflow_;
-   if ( std::string(h1_["cutflow"] -> GetXaxis()-> GetBinLabel(cutflow_+1)) == "" ) 
-   {
-      std::string bn;
-      if ( puweights_ )
-      {
-         bn = basename(config_->pileupWeights());
-      }
-      else
-      {
-         bn = "*** missing *** assuming puweight = 1";
-      }
-      h1_["cutflow"] -> GetXaxis()-> SetBinLabel(cutflow_+1,Form("Pileup weight (%s)",bn.c_str()));
-   }
-   
+      
    if ( puweights_ )
       weight_ *= this->pileupWeight(analysis_->nTruePileup(),var);
    else
       weight_ *= 1;
    
-   h1_["cutflow"] -> Fill(cutflow_,weight_);
+   cutflow(puw_label_);
+   
    this -> fillPileupHistogram();
 }
 
@@ -342,11 +329,6 @@ void BaseAnalyser::pileupHistogram()
 }
 void BaseAnalyser::fillPileupHistogram()
 {
-//    ++cutflow_;
-//    if ( std::string(h1_["cutflow"] -> GetXaxis()-> GetBinLabel(cutflow_+1)) == "" ) 
-//       h1_["cutflow"] -> GetXaxis()-> SetBinLabel(cutflow_+1,"*** Fill true pileup histrogram");
-//    
-//    h1_["cutflow"] -> Fill(cutflow_,weight_);
    
    h1_["pileup"] -> Fill(analysis_->nTruePileup());
    h1_["pileup_w"] -> Fill(analysis_->nTruePileup(),this->pileupWeight(analysis_->nTruePileup(),0));
@@ -360,6 +342,17 @@ int BaseAnalyser::cutflow()
 void BaseAnalyser::cutflow(const int & c)
 {
    cutflow_ = c;
+}
+
+void BaseAnalyser::cutflow(const std::string & label, const bool & ok)
+{
+   ++cutflow_;
+   if ( std::string(h1_["cutflow"] -> GetXaxis()-> GetBinLabel(cutflow_+1)) == "" ) 
+   {
+      h1_["cutflow"] -> GetXaxis()-> SetBinLabel(cutflow_+1,label.c_str());
+   }
+   if ( ok ) h1_["cutflow"] -> Fill(cutflow_,weight_);
+   
 }
 
 void BaseAnalyser::scale(const float & scale)
@@ -391,7 +384,6 @@ void BaseAnalyser::generatorWeight()
 {
    if ( ! config_->isMC() ) return;
    
-   ++cutflow_;
    float weight = analysis_->genWeight();
    if ( config_->fullGenWeight() )
    {
@@ -402,27 +394,68 @@ void BaseAnalyser::generatorWeight()
       float sign =  (weight > 0) ? 1 : ((weight < 0) ? -1 : 0);
       weight_ *= sign;
    }
-   h1_["cutflow"] -> Fill(cutflow_,weight_);
-   
+      
 }
 
 bool BaseAnalyser::triggerEmulation(const std::string & name, const int & nmin, const float & ptmin, const float & etamax, const std::string & newname)
 {
    trg_emul_[newname] = true;
-   std::shared_ptr< Collection<TriggerObject> > objects = analysis_->collection<TriggerObject>(name);
-   
    std::vector<TriggerObject> new_objects;
+      
    
-   
-   for ( int i = 0 ; i < objects->size() ; ++i )
+   if ( name != "l1tJets" && name != "l1tMuons" )
    {
-      TriggerObject obj = objects->at(i);
-      if ( obj.pt() >= ptmin && fabs(obj.eta()) <= etamax ) 
+      std::shared_ptr< Collection<TriggerObject> > objects = analysis_->collection<TriggerObject>(name);
+      
+      for ( int i = 0 ; i < objects->size() ; ++i )
       {
-         new_objects.push_back(obj);
+         TriggerObject obj = objects->at(i);
+         if ( obj.pt() >= ptmin && fabs(obj.eta()) <= etamax ) 
+         {
+            new_objects.push_back(obj);
+         }
       }
+      
    }
    
+   if ( name == "l1tJets" )
+   {
+      std::shared_ptr< Collection<L1TJet> > l1tjets = analysis_->collection<L1TJet>(name);
+
+      for ( int i = 0 ; i < l1tjets->size() ; ++i )
+      {
+         L1TJet l1tjet = l1tjets -> at(i);
+         float pt = l1tjet.pt();
+         float eta = l1tjet.eta();
+         float phi = l1tjet.phi();
+         float e = l1tjet.e();
+         TriggerObject obj(pt,eta,phi,e);
+         if ( obj.pt() >= ptmin && fabs(obj.eta()) <= etamax ) 
+         {
+            new_objects.push_back(obj);
+         }
+      }
+      
+   }
+   if ( name == "l1tMuons" )
+   {
+      std::shared_ptr< Collection<L1TMuon> > l1tmuons = analysis_->collection<L1TMuon>(name);
+      
+      for ( int i = 0 ; i < l1tmuons->size() ; ++i )
+      {
+         L1TMuon l1tmuon = l1tmuons -> at(i);
+         float pt = l1tmuon.pt();
+         float eta = l1tmuon.eta();
+         float phi = l1tmuon.phi();
+         float e = l1tmuon.e();
+         TriggerObject obj(pt,eta,phi,e);
+         if ( obj.pt() >= ptmin && fabs(obj.eta()) <= etamax ) 
+         {
+            new_objects.push_back(obj);
+         }
+      }
+      
+   }
    trg_emul_[newname] = ( (int)new_objects.size() >= nmin );
       
    Collection<TriggerObject> new_collection(new_objects,newname);

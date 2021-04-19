@@ -43,11 +43,20 @@ bool Analyser::event(const int & i)
 {
    bool ok = true;
    analysis_->event(i);
-   cutflow_ = 0;
+   cutflow_ = -1;
    weight_ = 1.;  // reset weight at the beginning of the event analysis
+  
+   cutflow("Total events read"); 
    
-   h1_["cutflow"] -> Fill(cutflow_,weight_);
-   this -> generatorWeight();
+   // Generator weight
+   if ( isMC_ )
+   {
+      this -> generatorWeight();
+      std::string genweight_type = "sign of weights";
+      if ( config_->fullGenWeight() ) genweight_type = "full weights";
+      
+      cutflow(Form("Generated weighted events (%s)",genweight_type.c_str()));
+   }
    
    if ( config_->runmin_ > 0 && analysis_->run() < config_->runmin_ ) return false;
    if ( config_->runmax_ > 0 && analysis_->run() > config_->runmax_ ) return false;
@@ -55,36 +64,24 @@ bool Analyser::event(const int & i)
    if (! config_->isMC() ) 
    {
        auto json = basename(config_->json());
-       ++cutflow_;
-       if ( std::string(h1_["cutflow"] -> GetXaxis()-> GetBinLabel(cutflow_+1)) == "" )
-       {
-         h1_["cutflow"] -> GetXaxis()-> SetBinLabel(cutflow_+1,Form("Certified data: %s",json.c_str()));
-       }
        ok = analysis_->selectJson();
+       cutflow(Form("Certified data: %s",json.c_str()),ok);
        if ( ! ok ) return false;
-       h1_["cutflow"] -> Fill(cutflow_,weight_);
+       
    }
    
    if ( this->genParticlesAnalysis() )
-   {
-      ++cutflow_;
-      if ( std::string(h1_["cutflow"] -> GetXaxis()-> GetBinLabel(cutflow_+1)) == "" )
-      {
-         h1_["cutflow"] -> GetXaxis()-> SetBinLabel(cutflow_+1,Form("Using GenParticles collection: %s",(config_->genParticlesCollection()).c_str()));
-      }
-      h1_["cutflow"] -> Fill(cutflow_,weight_);
-   }
+      cutflow(Form("Using GenParticles collection: %s",(config_->genParticlesCollection()).c_str()));
    
    if ( this->genJetsAnalysis() )
-   {
-      ++cutflow_;
-      if ( std::string(h1_["cutflow"] -> GetXaxis()-> GetBinLabel(cutflow_+1)) == "" )
-      {
-         h1_["cutflow"] -> GetXaxis()-> SetBinLabel(cutflow_+1,Form("Using GenJets collection: %s",(config_->genJetsCollection()).c_str()));
-      }
-      h1_["cutflow"] -> Fill(cutflow_,weight_);
-   }
+      cutflow(Form("Using GenJets collection: %s",(config_->genJetsCollection()).c_str()));
+      
+   if ( this -> l1tJetsAnalysis() )
+      cutflow(Form("Using L1TJet collection: %s", (config_->l1tJetsCollection()).c_str()));
 
+    if ( this -> l1tMuonsAnalysis() )
+      cutflow(Form("Using L1TMuon collection: %s", (config_->l1tMuonsCollection()).c_str()));
+      
    analysisWithJets();
    analysisWithMuons();
       
@@ -101,19 +98,12 @@ bool Analyser::muonJet(const int & r)
    if ( ! muonsanalysis_ ) return true;  // will skip this selection
 
    int j = r-1;
-   ++ cutflow_;
-   if ( std::string(h1_["cutflow"] -> GetXaxis()-> GetBinLabel(cutflow_+1)) == "" ) 
-   {
-      h1_["cutflow"] -> GetXaxis()-> SetBinLabel(cutflow_+1,Form("Jet %d: Jet-muon association",r));
-   }
-   
    auto jet = selectedJets_[j];
    jet -> addMuon(selectedMuons_);
+   bool isMuonJet = (jet -> muon() != nullptr);
+   cutflow(Form("Jet %d: Jet-muon association",r),isMuonJet);
    
-   if ( ! jet -> muon() ) return false;
-   
-   h1_["cutflow"] -> Fill(cutflow_,weight_);
-   return true;
+   return isMuonJet;
    
 }
 

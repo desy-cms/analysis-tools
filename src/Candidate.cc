@@ -51,8 +51,8 @@ Candidate::~Candidate()
 bool Candidate::matchTo(const std::vector<Candidate> * cands, const std::string & name, const float & deltaR)
 {
    bool status = false;
-   
-   
+
+
    if ( ! cands )
    {
       this -> matched_[name] = nullptr;
@@ -71,7 +71,7 @@ bool Candidate::matchTo(const std::vector<Candidate> * cands, const std::string 
          nearcand = cand;
       }
    }
-	
+
    if(minDeltaR < deltaR)
    {
      this->matched_[name]=nearcand;
@@ -81,7 +81,7 @@ bool Candidate::matchTo(const std::vector<Candidate> * cands, const std::string 
    else {
      this -> matched_[name] = nullptr;
    }
-   
+
    return status;
 }
 
@@ -147,6 +147,11 @@ TVector3       Candidate::p3() const { return p4_.Vect(); }
 const Candidate * Candidate::matched(const std::string & name) { return matched_[name]; }
 const Candidate * Candidate::matched(const std::string & name) const { return matched_.find(name) != matched_.end() ? matched_.find(name)->second : 0; }
 
+void Candidate::unmatch(const std::string & name)
+{
+    matched_[name] = nullptr;
+}
+
 // Sets
 void  Candidate::p4(const TLorentzVector & p4) { p4_ = p4; }
 void  Candidate::px(const float & px) { p4_.SetPx(px); }
@@ -154,4 +159,3 @@ void  Candidate::py(const float & py) { p4_.SetPy(py); }
 void  Candidate::pz(const float & pz) { p4_.SetPy(pz); }
 void  Candidate::e (const float & e ) { p4_.SetE(e);   }
 void  Candidate::q (const float & q)  { q_ = q; }
-

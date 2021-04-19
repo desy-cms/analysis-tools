@@ -88,6 +88,10 @@ namespace analysis {
 
             /// pileup weight
             std::shared_ptr<PileupWeight> puweights_;
+            
+            /// pileup weight label
+            std::string puw_label_;
+            
             /// true pileup
             bool istruepu_;
 
@@ -131,6 +135,8 @@ namespace analysis {
             int  cutflow();
             /// set cutflow index
             void cutflow(const int &);
+            /// create and update cutflow entry in the cutflow histogram 
+            void cutflow(const std::string & label, const bool & ok = true);
 
             // Actions
             /// event entry to be readout and processed

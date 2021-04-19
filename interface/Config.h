@@ -5,7 +5,7 @@
 //
 // Package:    Analysis/Tools
 // Class:      xxx
-// 
+//
 /**\class xxx Config.cc Analysis/Tools/src/Config.cc
 
  Description: [one line class summary]
@@ -23,7 +23,7 @@
 #include <memory>
 #include <vector>
 #include <string>
-// 
+//
 // user include files
 #include "boost/program_options.hpp"
 
@@ -49,7 +49,7 @@ namespace analysis {
          po::options_description cmd;
          po::options_description cfg;
       };
-      
+
       class Config {
          public:
             /// constructors
@@ -57,14 +57,14 @@ namespace analysis {
             Config(int argc, char ** argv);
             /// desctructor
            ~Config();
-            
+
             po::options_description & optionsCMD();
             po::options_description & optionsCFG();
-            
+
             void loadOptions();
-           
+
             // configuration variables - some basic ones out in the private section and make set/get methods
-         
+
          // gets (to replace the public variables)
             std::string configFile() const;
          // analysis control
@@ -84,18 +84,21 @@ namespace analysis {
             int  workflow() const;
             int  index() const;
             
+            std::string process() const;
+            std::string eventsDir() const;
+
             std::string seedFile() const;
             int seed() const;
-            
+
             bool pythia8() const;
-            
+
             float scale() const;
-            
+
             std::vector<float> erasLumi() const;
             std::vector<std::string> eras() const;
-            
+
             std::string pileupWeights() const;
-            
+
          // jets
             std::string jetsCollection() const;
             int nJetsMin() const;
@@ -108,8 +111,8 @@ namespace analysis {
             std::string jetsPuId() const;
             std::string jerPtRes() const;
             std::string jerSF() const;
-            std::string l1tJetsCollection() const; 
-            
+            std::string l1tJetsCollection() const;
+
             std::string btagAlgorithm() const;
             std::string btagScaleFactors() const;
             std::vector<std::string> jetsBtagWP() const;
@@ -126,13 +129,13 @@ namespace analysis {
             bool doDijet() const;
             bool doDijetFlavour() const;
             int nBJetsMin() const;
-            
+
             std::vector<float>  jetsQGmin() const;
             std::vector<float>  jetsQGmax() const;
 
-            
-            
-         // jet-jet                      
+
+
+         // jet-jet
             float jetsDetaMax()          const;
             float jetsDetaMin()          const;
             float jetsDphiMax()          const;
@@ -141,7 +144,7 @@ namespace analysis {
             float jetsDrMin()            const;
             float jetsPtImbalanceMax()   const;
             float jetsPtImbalanceMin()   const;
-            
+
          // muons
             std::string muonsCollection() const;
             int nMuonsMin() const;
@@ -150,8 +153,12 @@ namespace analysis {
             std::vector<float> muonsPtMax() const;
             std::vector<float> muonsEtaMax() const;
             std::string muonsId() const;
-            std::string l1tMuonsCollection() const; 
-            
+            std::string l1tMuonsCollection() const;
+
+         // muon-muon
+            float muonsDrMax()            const;
+            float muonsDrMin()            const;
+
          // trigger
             std::string triggerResults()         const;
             std::string triggerObjectsDir()      const;
@@ -160,40 +167,60 @@ namespace analysis {
             std::string triggerObjectsBJets()    const;
             std::string triggerObjectsL1Jets()   const;
             std::string triggerObjectsCaloJets() const;
-            std::string triggerObjectsPFJets()   const;  
-            
+            std::string triggerObjectsPFJets()   const;
+
             /// L1 muon trigger emulation
             std::string triggerEmulateL1Muons()       const;
             int         triggerEmulateL1MuonsNMin()   const;
             float       triggerEmulateL1MuonsPtMin()  const;
             float       triggerEmulateL1MuonsEtaMax() const;
-            
+
             /// L3 muon trigger emulation
             std::string triggerEmulateL3Muons()       const;
             int         triggerEmulateL3MuonsNMin()   const;
             float       triggerEmulateL3MuonsPtMin()  const;
             float       triggerEmulateL3MuonsEtaMax() const;
-           
+
+
+            /// L1 jet trigger emulation
+            std::string triggerEmulateL1Jets()       const;
+            int         triggerEmulateL1JetsNMin()   const;
+            float       triggerEmulateL1JetsPtMin()  const;
+            float       triggerEmulateL1JetsEtaMax() const;
+            
+            /// Calo jet trigger emulation
+            std::string triggerEmulateCaloJets()       const;
+            int         triggerEmulateCaloJetsNMin()   const;
+            float       triggerEmulateCaloJetsPtMin()  const;
+            float       triggerEmulateCaloJetsEtaMax() const;
+            
+            
+            /// PF jet trigger emulation
+            std::string triggerEmulatePFJets()       const;
+            int         triggerEmulatePFJetsNMin()   const;
+            float       triggerEmulatePFJetsPtMin()  const;
+            float       triggerEmulatePFJetsEtaMax() const;
+            
             
          // matching trigger objects
             float triggerMatchL1MuonsDrMax()       const;
-            float triggerMatchL3MuonsDrMax()       const;              
+            float triggerMatchL3MuonsDrMax()       const;
             float triggerMatchL1JetsDrMax()        const;
             float triggerMatchCaloJetsDrMax()      const;
             float triggerMatchPFJetsDrMax()        const;
             float triggerMatchCaloBJetsDrMax()     const;
-            
+
          // generator level
             std::string genJetsCollection() const;
             std::string genParticlesCollection() const;
-            
+
          // btag
             float btagWP(const std::string &) const;
-            
+
          // general
             float massMin() const;
             float massMax() const;
-            
+
          // AI
             std::vector<std::string> variablesAI(const std::string & t = "F") const;
             std::string directoryAI() const;
@@ -201,33 +228,33 @@ namespace analysis {
             float discriminatorMaxAI() const;
             float discriminatorMinAI() const;
             float efficiencyMinAI() const;
-            
+
          // output tree
             bool doTree() const;
-            
+
          // generic options
             int prescale() const;
             int n() const;
             float min() const;
             float max() const;
-            
+
          // histograms
             bool histogramJetsRegionSplit() const;
             bool histogramJetsPerFlavour() const;
 
          // btag
             std::string btagEfficiencies() const;
-            
+
          // ========================
-         
+
          // analysis control
-            std::string eventsdir_;
+            
             int nlumis_;
             int runmin_;
             int runmax_;
             std::string outputRoot() const;
             std::string json() const;
-            
+
 
             //
             float trgmatchdrmax_;
@@ -243,7 +270,7 @@ namespace analysis {
             std::vector<float> ptmax_;
             std::vector<float> etamax_;
 
-            
+
 
             float drmin_;
             float drmax_;
@@ -254,22 +281,23 @@ namespace analysis {
 
             std::string hltPath_;
             std::string l1Seed_;
-           
+
             // ----------member data ---------------------------
          protected:
-               
+
             int argc_;
             char ** argv_;
-            
+
             std::string cfg_; // config file
-         
+
             po::options_description opt_cmd_;
             po::options_description opt_cfg_;
-            
+
          // analysis control
             std::string inputlist_;
             std::string eventinfo_;
             std::string process_;
+            std::string eventsdir_;
             std::string xsectiontree_;
             std::string xsectiontype_;
             float xsection_;
@@ -283,21 +311,21 @@ namespace analysis {
             bool fullgenweight_;
             int workflow_;
             int index_;
-            
+
             bool apply_correct_;
-            
+
             int seed_;
             std::string seedfile_;
-            
+
             bool pythia8_;
-            
+
             float scale_;
-                        
+
             std::vector<std::string> eras_;
             std::vector<float> eraslumi_;
-            
+
             std::string puweight_;
-            
+
          // generic options
             int prescale_;
             int n_;
@@ -306,7 +334,7 @@ namespace analysis {
 
 
          // jets
-            std::string jetsCol_; 
+            std::string jetsCol_;
             int njetsmin_;
             int njetsmax_;
             int njets_;
@@ -315,10 +343,10 @@ namespace analysis {
             std::vector<float> jetsetamax_;
             std::string jetsid_;
             std::string jetspuid_;
-            
+
             std::vector<float>  qgmin_;
             std::vector<float>  qgmax_;
-            
+
             float jetsdetamax_;
             float jetsdetamin_;
             float jetsdphimin_;
@@ -327,14 +355,18 @@ namespace analysis {
             float jetsdrmax_;
             float jetsptimbalmax_;
             float jetsptimbalmin_;
-            
+
+            // muon-muons
+            float muonsdrmin_;
+            float muonsdrmax_;
+
             // JER resolution and scale factors from txt file
             std::string jerptres_;
             std::string jersf_;
             //
-            std::string l1tjetsCol_; 
+            std::string l1tjetsCol_;
             //
-            // 
+            //
             std::string btagalgo_;
             std::string btagsf_;
 
@@ -349,26 +381,26 @@ namespace analysis {
             std::vector<float> jetsbtagprobc_;
             std::vector<float> jetsbtagprobg_;
             std::vector<float> jetsbtagproblight_;
-            
+
             //
             bool usejetsextflv_;
             bool dodijet_;
-            
+
             std::vector<int> dijet_ranks_;
-            
+
             bool bregression_;
 
 
          // muons
-            std::string muonsCol_; 
+            std::string muonsCol_;
             int nmuonsmin_;
             int nmuonsmax_;
             std::vector<float> muonsptmin_;
             std::vector<float> muonsptmax_;
             std::vector<float> muonsetamax_;
             std::string muonsid_;
-            std::string l1tmuonsCol_; 
-            
+            std::string l1tmuonsCol_;
+
          // trigger
             std::string triggerCol_;
             std::string triggerObjDir_;
@@ -378,30 +410,48 @@ namespace analysis {
             std::string trgObjsL1Jets_;
             std::string trgObjsCaloJets_;
             std::string trgObjsPFJets_;
-            
+
          /// L1 muon trigger emulation
             std::string l1muonemul_;
             int         l1muonemulnmin_;
             float       l1muonemulptmin_;
             float       l1muonemuletamax_;
-            
+
          /// L3 muon trigger emulation
             std::string l3muonemul_;
             int         l3muonemulnmin_;
             float       l3muonemulptmin_;
             float       l3muonemuletamax_;
-            
+
+         /// L1 jet trigger emulation
+            std::string l1jetemul_;
+            int         l1jetemulnmin_;
+            float       l1jetemulptmin_;
+            float       l1jetemuletamax_;
+
+         /// Calo jet trigger emulation
+            std::string calojetemul_;
+            int         calojetemulnmin_;
+            float       calojetemulptmin_;
+            float       calojetemuletamax_;
+
+         /// PF jet trigger emulation
+            std::string pfjetemul_;
+            int         pfjetemulnmin_;
+            float       pfjetemulptmin_;
+            float       pfjetemuletamax_;
+
             float matchTrgL1MuonsDrMax_;
             float matchTrgL3MuonsDrMax_;
             float matchTrgL1JetsDrMax_;
             float matchTrgCaloJetsDrMax_;
             float matchTrgPFJetsDrMax_;
             float matchTrgCaloBJetsDrMax_;
-            
+
          // generator level collections
             std::string genjetsCol_;
             std::string genpartsCol_;
-            
+
 
 
          // btag
@@ -413,11 +463,11 @@ namespace analysis {
             // btag efficiency
             std::string btageff_;
 
-            
+
          // general
             float massmin_;
             float massmax_;
-            
+
          // AI
             std::vector<std::string> varsf_ai_;
             std::vector<std::string> varsi_ai_;
@@ -427,9 +477,9 @@ namespace analysis {
             float disc_min_ai_;
             float eff_min_ai_;
          // output tree
-            
+
             bool do_tree_;
-            
+
          // histograms
             bool histjets_rsplit_;
             bool histjets_flavour_;
@@ -437,10 +487,10 @@ namespace analysis {
          // analysis control
             std::string outputRoot_;
             std::string json_;
-                        
+
          private:
-               
-            
+
+
       };
    }
 }

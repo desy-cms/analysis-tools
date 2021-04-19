@@ -45,6 +45,8 @@ namespace analysis {
             // ----------member data ---------------------------
          protected:
             bool triggeranalysis_;
+            bool l1tjetsanalysis_;
+            bool l1tmuonsanalysis_;
          
          private:
                
@@ -55,6 +57,9 @@ namespace analysis {
             virtual bool selectionTrigger();
             virtual bool selectionHLT();
             virtual bool selectionL1();
+            
+            bool l1tJetsAnalysis() const;
+            bool l1tMuonsAnalysis() const;
             
             virtual bool selectionTriggerEmulated(const bool & , const bool &, const std::string& , const int &, const float &, const float &);
             
