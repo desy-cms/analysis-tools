@@ -116,11 +116,3 @@ bool Analyser::preselection()
       return true;
       
 }
-bool Analyser::triggerSelection()
-{
-// TRIGGER selection
-      if ( ! this->selectionHLT()           )   return false;      
-      if ( ! this->selectionL1 ()           )   return false;  // to be used mainly in case of "OR" of seeds
-      return true;
-      
-}

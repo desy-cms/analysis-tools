@@ -37,6 +37,7 @@
 namespace analysis {
    namespace tools {
 
+      /// inheritance
       class Analyser : 
             public analysis::tools::TriggerAnalyser,
             public analysis::tools::JetAnalyser,
@@ -45,8 +46,9 @@ namespace analysis {
       {
          
          public:
-            /// constructors
+            /// default constructor
             Analyser();
+            /// main constructor
             Analyser(int argc, char * argv[]);
             /// desctructor
            ~Analyser();
@@ -58,17 +60,12 @@ namespace analysis {
          private:
             
          public:
-            // Actions
+            /// Read event and perform basic selections and actions
             virtual bool event(const int &);
-         
+            /// Assign muon to jet 
             virtual bool muonJet(const int & );
-            
             /// multiple actions: perform muon Id, jet Id and jet pileup Id selections
             virtual bool preselection();
-            /// multiple actions: perform HLT and L1 selection
-            virtual bool triggerSelection();
-            
-
       };
    }
 }

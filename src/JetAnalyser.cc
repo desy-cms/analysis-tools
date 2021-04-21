@@ -1051,6 +1051,18 @@ void JetAnalyser::actionApplyBjetRegression()
    cutflow("b jet energy regression");
 }
 
+void JetAnalyser::actionApplyBjetRegression(const int & r)
+{
+   if ( ! config_->bRegression() ) return;
+   
+   int j = r-1;
+   selectedJets_[j]-> applyBjetRegression();
+   
+   cutflow(Form("Jet %d: b jet energy regression",r));
+}
+
+
+
 bool JetAnalyser::selectionDiJetMass(const int & r1, const int & r2)
 {
    float min = config_->massMin();
