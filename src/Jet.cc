@@ -53,7 +53,6 @@ Jet::~Jet()
 //
 // Gets
 bool  Jet::isPuppi()                               const { return isPuppi_;    } 
-//float Jet::btag()                                  const { return btags_.at(btagAlgo_);    }                   
 float Jet::btag(const std::string & algo)          const { return btags_.at(algo);         }                   
 int   Jet::flavour()                               const { return flavour_.at("Hadron");   }                   
 int   Jet::flavour(const std::string & definition) const { return flavour_.at(definition); }                   
@@ -64,10 +63,6 @@ std::vector<int> Jet::flavours()                   const { return flavours_;    
 std::vector< std::shared_ptr<GenParticle> >\
       Jet::partons()                               const { return partons_;        }
 std::string Jet::extendedFlavour()                 const { return extendedFlavour_; }
-// float Jet::jerPtResolution()                       const { return jerptres_;}
-// float Jet::jerSF()                                 const { return jersf_; }
-// float Jet::jerSFdown()                             const { return jersfdown_; }
-// float Jet::jerSFup()                               const { return jersfup_; }
 float Jet::jerPtResolution()                       const { return jerPtResolution(jerinfo_.resolution);}
 float Jet::jerSF()                                 const { return jerSF(jerinfo_.scalefactor); }
 float Jet::jerSFdown()                             const { return jerSFdown(jerinfo_.scalefactor); }
@@ -153,9 +148,6 @@ void Jet::jerCorrections()
    
    if ( jermatch_ )
    {
-//       c     += (sf-1)*((this->pt() - genjet_->pt())/this->pt());
-//       cup   += (sfup-1)*((this->pt() - genjet_->pt())/this->pt());
-//       cdown += (sfdown-1)*((this->pt() - genjet_->pt())/this->pt());
       // to avoid problems with regression corrections, use "uncorrected" 
       c     += (sf-1)*((this->pt() - genjet_->pt())/uncorrJetp4_.Pt());
       cup   += (sfup-1)*((this->pt() - genjet_->pt())/uncorrJetp4_.Pt());
@@ -263,38 +255,12 @@ bool  Jet::id(const std::string & wp)              const
 
 std::shared_ptr<GenJet> Jet::generatedJet() const { return genjet_; }
 
-// GenJet * Jet::generatedJet(const std::vector<GenJet*> & genjets, const float & deltaR)
-// {
-//    GenJet * cand = nullptr;
-//    GenJet * nearcand = nullptr;
-//    genjet_ = nullptr;
-//    float minDeltaR = 100.;
-//    for ( size_t j = 0; j < genjets.size() ; ++j )
-//    {
-//       cand = genjets.at(j);
-//       if(this->deltaR(*cand) < minDeltaR)
-//       {
-//          minDeltaR = this->deltaR(*cand);
-//          nearcand = cand;
-//       }
-//    }
-//    if(minDeltaR < deltaR)
-//    {
-//      genjet_ = nearcand;
-//    }
-//    
-//    return genjet_;
-// }
 
 double Jet::btagSFsys(std::shared_ptr<BTagCalibrationReader> reader, const std::string & systype, const std::string & flavalgo) const
 {
    double sf = 1;
    
    if ( reader == nullptr ) return sf;
-   
-//    if ( this->flavour(flavalgo) == 5 ) sf = reader->eval_auto_bounds(systype, BTagEntry::FLAV_B,    fabs(this->eta()), this->pt() ); 
-//    if ( this->flavour(flavalgo) == 4 ) sf = reader->eval_auto_bounds(systype, BTagEntry::FLAV_C,    fabs(this->eta()), this->pt() ); 
-//    if ( this->flavour(flavalgo) == 0 ) sf = reader->eval_auto_bounds(systype, BTagEntry::FLAV_UDSG, fabs(this->eta()), this->pt() );
    
 // to avoid problems with other corrections   
    if ( this->flavour(flavalgo) == 5 ) sf = reader->eval_auto_bounds(systype, BTagEntry::FLAV_B,    fabs(uncorrJetp4_.Eta()), uncorrJetp4_.Pt() ); 
@@ -397,12 +363,6 @@ int Jet::removeParton(const int & i)
    for ( auto & flav : flavours_ )
       if ( abs(flav) == flavour ) ++flavCounter;
    
-//    if (( flavour == 4 || flavour == 5 ) && flavCounter == 0 )
-//    {
-//       std::cout << "ERROR!!! Jet::removeParton => Original flavour has changed!? " << flavour << "->" << extendedFlavour_ << std::endl;
-//       return -1;
-//    }
-
    if ( flavour == 4 && flavCounter > 1 ) extendedFlavour_ == "cc";
    if ( flavour == 5 && flavCounter > 1 ) extendedFlavour_ == "bb";
    
@@ -586,34 +546,5 @@ void Jet::id      (const float & nHadFrac,
    
 //    // Jet ID 2016
 //    // https://twiki.cern.ch/twiki/bin/view/CMS/JetID?rev=95#Recommendations_for_13_TeV_data
-//    if ( fabs(p4_.Eta()) <= 2.7 )
-//    {
-//       idloose_ = ((nHadFrac<0.99 && nEmFrac<0.99 && numConst>1) && ((abs(p4_.Eta())<=2.4 && cHadFrac>0 && cM>0 && cEmFrac<0.99) || fabs(p4_.Eta())>2.4) && fabs(p4_.Eta())<=2.7);
-//       idtight_ = ((nHadFrac<0.90 && nEmFrac<0.90 && numConst>1) && ((abs(p4_.Eta())<=2.4 && cHadFrac>0 && cM>0 && cEmFrac<0.99) || fabs(p4_.Eta())>2.4) && fabs(p4_.Eta())<=2.7);
-//    }
-//    else if ( fabs(p4_.Eta()) > 2.7 && fabs(p4_.Eta()) <= 3. )
-//    {
-//       idloose_ = (nEmFrac<0.90 && nM>2);
-//       idtight_ = (nEmFrac<0.90 && nM>2);
-//    }
-//    else
-//    {
-//       idloose_ = (nEmFrac<0.90 && nM>10);
-//       idtight_ = (nEmFrac<0.90 && nM>10);
-//    }
-   
-//    if ( tag_ == "JetIdOld" )
-//    {
-//       if ( fabs(p4_.Eta()) <= 3.0 )
-//       {
-//          idloose_ = ((nHadFrac<0.99 && nEmFrac<0.99 && numConst>1) && ((abs(p4_.Eta())<=2.4 && cHadFrac>0 && cM>0 && cEmFrac<0.99) || fabs(p4_.Eta())>2.4) && fabs(p4_.Eta())<=3.0);
-//          idtight_ = ((nHadFrac<0.90 && nEmFrac<0.90 && numConst>1) && ((abs(p4_.Eta())<=2.4 && cHadFrac>0 && cM>0 && cEmFrac<0.99) || fabs(p4_.Eta())>2.4) && fabs(p4_.Eta())<=3.0);
-//       }
-//       else
-//       {
-//          idloose_ = (nEmFrac<0.90 && nM>10);
-//          idtight_ = (nEmFrac<0.90 && nM>10);
-//       }
-//    }
    
 }

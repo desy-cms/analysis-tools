@@ -26,6 +26,8 @@ TriggerAnalyser::TriggerAnalyser(int argc, char * argv[]) : BaseAnalyser(argc,ar
 {
 
    triggeranalysis_ = false;
+   l1tjetsanalysis_ = false;
+   l1tmuonsanalysis_ = false;
    
    if ( config_->triggerResults() != "" )
       triggeranalysis_  = analysis_->triggerResults(config_->triggerResults());

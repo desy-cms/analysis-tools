@@ -8,13 +8,13 @@
 //
 /**\class xxx Candidate.h Analysis/Tools/interface/Candidate.h
 
- Description: [one line class summary]
+ Description: class of a simple particle candidate
 
  Implementation:
      [Notes on implementation]
 */
 //
-// Original Author:  Roberval Walsh Bastos Rangel
+// Original Author:  Roberval Walsh
 //         Created:  Mon, 20 Oct 2014 14:24:08 GMT
 //
 //
@@ -45,9 +45,15 @@ namespace analysis {
             Candidate(const float & px, const float & py, const float & pz);
             /// constructor from 3-momentum and charge information
             Candidate(const float & px, const float & py, const float & pz, const float & q);
+            /// constructor from TLorentzVector and charge information
+            Candidate(const TLorentzVector & p4, const float & q);
             /// destructor
            virtual ~Candidate();
-
+           
+           /// overload operator + for candidates
+           Candidate operator + (const Candidate & cand) const;
+           /// overload operator + for candidates
+           Candidate & operator += (const Candidate & cand) ;
            // Get
            /// returns the x component of the momentum
            float px()          const;
@@ -73,6 +79,8 @@ namespace analysis {
            TLorentzVector p4() const;
            /// returns the 4-momentum (TVector3)
            TVector3       p3() const;
+           /// components
+           std::vector<const Candidate*> components() const;
 
            // Set
            /// sets the 4-momentum (TLorentzVector)
@@ -92,18 +100,31 @@ namespace analysis {
            float deltaR(const Candidate & ) const;
            /// returns the deltaPhi between this and another candidate
            float deltaPhi(const Candidate & ) const;
+            /// returns the deltaEta between this and another candidate
+           float deltaEta(const Candidate & ) const;
+           /// returns the deltaR between this and matched candidate of the given collection
+           float matchedDeltaR(const std::string & ) const;
 
 
            // made below virtual as this may be different for MET, or vertex
            /// function to match this candidate to another object from a list of pointers with a name
-           virtual bool matchTo(const std::vector<Candidate> * cands, const std::string & name, const float & deltaR = 0.5);
-           virtual bool matchTo(const std::vector<Candidate> * cands, const std::string & name, const float & delta_pT, const float & deltaR);
+           virtual bool matchTo(const std::vector<Candidate> * cands, const std::string & name, const float & deltar_max = 0.5);
+           virtual bool matchTo(const std::vector<Candidate> * cands, const std::string & name, const float & deltar_max, const float & deltaptrel_max);
            /// returns the pointer to the matched candidate object
            const Candidate * matched(const std::string & name);
            /// returns the pointer to the matched candidate object
            const Candidate * matched(const std::string & name) const;
            /// unmatch a matched candidate object, i.e. set it to nullptr, useful to remove possible duplicated matching
            void unmatch(const std::string &);
+           /// print candidate info
+           void printInfo(const std::string & type="") const;
+           /// print candidate matched info
+           void printMatchedInfo(const std::string & name, const std::string & type="") const;
+           /// list all matches
+           void listMatchedNames() const;
+           
+           ///
+           void addComponent(const Candidate&);
          protected:
             // ----------member data ---------------------------
 
@@ -114,6 +135,9 @@ namespace analysis {
             TLorentzVector p4_;
             /// map of matched candidates
             std::map<std::string, const Candidate * > matched_;
+            
+            /// composite candidate
+            std::vector<const Candidate*> components_;
 
          private:
       };

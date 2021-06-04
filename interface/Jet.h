@@ -14,7 +14,7 @@
      [Notes on implementation]
 */
 //
-// Original Author:  Roberval Walsh Bastos Rangel
+// Original Author:  Roberval Walsh
 //         Created:  Mon, 20 Oct 2014 14:24:08 GMT
 //
 //
@@ -67,8 +67,6 @@ namespace analysis {
            
             /// returns if jet is Puppi
             bool  isPuppi()                     const;
-            /// returns the btag value of btag_csvivf
-//            float btag()                        const;
             /// returns the btag value of algorithm
             float btag(const std::string & )    const;
             /// returns the flavour with the Hadron definition (=0 for data)
@@ -111,9 +109,11 @@ namespace analysis {
             bool jerMatch(const float & drmin=0.2);
             bool jerMatch() const;
             
+            /// jet energy resolution
             void jerCorrections();
             float jerCorrection(const std::string & var = "nominal", const float & nsig = 1) const;
             
+            /// jet id
             float neutralHadronFraction()  const ;
             float neutralEmFraction()      const ;
             float neutralMultiplicity()    const ;
@@ -152,7 +152,6 @@ namespace analysis {
             
             /// Pointer to GenJet
             std::shared_ptr<GenJet> generatedJet() const;
-//            GenJet * generatedJet(const std::vector<GenJet*> &, const float &);
                
             // Sets
             /// sets the isPuppi value
@@ -182,8 +181,11 @@ namespace analysis {
             /// sets jet energy resolution SF Down variation
             void jerSFdown(const float &);
             
+            /// jet energy resolution corrections
             void jerInfo(const JetResolutionInfo &, const std::string &);
+            /// jet energy resolution corrections
             void jerInfo(const JetResolutionInfo &, const float & drmin=0.2);
+            /// jet energy resolution corrections
             void applyJER(const JetResolutionInfo &, const float & drmin=0.2);
             
             /// add parton that gave rise to jet
@@ -191,6 +193,7 @@ namespace analysis {
             /// remove parton from jet parton list
             int removeParton(const int &);
             
+            /// for jet id
             void neutralHadronFraction(const float & nHadFrac);
             void neutralEmFraction(const float & nEmFrac);
             void neutralMultiplicity(const float & nMult);
@@ -200,14 +203,6 @@ namespace analysis {
             void muonFraction(const float & muFrac);
             
             /// calculates the jet id
-//             void id(const float & nHadFrac,
-//                     const float & nEmFrac ,
-//                     const float & nMult   ,
-//                     const float & cHadFrac,
-//                     const float & cEmFrac ,
-//                     const float & cMult   ,
-//                     const float & muFrac  );
-            
             void id(const float & nHadFrac,
                     const float & nEmFrac ,
                     const float & nMult   ,
@@ -228,15 +223,14 @@ namespace analysis {
             void bRegCorr(const float &);
             void bRegRes(const float &);
             
+            /// applyBjetRegression
             void applyBjetRegression();
             
             /// Rho
             void rho(const double &);
             
-            
             /// associate partons to the jet
             void associatePartons(const std::vector< std::shared_ptr<GenParticle> > &, const float & dRmax = 0.5, const float & ptMin = 1., const bool & pythi8 = true );
-//            using Candidate::set; // in case needed to overload the function set
             
             /// gen jets
             void genJets(const std::vector< std::shared_ptr<GenJet> > &);
@@ -298,7 +292,7 @@ namespace analysis {
             /// JER info
             JetResolutionInfo jerinfo_;
             
-            /// jet id
+            /// jet id inputs
             float nHadFrac_;
             float nEmFrac_;
             float nMult_;
@@ -330,7 +324,6 @@ namespace analysis {
             
             /// collection of GenJets
             std::vector< std::shared_ptr<GenJet> > genjets_;
-            
             
             /// muon in jet
             std::shared_ptr<Muon> muon_;
