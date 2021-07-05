@@ -25,6 +25,7 @@
 #include <string>
 // 
 #include "Analysis/Tools/interface/BaseAnalyser.h"
+#include "Analysis/Tools/interface/BTagEfficiencies.h"
 //
 // class declaration
 //
@@ -57,6 +58,10 @@ namespace analysis {
             std::shared_ptr<JetResolutionInfo> jerinfo_;
             
             std::vector<std::string> flavours_;
+            
+            BTagEfficiencies btagEfficiencies_;
+            
+            
          
          private:
                
@@ -127,7 +132,7 @@ namespace analysis {
             virtual void jetSwap(const int &, const int &);
             virtual bool selectionJetQGlikelihood(const int &, const float &);
             virtual bool selectionJetQGlikelihood(const int &);
-//            virtual void actionApplyBtagEfficiencyWeight(const int &);
+            virtual void actionApplyBtagEfficiency(const int &);
 //            virtual float btagEfficiency(const int &);
             /// multiple actions: apply JER and b-tag regression corrections
             virtual bool jetCorrections();

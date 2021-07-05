@@ -61,7 +61,7 @@ bool Analyser::event(const int & i)
    if ( config_->runmin_ > 0 && analysis_->run() < config_->runmin_ ) return false;
    if ( config_->runmax_ > 0 && analysis_->run() > config_->runmax_ ) return false;
 
-   if (! config_->isMC() ) 
+   if (! config_->isMC() && config_->json() != "" ) 
    {
        auto json = basename(config_->json());
        ok = analysis_->selectJson();
@@ -79,7 +79,7 @@ bool Analyser::event(const int & i)
    if ( this -> l1tJetsAnalysis() )
       cutflow(Form("Using L1TJet collection: %s", (config_->l1tJetsCollection()).c_str()));
 
-    if ( this -> l1tMuonsAnalysis() )
+   if ( this -> l1tMuonsAnalysis() )
       cutflow(Form("Using L1TMuon collection: %s", (config_->l1tMuonsCollection()).c_str()));
       
    analysisWithJets();

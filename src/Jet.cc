@@ -27,6 +27,7 @@ Jet::Jet() : Candidate()
    uncorrJetp4_ = p4_;
    genjet_ = nullptr;
    jermatch_ = false;
+   offBtagWeight_ = 1.;
    
 }
 Jet::Jet(const float & pt, const float & eta, const float & phi, const float & e) : Candidate(pt,eta,phi,e,0.) 
@@ -38,6 +39,7 @@ Jet::Jet(const float & pt, const float & eta, const float & phi, const float & e
    uncorrJetp4_ = p4_;
    genjet_ = nullptr;
    jermatch_ = false;
+   offBtagWeight_ = 1.;
    
    
 }
@@ -311,6 +313,7 @@ bool  Jet::pileupJetIdFullId(const std::string & wp) const
    return false;
 }
 
+float Jet::offlineBtagWeight()                          const { return offBtagWeight_;   }
 
 
 // Sets                                                             
@@ -543,8 +546,14 @@ void Jet::id      (const float & nHadFrac,
 
    }
    
-   
 //    // Jet ID 2016
 //    // https://twiki.cern.ch/twiki/bin/view/CMS/JetID?rev=95#Recommendations_for_13_TeV_data
    
 }
+
+
+void Jet::offlineBtagWeight(const float & w)
+{
+   offBtagWeight_ = w;
+}
+      

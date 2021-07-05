@@ -152,6 +152,10 @@ namespace analysis {
             
             /// Pointer to GenJet
             std::shared_ptr<GenJet> generatedJet() const;
+            
+            /// offline btag weight
+            float offlineBtagWeight() const;
+            
                
             // Sets
             /// sets the isPuppi value
@@ -250,6 +254,9 @@ namespace analysis {
             /// GenJet matching
             void generatedJet(std::shared_ptr<GenJet>);
             
+            /// set offline btag weight
+            void offlineBtagWeight(const float &);
+            
             
          protected:
             // ----------member data ---------------------------
@@ -327,6 +334,9 @@ namespace analysis {
             
             /// muon in jet
             std::shared_ptr<Muon> muon_;
+            
+            /// offline btag weight
+            float offBtagWeight_;
             
             
          private:

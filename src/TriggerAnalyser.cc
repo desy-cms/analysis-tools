@@ -71,8 +71,8 @@ TriggerAnalyser::~TriggerAnalyser()
 
 bool TriggerAnalyser::selectionTrigger() // Maybe not use this, use selectionHLT and selectionL1
 {
-   bool hlt = selectionHLT();
    bool l1  = selectionL1();
+   bool hlt = selectionHLT();
    
    /// Emulated triggers
    // L1 muon trigger
