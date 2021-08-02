@@ -281,6 +281,11 @@ namespace analysis {
 
             std::string hltPath_;
             std::string l1Seed_;
+            
+            // User vectors
+            std::vector<float> vectorFloat() const;
+            std::vector<int>   vectorInt() const;
+            
 
             // ----------member data ---------------------------
          protected:
@@ -492,6 +497,10 @@ namespace analysis {
          // analysis control
             std::string outputRoot_;
             std::string json_;
+            
+         // user vector
+            std::vector<float> vfloat_;
+            std::vector<int>   vint_;
 
          private:
 

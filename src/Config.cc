@@ -212,7 +212,9 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          ("User.workflow"                , po::value <int>                       (&workflow_)        -> default_value(1)                  , "Workflow index defined by user")
          ("User.prescale"                , po::value <int>                       (&prescale_)        -> default_value(1)                  , "Prescale factor")
          ("User.n"                       , po::value <int>                       (&n_)               -> default_value(-1)                 , "Some integer")
-         ("User.index"                   , po::value <int>                       (&index_)           -> default_value(-1)                 , "Some User index for user");
+         ("User.index"                   , po::value <int>                       (&index_)           -> default_value(-1)                 , "Some User index for user")
+         ("User.float"                   , po::value<std::vector<float> >        (&vfloat_)          ->multitoken()                       , "Float vector")
+         ("User.int"                     , po::value<std::vector<int> >          (&vint_)            ->multitoken()                       , "Integer vector");
 
       // others
       opt_cfg_.add_options()
@@ -596,7 +598,9 @@ int          Config::triggerEmulatePFJetsNMin()   const { return pfjetemulnmin_ 
 float        Config::triggerEmulatePFJetsPtMin()  const { return pfjetemulptmin_  ; }
 float        Config::triggerEmulatePFJetsEtaMax() const { return pfjetemuletamax_ ; }
 
-
+// User vectors
+std::vector<float> Config::vectorFloat()  const { return vfloat_ ; }
+std::vector<int>   Config::vectorInt()    const { return vint_   ; }
 
 
 
