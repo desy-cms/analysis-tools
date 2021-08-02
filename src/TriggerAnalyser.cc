@@ -273,9 +273,30 @@ void TriggerAnalyser::fillL1TJetHistograms(const std::string & label)
    
    for ( int j = 0; j < n; ++j )
    {
+      h1_[Form("pt_l1tjet%d_%s"   , j+1,label.c_str())] -> Fill(l1tjets_[j]->pt());
+      h1_[Form("eta_l1tjet%d_%s"  , j+1,label.c_str())] -> Fill(l1tjets_[j]->eta());
+      h1_[Form("phi_l1tjet%d_%s"  , j+1,label.c_str())] -> Fill(l1tjets_[j]->phi());
    }
    this->output()->cd();
    
    cutflow(Form("*** Filling jets histograms - %s",label.c_str()));
    
+}
+
+
+bool TriggerAnalyser::analysisWithL1TJets()
+{
+   l1tjets_.clear();
+   
+   if ( ! l1tjetsanalysis_ ) return false;
+   
+   auto l1tjets = analysis_->collection<L1TJet>("l1tJets");
+   for ( int j = 0 ; j < l1tjets->size() ; ++j )  l1tjets_.push_back(std::make_shared<L1TJet>(l1tjets->at(j)));
+   
+   return true;
+}
+
+std::vector< std::shared_ptr<L1TJet> > TriggerAnalyser::l1tJets()
+{
+   return l1tjets_;
 }

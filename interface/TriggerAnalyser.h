@@ -49,6 +49,7 @@ namespace analysis {
             bool l1tmuonsanalysis_;
             
             int   n_hl1tjets_;
+            std::vector< std::shared_ptr<L1TJet> > l1tjets_;
          
          private:
                
@@ -59,6 +60,8 @@ namespace analysis {
             virtual bool selectionTrigger();
             virtual bool selectionHLT();
             virtual bool selectionL1();
+            
+            virtual bool analysisWithL1TJets();
             
             bool l1tJetsAnalysis() const;
             bool l1tMuonsAnalysis() const;
@@ -75,6 +78,9 @@ namespace analysis {
             std::vector< std::shared_ptr<TriggerObject> > triggerObjectsPFJets();
             std::vector< std::shared_ptr<TriggerObject> > triggerObjectsL1Muons();
             std::vector< std::shared_ptr<TriggerObject> > triggerObjectsL3Muons();
+            
+            
+            std::vector< std::shared_ptr<L1TJet> > l1tJets();
 
       };
    }
