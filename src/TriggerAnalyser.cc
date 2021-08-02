@@ -243,3 +243,39 @@ bool  TriggerAnalyser::l1tMuonsAnalysis() const
 {
    return l1tmuonsanalysis_;
 }
+
+
+void TriggerAnalyser::l1tjetHistograms( const int & n, const std::string & label )
+{
+   this->output()->cd();
+   this->output()->mkdir(label.c_str());
+   this->output()->cd(label.c_str());
+   
+   n_hl1tjets_ = n;
+   
+   for ( int j = 0; j < n; ++j ) // loop over jets
+   {
+      // 1D histograms
+      h1_[Form("pt_l1tjet%d_%s"  , j+1,label.c_str())]  = std::make_shared<TH1F>(Form("pt_l1tjet%d"  , j+1) , Form("pt_l1tjet%d_%s"  , j+1,label.c_str()) ,500 , 0   , 500  );
+      h1_[Form("eta_l1tjet%d_%s" , j+1,label.c_str())]  = std::make_shared<TH1F>(Form("eta_l1tjet%d" , j+1) , Form("eta_l1tjet%d_%s" , j+1,label.c_str()) , 500 , -5, 5 );
+      h1_[Form("phi_l1tjet%d_%s" , j+1,label.c_str())]  = std::make_shared<TH1F>(Form("phi_l1tjet%d" , j+1) , Form("phi_l1tjet%d_%s" , j+1,label.c_str()) , 360 , -180, 180 );
+   }
+   
+   this->output()->cd();
+}
+
+void TriggerAnalyser::fillL1TJetHistograms(const std::string & label)
+{
+   this->output()->cd();
+   this->output()->cd(label.c_str());
+   
+   int n = n_hl1tjets_;
+   
+   for ( int j = 0; j < n; ++j )
+   {
+   }
+   this->output()->cd();
+   
+   cutflow(Form("*** Filling jets histograms - %s",label.c_str()));
+   
+}
