@@ -71,7 +71,9 @@ namespace analysis {
             /// Creates pre-defined histograms in directory 'label' for analysis with 'n' jets
             virtual void l1tjetHistograms(const int & n, const std::string & label = "x");
             /// Fill the pre-defined histograms created by the l1tjetHistograms() method
-            virtual void fillL1TJetHistograms(const std::string & label = "x");
+            virtual void fillL1TJetHistograms(const std::string & label);
+            /// Fill the pre-defined histograms created by the l1tjetHistograms() method
+            virtual void fillL1TJetHistograms(const std::string & label, std::vector<std::shared_ptr<L1TJet> > sel_l1tjets);
             
             std::vector< std::shared_ptr<TriggerObject> > triggerObjectsL1Jets();
             std::vector< std::shared_ptr<TriggerObject> > triggerObjectsCaloJets();

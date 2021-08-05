@@ -264,7 +264,7 @@ void TriggerAnalyser::l1tjetHistograms( const int & n, const std::string & label
    this->output()->cd();
 }
 
-void TriggerAnalyser::fillL1TJetHistograms(const std::string & label)
+void TriggerAnalyser::fillL1TJetHistograms(const std::string & label, std::vector<std::shared_ptr<L1TJet> > sel_l1tjets)
 {
    this->output()->cd();
    this->output()->cd(label.c_str());
@@ -273,9 +273,9 @@ void TriggerAnalyser::fillL1TJetHistograms(const std::string & label)
    
    for ( int j = 0; j < n; ++j )
    {
-      h1_[Form("pt_l1tjet%d_%s"   , j+1,label.c_str())] -> Fill(l1tjets_[j]->pt());
-      h1_[Form("eta_l1tjet%d_%s"  , j+1,label.c_str())] -> Fill(l1tjets_[j]->eta());
-      h1_[Form("phi_l1tjet%d_%s"  , j+1,label.c_str())] -> Fill(l1tjets_[j]->phi());
+      h1_[Form("pt_l1tjet%d_%s"   , j+1,label.c_str())] -> Fill(sel_l1tjets[j]->pt(),weight_);
+      h1_[Form("eta_l1tjet%d_%s"  , j+1,label.c_str())] -> Fill(sel_l1tjets[j]->eta(),weight_);
+      h1_[Form("phi_l1tjet%d_%s"  , j+1,label.c_str())] -> Fill(sel_l1tjets[j]->phi(),weight_);
    }
    this->output()->cd();
    
@@ -283,6 +283,10 @@ void TriggerAnalyser::fillL1TJetHistograms(const std::string & label)
    
 }
 
+void TriggerAnalyser::fillL1TJetHistograms(const std::string & label)
+{
+   fillL1TJetHistograms(label,l1tjets_);
+}
 
 bool TriggerAnalyser::analysisWithL1TJets()
 {

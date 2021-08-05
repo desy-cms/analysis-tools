@@ -84,6 +84,7 @@ bool Analyser::event(const int & i)
       
    analysisWithJets();
    analysisWithMuons();
+   analysisWithL1TJets();
       
    // PILEUP RE-WEIGHT
    this->actionApplyPileupWeight(); 
