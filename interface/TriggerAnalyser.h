@@ -76,6 +76,7 @@ namespace analysis {
             virtual bool selectionL1TMuon(const float & ptmin, const float & etamax);
             virtual bool selectionL1TMuonQuality(const int & qual);
             
+            virtual bool selectionL1TMuonJet(const float & drmax);
             
             bool l1tJetsAnalysis() const;
             bool l1tMuonsAnalysis() const;

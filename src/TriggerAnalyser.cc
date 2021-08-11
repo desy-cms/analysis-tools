@@ -489,3 +489,28 @@ bool TriggerAnalyser::selectionL1TMuonQuality(const int & qual)
    return isgood;
    
 }
+bool TriggerAnalyser::selectionL1TMuonJet(const float & drmax)
+{
+   bool isgood = true;
+   std::string label = Form("L1TMuonJet drmax <= %4.2f", drmax);
+   
+   auto muons = selected_l1tmuons_;
+   auto jets = selected_l1tjets_;
+   selected_l1tmuons_.clear();
+
+   for ( auto & m : muons )
+   {
+      for ( auto & j : jets )
+      {
+         if ( m->deltaR(*j) <= drmax )
+         {
+            selected_l1tmuons_.push_back(m);
+         }
+      }
+   }
+   isgood = ( selected_l1tmuons_.size() >= 1 );
+   cutflow(label,isgood);
+   
+   return isgood;
+   
+}
