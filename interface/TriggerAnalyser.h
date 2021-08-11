@@ -51,6 +51,8 @@ namespace analysis {
             int   n_hl1tjets_;
             std::vector< std::shared_ptr<L1TJet> > l1tjets_;
             std::vector< std::shared_ptr<L1TJet> > selected_l1tjets_;
+            std::vector< std::shared_ptr<L1TMuon> > l1tmuons_;
+            std::vector< std::shared_ptr<L1TMuon> > selected_l1tmuons_;
          
          private:
                
@@ -62,11 +64,18 @@ namespace analysis {
             virtual bool selectionHLT();
             virtual bool selectionL1();
             
+            virtual bool analysisWithL1TJets();
+            virtual bool analysisWithL1TMuons();
+            
             virtual bool selectionNL1TJets(const int & nmin);
             virtual bool selectionL1TJet(const float & ptmin, const float & etamax);
             virtual bool selectionL1TDijet(const float & pt1min, const float & eta1max, const float & pt2min = -1, const float & eta2max = -1);
+            virtual bool selectionL1TDijetDeta(const float & detamax);
             
-            virtual bool analysisWithL1TJets();
+            virtual bool selectionNL1TMuons(const int & nmin);
+            virtual bool selectionL1TMuon(const float & ptmin, const float & etamax);
+            virtual bool selectionL1TMuonQuality(const int & qual);
+            
             
             bool l1tJetsAnalysis() const;
             bool l1tMuonsAnalysis() const;

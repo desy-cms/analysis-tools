@@ -378,12 +378,13 @@ bool TriggerAnalyser::selectionL1TDijet(const float & pt1min, const float & eta1
    return isgood;
    
 }
+
 bool TriggerAnalyser::selectionNL1TJets(const int & nmin)
 {
    if ( nmin < 0 ) return true;
 
-   std::string label = Form("N L1TJets >= %d",nmin);
-   bool isgood = ( (int)l1tjets_.size() >= nmin );
+   std::string label = Form("L1TJets N >= %d",nmin);
+   bool isgood = ( (int)selected_l1tjets_.size() >= nmin );
    
    cutflow(label,isgood);
    
@@ -391,3 +392,100 @@ bool TriggerAnalyser::selectionNL1TJets(const int & nmin)
    
 }
 
+bool TriggerAnalyser::selectionL1TDijetDeta(const float & detamax)
+{
+   if ( detamax == 0 ) return true;
+
+   std::string label = Form("L1TDijet delta_eta <= %4.2f",detamax);
+   
+   bool isgood = true;
+   
+   auto jets = selected_l1tjets_;
+   selected_l1tjets_.clear();
+   
+   for ( auto & j1 : jets )
+   {
+      for ( auto & j2 : jets )
+      {
+         if ( j1 == j2 ) continue;
+         if ( j1->deltaEta(*j2) <= detamax )
+            selected_l1tjets_.push_back(j1);
+      }
+   }
+   isgood = ( selected_l1tjets_.size() >= 2 );
+   
+   cutflow(label,isgood);
+   
+   return isgood;
+   
+}
+
+bool TriggerAnalyser::analysisWithL1TMuons()
+{
+   l1tmuons_.clear();
+   selected_l1tmuons_.clear();
+   
+   if ( ! l1tmuonsanalysis_ ) return false;
+   
+   auto l1tmuons = analysis_->collection<L1TMuon>("l1tMuons");
+   for ( int m = 0 ; m < l1tmuons->size() ; ++m ) 
+   {
+      l1tmuons_.push_back(std::make_shared<L1TMuon>(l1tmuons->at(m)));
+      selected_l1tmuons_.push_back(l1tmuons_.back());
+   }
+   
+   return true;
+}
+
+bool TriggerAnalyser::selectionNL1TMuons(const int & nmin)
+{
+   if ( nmin < 0 ) return true;
+
+   std::string label = Form("L1TMuons N >= %d",nmin);
+   bool isgood = ( (int)selected_l1tmuons_.size() >= nmin );
+   
+   cutflow(label,isgood);
+   
+   return isgood;
+   
+}
+
+bool TriggerAnalyser::selectionL1TMuon(const float & ptmin, const float & etamax)
+{
+   bool isgood = true;
+   std::string label = Form("L1TMuon pt>=%4.2f, |eta|<=%4.2f", ptmin, etamax);
+   
+   auto muons = selected_l1tmuons_;
+   selected_l1tmuons_.clear();
+   
+   for ( auto & m : muons )
+   {
+      if ( m->pt() >= ptmin && fabs(m->eta()) <= etamax )
+         selected_l1tmuons_.push_back(m);
+   }
+   isgood = ( selected_l1tmuons_.size() >= 1 );
+   cutflow(label,isgood);
+   
+   return isgood;
+   
+}
+
+bool TriggerAnalyser::selectionL1TMuonQuality(const int & qual)
+{
+   bool isgood = true;
+   std::string label = Form("L1TMuon quality >= %d", qual);
+   
+   auto muons = selected_l1tmuons_;
+   selected_l1tmuons_.clear();
+   
+   for ( auto & m : muons )
+   {
+      if ( m->hwQual() >= qual)
+         selected_l1tmuons_.push_back(m);
+   }
+   isgood = ( selected_l1tmuons_.size() >= 1 );
+   cutflow(label,isgood);
+   
+   return isgood;
+   
+}
