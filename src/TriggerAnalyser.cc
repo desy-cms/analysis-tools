@@ -285,17 +285,22 @@ void TriggerAnalyser::fillL1TJetHistograms(const std::string & label, std::vecto
 
 void TriggerAnalyser::fillL1TJetHistograms(const std::string & label)
 {
-   fillL1TJetHistograms(label,l1tjets_);
+   fillL1TJetHistograms(label,selected_l1tjets_);
 }
 
 bool TriggerAnalyser::analysisWithL1TJets()
 {
    l1tjets_.clear();
+   selected_l1tjets_.clear();
    
    if ( ! l1tjetsanalysis_ ) return false;
    
    auto l1tjets = analysis_->collection<L1TJet>("l1tJets");
-   for ( int j = 0 ; j < l1tjets->size() ; ++j )  l1tjets_.push_back(std::make_shared<L1TJet>(l1tjets->at(j)));
+   for ( int j = 0 ; j < l1tjets->size() ; ++j ) 
+   {
+      l1tjets_.push_back(std::make_shared<L1TJet>(l1tjets->at(j)));
+      selected_l1tjets_.push_back(l1tjets_.back());
+   }
    
    return true;
 }
@@ -304,3 +309,85 @@ std::vector< std::shared_ptr<L1TJet> > TriggerAnalyser::l1tJets()
 {
    return l1tjets_;
 }
+
+std::vector< std::shared_ptr<L1TJet> > TriggerAnalyser::selectedL1TJets()
+{
+   return selected_l1tjets_;
+}
+
+
+bool TriggerAnalyser::selectionL1TJet(const float & ptmin, const float & etamax)
+{
+   auto jets = selected_l1tjets_;
+   selected_l1tjets_.clear();
+   
+   for ( auto & j : jets )
+   {
+      if ( j->pt() >= ptmin && fabs(j->eta()) <= etamax )
+         selected_l1tjets_.push_back(j);
+   }
+   if ( selected_l1tjets_.size() < 1 ) return false;
+   
+   return true;
+   
+}
+
+bool TriggerAnalyser::selectionL1TDijet(const float & pt1min, const float & eta1max, const float & pt2min, const float & eta2max)
+{
+   bool isgood = true;
+   std::string label;
+   
+   float pt1 = pt1min;
+   float eta1 = eta1max;
+   float pt2 = pt2min;
+   float eta2 = eta2max;
+   
+   if ( pt2 < 0 ) pt2 = pt1;
+   if ( eta2 < 0 ) eta2 = eta1;
+   
+   // Just to be flexible with inputs
+   if ( pt1min < pt2min )
+   {
+      pt1 = pt2min;
+      pt2 = pt1min;
+      eta1 = eta2max;
+      eta2 = eta1max;
+   }
+   
+   if ( pt1 == pt2 && eta1 == eta2 ) // same thresholds
+   {
+      label = Form("L1TDijet pt>=%4.2f, |eta|<=%4.2f", pt1, eta1);
+   }
+   else
+   {
+      label = Form("L1TJet1: pt>=%4.2f, |eta|<=%4.2f; L1TJet2: pt>=%4.2f, |eta|<=%4.2f", pt1, eta1, pt2, eta2);
+   }
+   
+   auto jets = selected_l1tjets_;
+   selected_l1tjets_.clear();
+   
+   for ( auto & j : jets )
+   {
+      if ( j->pt() >= pt2 && fabs(j->eta()) <= eta2 )
+         selected_l1tjets_.push_back(j);
+   }
+   isgood = ( selected_l1tjets_.size() >= 2 );
+   isgood = ( isgood && ( selected_l1tjets_[0]->pt()>=pt1 && fabs(selected_l1tjets_[0]->eta() <= eta1 ) ) );
+   
+   cutflow(label,isgood);
+   return isgood;
+   
+}
+bool TriggerAnalyser::selectionNL1TJets(const int & nmin)
+{
+   if ( nmin < 0 ) return true;
+
+   std::string label = Form("N L1TJets >= %d",nmin);
+   bool isgood = ( (int)l1tjets_.size() >= nmin );
+   
+   cutflow(label,isgood);
+   
+   return isgood;
+   
+}
+
