@@ -245,18 +245,20 @@ bool  TriggerAnalyser::l1tMuonsAnalysis() const
 }
 
 
-void TriggerAnalyser::l1tjetHistograms( const int & n, const std::string & label )
+void TriggerAnalyser::l1tjetHistograms(const std::string & label )
 {
    this->output()->cd();
    this->output()->mkdir(label.c_str());
    this->output()->cd(label.c_str());
    
-   n_hl1tjets_ = n;
+   n_hl1tjets_ = 6;
    
-   for ( int j = 0; j < n; ++j ) // loop over jets
+   h1_[Form("n_l1tjet_%s"  , label.c_str())]  = std::make_shared<TH1F>("n_l1tjet" , Form("n_l1tjet_%s" ,label.c_str()) ,12 , 0   , 12  );
+   
+   for ( int j = 0; j < n_hl1tjets_; ++j ) // loop over jets
    {
       // 1D histograms
-      h1_[Form("pt_l1tjet%d_%s"  , j+1,label.c_str())]  = std::make_shared<TH1F>(Form("pt_l1tjet%d"  , j+1) , Form("pt_l1tjet%d_%s"  , j+1,label.c_str()) ,500 , 0   , 500  );
+      h1_[Form("pt_l1tjet%d_%s"  , j+1,label.c_str())]  = std::make_shared<TH1F>(Form("pt_l1tjet%d"  , j+1) , Form("pt_l1tjet%d_%s"  , j+1,label.c_str()) ,1000 , 0   , 1000  );
       h1_[Form("eta_l1tjet%d_%s" , j+1,label.c_str())]  = std::make_shared<TH1F>(Form("eta_l1tjet%d" , j+1) , Form("eta_l1tjet%d_%s" , j+1,label.c_str()) , 500 , -5, 5 );
       h1_[Form("phi_l1tjet%d_%s" , j+1,label.c_str())]  = std::make_shared<TH1F>(Form("phi_l1tjet%d" , j+1) , Form("phi_l1tjet%d_%s" , j+1,label.c_str()) , 360 , -180, 180 );
    }
@@ -271,11 +273,16 @@ void TriggerAnalyser::fillL1TJetHistograms(const std::string & label, std::vecto
    
    int n = n_hl1tjets_;
    
-   for ( int j = 0; j < n; ++j )
+   
+   h1_[Form("n_l1tjet_%s"  , label.c_str())] -> Fill(sel_l1tjets.size(), weight_);
+   
+   for ( size_t j = 0; j < sel_l1tjets.size(); ++j )
    {
-      h1_[Form("pt_l1tjet%d_%s"   , j+1,label.c_str())] -> Fill(sel_l1tjets[j]->pt(),weight_);
-      h1_[Form("eta_l1tjet%d_%s"  , j+1,label.c_str())] -> Fill(sel_l1tjets[j]->eta(),weight_);
-      h1_[Form("phi_l1tjet%d_%s"  , j+1,label.c_str())] -> Fill(sel_l1tjets[j]->phi(),weight_);
+      int r = j+1;
+      if ( r > n ) r = n;
+      h1_[Form("pt_l1tjet%d_%s"   , r,label.c_str())] -> Fill(sel_l1tjets[j]->pt(),weight_);
+      h1_[Form("eta_l1tjet%d_%s"  , r,label.c_str())] -> Fill(sel_l1tjets[j]->eta(),weight_);
+      h1_[Form("phi_l1tjet%d_%s"  , r,label.c_str())] -> Fill(sel_l1tjets[j]->phi(),weight_);
    }
    this->output()->cd();
    
@@ -372,7 +379,7 @@ bool TriggerAnalyser::selectionL1TDijet(const float & pt1min, const float & eta1
          selected_l1tjets_.push_back(j);
    }
    isgood = ( selected_l1tjets_.size() >= 2 );
-   isgood = ( isgood && ( selected_l1tjets_[0]->pt()>=pt1 && fabs(selected_l1tjets_[0]->eta() <= eta1 ) ) );
+   isgood = ( isgood && ( selected_l1tjets_[0]->pt()>=pt1 && fabs(selected_l1tjets_[0]->eta()) <= eta1 ) );
    
    cutflow(label,isgood);
    return isgood;
@@ -403,15 +410,33 @@ bool TriggerAnalyser::selectionL1TDijetDeta(const float & detamax)
    auto jets = selected_l1tjets_;
    selected_l1tjets_.clear();
    
+   // not the smartest way I suppose... but preserves the pt rank
+   std::vector<bool> match;
+   for ( size_t i = 0; i < jets.size(); ++i )
+      match.push_back(false);
+   
    for ( auto & j1 : jets )
    {
+      auto i1 = &j1 - &jets[0];
       for ( auto & j2 : jets )
       {
-         if ( j1 == j2 ) continue;
+         auto i2 = &j2 - &jets[0];
+         if ( i1 == i2 ) continue;
          if ( j1->deltaEta(*j2) <= detamax )
-            selected_l1tjets_.push_back(j1);
+         {
+            match[i1] = true;
+            match[i2] = true;
+         }
       }
    }
+   
+   for ( auto & j : jets )
+   {
+      auto i = &j - &jets[0];
+      if ( ! match[i] ) continue;
+      selected_l1tjets_.push_back(j);
+   }
+   
    isgood = ( selected_l1tjets_.size() >= 2 );
    
    cutflow(label,isgood);
@@ -460,7 +485,7 @@ bool TriggerAnalyser::selectionL1TMuon(const float & ptmin, const float & etamax
    
    for ( auto & m : muons )
    {
-      if ( m->pt() >= ptmin && fabs(m->eta()) <= etamax )
+      if ( m->pt() >= ptmin && fabs(m->etaAtVtx()) <= etamax )
          selected_l1tmuons_.push_back(m);
    }
    isgood = ( selected_l1tmuons_.size() >= 1 );
@@ -502,6 +527,8 @@ bool TriggerAnalyser::selectionL1TMuonJet(const float & drmax)
    {
       for ( auto & j : jets )
       {
+//         float dr = sqrt((m->etaAtVtx()-j->eta())+(m->phiAtVtx()-j->phi()));
+//         if ( dr <= drmax )
          if ( m->deltaR(*j) <= drmax )
          {
             selected_l1tmuons_.push_back(m);
