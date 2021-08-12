@@ -9,6 +9,7 @@
 // 
 // user include files
 #include "TString.h" 
+#include "Analysis/Tools/interface/Utils.h"
 
 //
 // class declaration
@@ -53,7 +54,11 @@ TriggerAnalyser::TriggerAnalyser(int argc, char * argv[]) : BaseAnalyser(argc,ar
    {
       l1tmuonsanalysis_ = ( analysis_ -> addTree<L1TMuon> ("l1tMuons",config_ -> l1tMuonsCollection()) != nullptr );
    }
-
+   l1tjets_etabins_ = utilsL1TJetsEtaBins();
+   l1tjets_phibins_ = utilsL1TJetsPhiBins();
+   l1tmuons_etabins_ = utilsL1TMuonsEtaBins();
+   l1tmuons_phibins_ = utilsL1TMuonsPhiBins();
+   
 }
 
 TriggerAnalyser::~TriggerAnalyser()
@@ -251,7 +256,7 @@ void TriggerAnalyser::l1tjetHistograms(const std::string & label )
    this->output()->mkdir(label.c_str());
    this->output()->cd(label.c_str());
    
-   n_hl1tjets_ = 6;
+   n_hl1tjets_ = 13;
    
    h1_[Form("n_l1tjet_%s"  , label.c_str())]  = std::make_shared<TH1F>("n_l1tjet" , Form("n_l1tjet_%s" ,label.c_str()) ,12 , 0   , 12  );
    
@@ -544,4 +549,22 @@ bool TriggerAnalyser::selectionL1TMuonJet(const float & drmax)
    
    return isgood;
    
+}
+
+
+std::vector<float> TriggerAnalyser::l1tJetsEtaBins()
+{
+   return l1tjets_etabins_;
+}
+std::vector<float> TriggerAnalyser::l1tJetsPhiBins()
+{
+   return l1tjets_phibins_;
+}
+std::vector<float> TriggerAnalyser::l1tMuonsEtaBins()
+{
+   return l1tmuons_etabins_;
+}
+std::vector<float> TriggerAnalyser::l1tMuonsPhiBins()
+{
+   return l1tmuons_phibins_;
 }

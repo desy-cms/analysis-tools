@@ -53,6 +53,11 @@ namespace analysis {
             std::vector< std::shared_ptr<L1TJet> > selected_l1tjets_;
             std::vector< std::shared_ptr<L1TMuon> > l1tmuons_;
             std::vector< std::shared_ptr<L1TMuon> > selected_l1tmuons_;
+            
+            std::vector<float> l1tjets_etabins_;
+            std::vector<float> l1tjets_phibins_;
+            std::vector<float> l1tmuons_etabins_;
+            std::vector<float> l1tmuons_phibins_;
          
          private:
                
@@ -99,7 +104,13 @@ namespace analysis {
             
             std::vector< std::shared_ptr<L1TJet> > l1tJets();
             std::vector< std::shared_ptr<L1TJet> > selectedL1TJets();
-
+            
+            std::vector<float> l1tJetsEtaBins();
+            std::vector<float> l1tJetsPhiBins();
+            
+            std::vector<float> l1tMuonsEtaBins();
+            std::vector<float> l1tMuonsPhiBins();
+            
       };
    }
 }
