@@ -408,53 +408,6 @@ bool TriggerAnalyser::selectionNL1TJets(const int & nmin)
    
 }
 
-// This is not correct, the list of objects is the same as returned after kinematic selection
-// bool TriggerAnalyser::selectionL1TDijetDeta(const float & detamax)
-// {
-//    if ( detamax == 0 ) return true;
-// 
-//    std::string label = Form("L1TDijet delta_eta <= %4.2f",detamax);
-//    
-//    bool isgood = true;
-//    
-//    auto jets = selected_l1tjets_;
-//    selected_l1tjets_.clear();
-//    
-//    // not the smartest way I suppose... but preserves the pt rank
-//    std::vector<bool> match;
-//    for ( size_t i = 0; i < jets.size(); ++i )
-//       match.push_back(false);
-//    
-//    for ( auto & j1 : jets )
-//    {
-//       auto i1 = &j1 - &jets[0];
-//       for ( auto & j2 : jets )
-//       {
-//          auto i2 = &j2 - &jets[0];
-//          if ( i1 == i2 ) continue;
-//          if ( j1->deltaEta(*j2) <= detamax )
-//          {
-//             match[i1] = true;
-//             match[i2] = true;
-//          }
-//       }
-//    }
-//    
-//    for ( auto & j : jets )
-//    {
-//       auto i = &j - &jets[0];
-//       if ( ! match[i] ) continue;
-//       selected_l1tjets_.push_back(j);
-//    }
-//    
-//    isgood = ( selected_l1tjets_.size() >= 2 );
-//    
-//    cutflow(label,isgood);
-//    
-//    return isgood;
-//    
-// }
-
 bool TriggerAnalyser::selectionL1TDijetDeta(const float & detamax)
 {
    if ( detamax == 0 ) return true;
