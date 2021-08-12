@@ -67,6 +67,11 @@ namespace analysis {
          float down;
       };
       
+      std::vector<float> utilsL1TJetsEtaBins();
+      std::vector<float> utilsL1TJetsPhiBins();
+      std::vector<float> utilsL1TMuonsEtaBins();
+      std::vector<float> utilsL1TMuonsPhiBins();
+      
    }
 }
 
