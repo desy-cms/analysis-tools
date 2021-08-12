@@ -5,6 +5,12 @@
 namespace analysis {
    namespace tools {
 
+      
+/* L1 trigger eta and phi bins (scales)
+   http://cms.cern.ch/iCMS/jsp/openfile.jsp?tp=draft&files=DN2014_029_v2.pdf
+   https://globaltrigger.web.cern.ch/globaltrigger/upgrade/ugt/downloads
+*/
+                  
 // L1TJets eta bins
       std::vector<float> utilsL1TJetsEtaBins()
       {
