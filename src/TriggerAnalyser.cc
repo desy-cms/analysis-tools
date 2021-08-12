@@ -325,6 +325,9 @@ std::vector< std::shared_ptr<L1TJet> > TriggerAnalyser::selectedL1TJets()
 
 bool TriggerAnalyser::selectionL1TJet(const float & ptmin, const float & etamax)
 {
+   bool isgood = true;
+   std::string label = Form("L1TJet pt>=%4.2f, |eta|<=%4.2f", ptmin, etamax);;
+   
    auto jets = selected_l1tjets_;
    selected_l1tjets_.clear();
    
@@ -333,9 +336,10 @@ bool TriggerAnalyser::selectionL1TJet(const float & ptmin, const float & etamax)
       if ( j->pt() >= ptmin && fabs(j->eta()) <= etamax )
          selected_l1tjets_.push_back(j);
    }
-   if ( selected_l1tjets_.size() < 1 ) return false;
+   isgood = ( selected_l1tjets_.size() >= 1 );
    
-   return true;
+   cutflow(label,isgood);
+   return isgood;
    
 }
 
