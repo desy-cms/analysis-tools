@@ -38,7 +38,12 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
       namespace po = boost::program_options;
       opt_cmd_.add_options()
          ("help,h","Show help messages")
-         ("config,c",po::value<std::string>(&cfg_),"Configuration file name");
+         ("config,c",po::value<std::string>(&cfg_),"Configuration file name")
+         ("mc",po::bool_switch(&cmdl_mc_),"Run on Monte Carlo")  
+         ("data",po::bool_switch(&cmdl_data_),"Run on data (default)")  
+         ("ntuple_list,l",po::value <std::string>(&cmdl_inputlist_)-> default_value(""),"File with list of ntuples")  
+         ("nevents,n",po::value <int>(&cmdl_evtmax_)-> default_value(-100),"Maximum number of events")  
+            ;
 
       // analysis info
       opt_cfg_.add_options()
@@ -51,7 +56,7 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          ("Info.seedFile"                , po::value <std::string>               (&seedfile_)        -> default_value("no_seed.txt")      ,"File with seed value for random numbers")
          ("Info.blindAnalysis"           , po::value <bool>                      (&blind_)           -> default_value(false)              ,"Flag for blind analysis")
          ("Info.nloMC"                   , po::value <bool>                      (&nlo_)             -> default_value(false)              ,"Flag for NLO MC samples")
-         ("Info.isMC"                    , po::value <bool>                      (&isMC_)            -> default_value(true)               ,"Flag for MC dataset")
+         ("Info.isMC"                    , po::value <bool>                      (&isMC_)            -> default_value(false)              ,"Flag for MC dataset")
          ("Info.fullGenWeight"           , po::value <bool>                      (&fullgenweight_)   -> default_value(false)              ,"Flag for full gen weight of MC samples, otherwise only sign")
          ("Info.signalRegion"            , po::value <bool>                      (&signalregion_)    -> default_value(true)               ,"Flag for signal region")
          ("Info.eventsMax"               , po::value <int>                       (&nevtmax_)         -> default_value(-1)                 , "Maximum number of events")
@@ -207,7 +212,9 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          ("User.workflow"                , po::value <int>                       (&workflow_)        -> default_value(1)                  , "Workflow index defined by user")
          ("User.prescale"                , po::value <int>                       (&prescale_)        -> default_value(1)                  , "Prescale factor")
          ("User.n"                       , po::value <int>                       (&n_)               -> default_value(-1)                 , "Some integer")
-         ("User.index"                   , po::value <int>                       (&index_)           -> default_value(-1)                 , "Some User index for user");
+         ("User.index"                   , po::value <int>                       (&index_)           -> default_value(-1)                 , "Some User index for user")
+         ("User.float"                   , po::value<std::vector<float> >        (&vfloat_)          ->multitoken()                       , "Float vector")
+         ("User.int"                     , po::value<std::vector<int> >          (&vint_)            ->multitoken()                       , "Integer vector");
 
       // others
       opt_cfg_.add_options()
@@ -261,24 +268,51 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
       po::variables_map vm;
       try
       {
+
          po::store(po::parse_command_line(argc, argv, opt_cmd_), vm); // can throw
          // --help option
 
          if ( vm.count("help") )
          {
-            std::cout << "SimpleBjetsAnalysis macro" << std::endl
-                      << opt_cmd_ << std::endl
-                      << opt_cfg_ << std::endl;
+            std::cout << "Analysis Tools command line options - override configuration file options" << std::endl
+                      << opt_cmd_ << std::endl;
+                    //  << opt_cfg_ << std::endl;
+            std::exit(0);
          }
          po::notify(vm);
-
+         
          std::ifstream cfg_s(cfg_.c_str());
          po::store(po::parse_config_file(cfg_s, opt_cfg_), vm); // can throw
-         if ( vm.count("config") )
+         if ( ! vm.count("config") )
          {
-
+            std::cout << "*** ERROR *** A configuration file must be provided!" << std::endl;
+            std::exit(-1);
          }
          po::notify(vm);
+         
+         
+         // Do your stuff
+         // overriding isMC_ from command line
+         if ( cmdl_data_ &&  cmdl_mc_ )
+         {
+            std::cout << "*** ERROR *** You set both --mc and --data options!" << std::endl;
+            std::exit(-1);
+         }
+         if ( cmdl_data_ != cmdl_mc_ ) 
+         {
+            isMC_ = cmdl_mc_;
+         }
+         // overriding ntuples_list
+         if ( cmdl_inputlist_ != "" )
+         {
+            inputlist_ = cmdl_inputlist_;
+         }
+         // opverride nevtmax_
+         if ( cmdl_evtmax_ != -100 )
+         {
+            nevtmax_ = cmdl_evtmax_;
+         }
+         
          boost::algorithm::to_lower(jetsid_);
          std::transform(btagalgo_.begin(), btagalgo_.end(), btagalgo_.begin(), ::tolower);
 
@@ -564,7 +598,9 @@ int          Config::triggerEmulatePFJetsNMin()   const { return pfjetemulnmin_ 
 float        Config::triggerEmulatePFJetsPtMin()  const { return pfjetemulptmin_  ; }
 float        Config::triggerEmulatePFJetsEtaMax() const { return pfjetemuletamax_ ; }
 
-
+// User vectors
+std::vector<float> Config::vectorFloat()  const { return vfloat_ ; }
+std::vector<int>   Config::vectorInt()    const { return vint_   ; }
 
 
 

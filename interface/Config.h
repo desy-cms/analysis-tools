@@ -281,6 +281,11 @@ namespace analysis {
 
             std::string hltPath_;
             std::string l1Seed_;
+            
+            // User vectors
+            std::vector<float> vectorFloat() const;
+            std::vector<int>   vectorInt() const;
+            
 
             // ----------member data ---------------------------
          protected:
@@ -289,6 +294,11 @@ namespace analysis {
             char ** argv_;
 
             std::string cfg_; // config file
+            
+            bool cmdl_mc_;
+            bool cmdl_data_;
+            std::string cmdl_inputlist_;
+            int cmdl_evtmax_;
 
             po::options_description opt_cmd_;
             po::options_description opt_cfg_;
@@ -487,6 +497,10 @@ namespace analysis {
          // analysis control
             std::string outputRoot_;
             std::string json_;
+            
+         // user vector
+            std::vector<float> vfloat_;
+            std::vector<int>   vint_;
 
          private:
 

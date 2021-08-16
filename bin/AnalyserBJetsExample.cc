@@ -15,33 +15,36 @@ int main(int argc, char ** argv)
 // HISTOGRAMS definitions  
    // create some predefined jet histograms
    // if not defined, the number of jets is nJetMin from the configurations
-   analyser.jetHistograms("selection01");
-   analyser.jetHistograms("selection02");
-   analyser.jetHistograms("selection03");
+   analyser.jetHistograms("unbiased_jet2");
+   analyser.jetHistograms("biased_jet2");
    
    for ( int i = 0 ; i < analyser.nEvents() ; ++i )
    {
       if ( ! analyser.event(i)                  )   continue;
       
    // JETS
-      analyser.actionApplyJER();                               // correction : jet energy resolution smearing
-      analyser.actionApplyBjetRegression();                    // correction : jet energy regression (for b jets)
+      if ( ! analyser.selectionL1 ()            )   continue;  // L1  trigger (selection)
+      if ( ! analyser.selectionHLT ()           )   continue;  // HLT trigger
       if ( ! analyser.selectionJetId()          )   continue;  // selection  : jet identification 
       if ( ! analyser.selectionJetPileupId()    )   continue;  // selection  : jet Pileup identification 
       if ( ! analyser.selectionNJets()          )   continue;  // selection  : number of jets 
       
-      // the lines below will only be executed if rank <= nJetsMin
+      analyser.actionApplyJER();                               // correction : jet energy resolution smearing
+      analyser.actionApplyBjetRegression();                    // correction : jet energy regression (for b jets)
+      
       if ( ! analyser.selectionJet(1)           )   continue;  // selection  : jet1 pt and eta 
       if ( ! analyser.selectionJet(2)           )   continue;  // selection  : jet2 pt and eta 
       if ( ! analyser.selectionJetDphi(1,2)     )   continue;  // selection  : delta_phi_jets (1,2) [or  MIN(neg): analyser.selectionJetDphi(1,2,-2.0) / MAX(pos): analyser.selectionJetDphi(1,2,+2.0)]
-   // HISTOGRAMS
-      analyser.fillJetHistograms("selection01");               // histograms : jets fill
-   // BTAG
+      if ( ! analyser.onlineJetMatching(1)      )   continue;
+      if ( ! analyser.onlineJetMatching(2)      )   continue;
       if ( ! analyser.selectionBJet(1)          )   continue;
-      analyser.fillJetHistograms("selection02");               // histograms : jets fill
       if ( ! analyser.selectionBJet(2)          )   continue;
-      analyser.fillJetHistograms("selection03");               // histograms : jets fill
-   // HISTOGRAMS
+      analyser.actionApplyBtagSF(1);
+      analyser.actionApplyBtagSF(2);
+      if ( ! analyser.onlineBJetMatching(1)     )   continue;
+      analyser.fillJetHistograms("unbiased_jet2");             // histograms : jets fill
+      if ( ! analyser.onlineBJetMatching(2)     )   continue;
+      analyser.fillJetHistograms("biased_jet2");               // histograms : jets fill
       
    }  //end event loop
    
