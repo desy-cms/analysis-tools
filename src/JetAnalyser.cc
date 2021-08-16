@@ -177,8 +177,18 @@ void JetAnalyser::jetHistograms( const std::string & label )
 void JetAnalyser::jetHistograms( const int & n, const std::string & label )
 {
    this->output()->cd();
-   this->output()->mkdir(label.c_str());
-   this->output()->cd(label.c_str());
+   if ( ! this->output()->FindObjectAny(label.c_str()) )
+   {
+      this->output()->mkdir(label.c_str());
+      this->output()->cd(label.c_str());
+   }
+   else
+   {
+      if ( h1_.find(Form("jet_hist_weight_%s",label.c_str())) != h1_.end() ) // the jet histograms already exist
+      {
+         return;
+      }
+   }
    
    n_hjets_ = n;
    

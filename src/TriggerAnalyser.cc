@@ -253,8 +253,18 @@ bool  TriggerAnalyser::l1tMuonsAnalysis() const
 void TriggerAnalyser::l1tjetHistograms(const std::string & label )
 {
    this->output()->cd();
-   this->output()->mkdir(label.c_str());
-   this->output()->cd(label.c_str());
+   if ( ! this->output()->FindObjectAny(label.c_str()) )
+   {
+      this->output()->mkdir(label.c_str());
+      this->output()->cd(label.c_str());
+   }
+   else
+   {
+      if ( h1_.find(Form("n_l1tjet_%s"  , label.c_str())) != h1_.end() ) // the jet histograms already exist
+      {
+         return;
+      }
+   }
    
    n_hl1tjets_ = 13;
    
