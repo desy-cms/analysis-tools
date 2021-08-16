@@ -72,6 +72,12 @@ namespace analysis {
       std::vector<float> utilsL1TMuonsEtaBins();
       std::vector<float> utilsL1TMuonsPhiBins();
       
+      float utilsL1TJetsDeta(const float & eta1, const float & eta2);
+      float utilsL1TJetsDphi(const float & phi1, const float & phi2);
+      float utilsL1TMuonJetDeta(const float & m_eta, const float & j_eta);
+      float utilsL1TMuonJetDphi(const float & phi1, const float & phi2);
+      float utilsL1TMuonJetDr(const float & eta1, const float & phi1, const float & eta2, const float & phi2);
+      
    }
 }
 
