@@ -420,7 +420,9 @@ bool TriggerAnalyser::selectionL1TDijetDeta(const float & detamax)
       for ( auto & j2 : selected_l1tjets_ )
       {
          if ( j1 == j2 ) continue;
-         if ( j1->deltaEta(*j2) <= detamax )
+         
+         if ( j1->deltaEta(*j2) <= detamax )   // a few percent difference wrt to the precise method below
+//         if ( utilsL1TJetsDeta(j1->eta(),j2->eta()) <= detamax )
          {
             isgood = true;
             break;
@@ -474,7 +476,7 @@ bool TriggerAnalyser::selectionL1TMuon(const float & ptmin, const float & etamax
    
    for ( auto & m : muons )
    {
-      if ( m->pt() >= ptmin && fabs(m->etaAtVtx()) <= etamax )
+      if ( m->pt() >= ptmin && fabs(m->eta()) <= etamax )
          selected_l1tmuons_.push_back(m);
    }
    isgood = ( selected_l1tmuons_.size() >= 1 );
@@ -516,9 +518,9 @@ bool TriggerAnalyser::selectionL1TMuonJet(const float & drmax)
    {
       for ( auto & j : jets )
       {
-//         float dr = sqrt((m->etaAtVtx()-j->eta())+(m->phiAtVtx()-j->phi()));
-//         if ( dr <= drmax )
          if ( m->deltaR(*j) <= drmax )
+//         float dr = utilsL1TMuonJetDr(m->eta(),m->phi(),j->eta(),j->phi());
+//         if ( dr <= drmax )
          {
             selected_l1tmuons_.push_back(m);
          }
