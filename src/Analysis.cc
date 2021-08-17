@@ -21,7 +21,65 @@ using namespace analysis::tools;
 //
 // constructors and destructor
 //
+Analysis::Analysis(std::shared_ptr<Config> cfg)
+{
+   config_ = cfg;
+   inputFilelist_  = config_->ntuplesList();
+   fileCollection_ = new TFileCollection("fileCollection","",inputFilelist_.c_str());
+   fileList_ = (TCollection*) fileCollection_->GetList();
 
+   // event info (must be in the tree always)
+   t_event_ = new TChain(config_->eventInfo().c_str());
+   t_event_ -> AddFileInfoList(fileList_);
+   
+   std::vector<std::string> branches;
+   TObjArray * treeBranches = t_event_->GetListOfBranches();
+   for ( int i = 0 ; i < treeBranches->GetEntries() ; ++i )
+      branches.push_back(treeBranches->At(i)->GetName());
+   
+   t_event_ -> SetBranchAddress("event", &event_);
+   t_event_ -> SetBranchAddress("run", &run_);
+   t_event_ -> SetBranchAddress("lumisection", &lumi_);
+   
+   // For backward compatibility
+   std::vector<std::string>::iterator it;
+   it = std::find(branches.begin(),branches.end(),"nPileup");      if ( it != branches.end() ) t_event_  -> SetBranchAddress( (*it).c_str(), &n_pu_);
+   it = std::find(branches.begin(),branches.end(),"nTruePileup");  if ( it != branches.end() ) t_event_  -> SetBranchAddress( (*it).c_str(), &n_true_pu_);
+   
+   it = std::find(branches.begin(),branches.end(),"lumiPileup");   if ( it != branches.end() ) t_event_  -> SetBranchAddress( (*it).c_str(), &lumi_pu_);
+   it = std::find(branches.begin(),branches.end(),"instantLumi");  if ( it != branches.end() ) t_event_  -> SetBranchAddress( (*it).c_str(), &inst_lumi_);
+   
+   it = std::find(branches.begin(),branches.end(),"genWeight");    if ( it != branches.end() ) t_event_  -> SetBranchAddress( (*it).c_str(), &genWeight_);
+   it = std::find(branches.begin(),branches.end(),"genScale");     if ( it != branches.end() ) t_event_  -> SetBranchAddress( (*it).c_str(), &genScale_);
+   it = std::find(branches.begin(),branches.end(),"pdfid1");       if ( it != branches.end() ) t_event_  -> SetBranchAddress( (*it).c_str(), &pdf_.id.first);
+   it = std::find(branches.begin(),branches.end(),"pdfid2");       if ( it != branches.end() ) t_event_  -> SetBranchAddress( (*it).c_str(), &pdf_.id.second);
+   it = std::find(branches.begin(),branches.end(),"pdfx1");        if ( it != branches.end() ) t_event_  -> SetBranchAddress( (*it).c_str(), &pdf_.x.first);
+   it = std::find(branches.begin(),branches.end(),"pdfx2");        if ( it != branches.end() ) t_event_  -> SetBranchAddress( (*it).c_str(), &pdf_.x.second);
+   
+   it = std::find(branches.begin(),branches.end(),"rho");          if ( it != branches.end() ) t_event_  -> SetBranchAddress( (*it).c_str(), &rho_);
+   
+//   t_event_ -> SetBranchAddress("nPileup", &n_pu_);
+//   t_event_ -> SetBranchAddress("nTruePileup", &n_true_pu_);
+
+   nevents_ = t_event_ -> GetEntries();
+
+   t_event_ -> GetEntry(1); // Check whether it's mc simulation
+   if (run_ == 1) {         // A bit stupid, but it's only solution that I found for the moment
+     is_mc_ = true;
+   } else {
+     is_mc_ = false;
+   }
+   
+   btageff_algo_    = "";
+   btageff_flavour_ = "";
+   
+   mylumi_= -1.;
+
+   
+   //if(is_mc_) crossSection();
+
+   
+}
 Analysis::Analysis(const std::string & inputFilelist, const std::string & evtinfo)
 {
    inputFilelist_  = inputFilelist;
@@ -569,4 +627,9 @@ int Analysis::seed(const std::string & name)
    if ( seed < 1 )     return -1;
    
    return seed;
+}
+
+void Analysis::config(std::shared_ptr<Config> cfg)
+{
+   config_ = cfg;
 }

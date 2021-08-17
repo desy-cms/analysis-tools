@@ -44,6 +44,7 @@
 #include "Analysis/Tools/interface/PileupWeight.h"
 #include "Analysis/Tools/interface/MuonIdWeight.h"
 
+#include "Analysis/Tools/interface/Config.h"
 
 //#include "CondFormats/JetMETObjects/interface/JetCorrectorParameters.h"
 //#include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
@@ -60,11 +61,15 @@ namespace analysis {
       class Analysis {
          public:
             Analysis(const std::string & inputFilelist, const std::string & evtinfo = "MssmHbb/Events/EventInfo");
+            Analysis(std::shared_ptr<Config> cfg);
            ~Analysis();
            
             // Info
             void tag(const std::string &);
             std::string tag();
+            
+            /// Configuration
+            void config(std::shared_ptr<Config> cfg);
             
             /// seed for random number generator read from a txt file given as a parameter
             int seed(const std::string &);
@@ -178,6 +183,9 @@ namespace analysis {
             TFileCollection * fileCollection_;
             TCollection * fileList_;
             std::string inputFilelist_;
+            
+            // Configuration
+            std::shared_ptr<Config>   config_;
             
             // Info
             std::string tag_;
