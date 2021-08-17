@@ -143,6 +143,7 @@ namespace analysis {
             float jetsDrMin()            const;
             float jetsPtImbalanceMax()   const;
             float jetsPtImbalanceMin()   const;
+            bool  jetsWithMuons()        const;
 
          // muons
             std::string muonsCollection() const;
@@ -364,6 +365,7 @@ namespace analysis {
             float jetsdrmax_;
             float jetsptimbalmax_;
             float jetsptimbalmin_;
+            bool  jetswithmuons_;
 
             // muon-muons
             float muonsdrmin_;
