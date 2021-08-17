@@ -41,7 +41,8 @@ BaseAnalyser::BaseAnalyser(int argc, char * argv[])
     
    // the heavy stuff
    config_   = std::make_shared<Config>(argc,argv);
-   analysis_ = std::make_shared<Analysis>(config_->ntuplesList(),config_->eventInfo());
+//   analysis_ = std::make_shared<Analysis>(config_->ntuplesList(),config_->eventInfo());
+   analysis_ = std::make_shared<Analysis>(config_);
    
    // output file
    if ( config_->outputRoot() != "" )
