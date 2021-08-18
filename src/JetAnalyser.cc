@@ -157,7 +157,10 @@ bool JetAnalyser::analysisWithJets()
       jets->addGenJets(genjets);
    }
    
-   for ( int j = 0 ; j < jets->size() ; ++j )  jets_.push_back(std::make_shared<Jet>(jets->at(j)));
+   for ( int j = 0 ; j < jets->size() ; ++j )
+   {
+      jets_.push_back(std::make_shared<Jet>(jets->at(j)));
+   }
    
    selectedJets_ = jets_;
    
