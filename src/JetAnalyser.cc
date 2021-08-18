@@ -157,7 +157,10 @@ bool JetAnalyser::analysisWithJets()
       jets->addGenJets(genjets);
    }
    
-   for ( int j = 0 ; j < jets->size() ; ++j )  jets_.push_back(std::make_shared<Jet>(jets->at(j)));
+   for ( int j = 0 ; j < jets->size() ; ++j )
+   {
+      jets_.push_back(std::make_shared<Jet>(jets->at(j)));
+   }
    
    selectedJets_ = jets_;
    
@@ -177,8 +180,18 @@ void JetAnalyser::jetHistograms( const std::string & label )
 void JetAnalyser::jetHistograms( const int & n, const std::string & label )
 {
    this->output()->cd();
-   this->output()->mkdir(label.c_str());
-   this->output()->cd(label.c_str());
+   if ( ! this->output()->FindObjectAny(label.c_str()) )
+   {
+      this->output()->mkdir(label.c_str());
+      this->output()->cd(label.c_str());
+   }
+   else
+   {
+      if ( h1_.find(Form("jet_hist_weight_%s",label.c_str())) != h1_.end() ) // the jet histograms already exist
+      {
+         return;
+      }
+   }
    
    n_hjets_ = n;
    
@@ -368,6 +381,12 @@ void JetAnalyser::jetHistograms( const int & n, const std::string & label )
                }
             }
          }
+      }
+      if ( config_->jetsWithMuons() )
+      {
+          h1_[Form("muon_pt_jet%d_%s"  , j+1,label.c_str())]  = std::make_shared<TH1F>(Form("muon_pt_jet%d"  , j+1) , Form("muon_pt_jet%d_%s"  , j+1,label.c_str()) ,1500 , 0   , 1500  );
+          h1_[Form("muon_eta_jet%d_%s" , j+1,label.c_str())]  = std::make_shared<TH1F>(Form("muon_eta_jet%d" , j+1) , Form("muon_eta_jet%d_%s" , j+1,label.c_str()) , 600 , -3, 3 );
+          h1_[Form("muon_phi_jet%d_%s" , j+1,label.c_str())]  = std::make_shared<TH1F>(Form("muon_phi_jet%d" , j+1) , Form("muon_phi_jet%d_%s" , j+1,label.c_str()) , 360 , -180, 180 );
       }
    }
    
@@ -984,6 +1003,23 @@ void JetAnalyser::fillJetHistograms(const int & r, const std::string & label, co
       }
       // 2D histograms
       h2_[Form("pt_eta_jet%d_%s_%s"  , j+1,label.c_str(),flv.c_str())] -> Fill(selectedJets_[j]->pt(), selectedJets_[j]->eta(), weight_*sf);
+   }
+   
+   if ( config_->jetsWithMuons() )
+   {
+      auto jetmu = selectedJets_[j]->muon();
+      float mpt = -1.;
+      float meta = -10;
+      float mphi = -200;
+      if ( selectedJets_[j]->muon() )
+      {
+         mpt  = jetmu->pt();
+         meta = jetmu->eta();
+         mphi = jetmu->phi();
+      }
+      h1_[Form("muon_pt_jet%d_%s"  , j+1,label.c_str())]  -> Fill(mpt);
+      h1_[Form("muon_eta_jet%d_%s" , j+1,label.c_str())]  -> Fill(meta);  
+      h1_[Form("muon_phi_jet%d_%s" , j+1,label.c_str())]  -> Fill(mphi);    
    }
       
    this->output()->cd();
