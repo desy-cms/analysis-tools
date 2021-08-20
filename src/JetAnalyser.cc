@@ -1063,8 +1063,10 @@ void JetAnalyser::actionApplyJER()
       std::string bnpt = basename(config_->jerPtRes());
       std::string bnsf = basename(config_->jerSF());
       label = Form("JER smearing (%s,%s)",bnpt.c_str(),bnsf.c_str());
+      if ( config_->jerSystematics() != 0 )
+         label = Form("JER smearing (%s,%s), syst: %+d sig",bnpt.c_str(),bnsf.c_str(),config_->jerSystematics());
       for ( auto & j : selectedJets_ )
-         j -> applyJER(*jerinfo_,0.2);
+         j -> applyJER(*jerinfo_,0.2,config_->jerSystematics());
    }
    
    cutflow(label);

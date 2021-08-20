@@ -110,6 +110,7 @@ namespace analysis {
             std::string jetsPuId() const;
             std::string jerPtRes() const;
             std::string jerSF() const;
+            int         jerSystematics() const;
             std::string l1tJetsCollection() const;
 
             std::string btagAlgorithm() const;
@@ -374,6 +375,7 @@ namespace analysis {
             // JER resolution and scale factors from txt file
             std::string jerptres_;
             std::string jersf_;
+            int         jersyst_;
             //
             std::string l1tjetsCol_;
             //
