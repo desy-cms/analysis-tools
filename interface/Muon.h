@@ -39,14 +39,21 @@ namespace analysis {
             Muon(const float & pt, const float & eta, const float & phi, const float & e, const float & q);
             /// destructor
            ~Muon();
-//            using Candidate::set; // in case needed to overload the function set
            // Gets
+           
+           /// is particle flow muon
            bool  isPFMuon()        const ;
+           /// is global muon
            bool  isGlobalMuon()    const ; 
+           /// is tracker muon
            bool  isTrackerMuon()   const ; 
+           /// is loose id muon
            bool  isLooseMuon()     const ; 
+           /// is medium id muon
            bool  isMediumMuon()    const ;
+           /// is tight id muon
            bool  isTightMuon()     const ;
+           /// muon id
            bool  id(const std::string & ) const;
            
 
@@ -58,11 +65,17 @@ namespace analysis {
            float normChi2()               const ;
 
            // Sets
+           /// set flag for particle flow muon
            void isPFMuon     (const bool & isPFMuon)      ;    
+           /// set flag for global muon
            void isGlobalMuon (const bool & isGlobalMuon)  ; 
+           /// set flag for tracker muon
            void isTrackerMuon(const bool & isTrackerMuon) ;  
+           /// set flag for loose muon id
            void isLooseMuon  (const bool & isLooseMuon)   ; 
+           /// set flag for medium muon id
            void isMediumMuon (const bool & isMediumMuon)  ;
+           /// set flag for tight muon id
            void isTightMuon  (const bool & isTightMuon)  ;
 
            void validFraction( const float & validFraction) ;     
