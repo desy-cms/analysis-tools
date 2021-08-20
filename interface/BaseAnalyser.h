@@ -142,7 +142,7 @@ namespace analysis {
             /// event entry to be readout and processed
             virtual bool event(const int &);
             /// create n histograms of a given type
-            virtual void histograms(const std::string &, const int &);
+            virtual void histograms(const std::string &);
 
             /// returns a seed for random number generator
             int  seed();

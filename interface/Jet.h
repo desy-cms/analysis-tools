@@ -112,6 +112,7 @@ namespace analysis {
             /// jet energy resolution
             void jerCorrections();
             float jerCorrection(const std::string & var = "nominal", const float & nsig = 1) const;
+            float jerCorrection(const int & syst) const;
             
             /// jet id
             float neutralHadronFraction()  const ;
@@ -190,7 +191,7 @@ namespace analysis {
             /// jet energy resolution corrections
             void jerInfo(const JetResolutionInfo &, const float & drmin=0.2);
             /// jet energy resolution corrections
-            void applyJER(const JetResolutionInfo &, const float & drmin=0.2);
+            void applyJER(const JetResolutionInfo &, const float & drmin=0.2, const float & syst = 0);
             
             /// add parton that gave rise to jet
             void addParton(const std::shared_ptr<GenParticle> &);

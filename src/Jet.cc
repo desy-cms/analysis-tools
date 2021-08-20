@@ -154,6 +154,7 @@ void Jet::jerCorrections()
       c     += (sf-1)*((this->pt() - genjet_->pt())/uncorrJetp4_.Pt());
       cup   += (sfup-1)*((this->pt() - genjet_->pt())/uncorrJetp4_.Pt());
       cdown += (sfdown-1)*((this->pt() - genjet_->pt())/uncorrJetp4_.Pt());
+//      std::cout << "match   : ";
    }
    else
    {
@@ -162,11 +163,14 @@ void Jet::jerCorrections()
       c     += n*sqrt(std::max(sf*sf-1.,0.));
       cup   += n*sqrt(std::max(sfup*sfup-1.,0.));
       cdown += n*sqrt(std::max(sfdown*sfdown-1.,0.));
+//      std::cout << "no match: ";
    }
    
    jercorr_.nominal = c;
    jercorr_.up = cup;
    jercorr_.down = cdown;
+   
+//   std::cout << cdown << "      " << c << "      " << cup << std::endl;
    
 }
 
@@ -177,14 +181,23 @@ float Jet::jerCorrection(const std::string & var, const float & nsig ) const
    std::transform(v.begin(), v.end(), v.begin(), ::tolower);
    if ( v == "up"   )
    {
-      corr = jercorr_.nominal + (fabs(jercorr_.nominal-jercorr_.up)*nsig);
-//      corr = jercorr_.up;
+      corr = jercorr_.nominal + (fabs(jercorr_.nominal-jercorr_.up)*fabs(nsig));
    }
    if ( v == "down" )
    {
-      corr = jercorr_.nominal - (fabs(jercorr_.nominal-jercorr_.down)*nsig);      
-//      corr = jercorr_.down;
+      corr = jercorr_.nominal - (fabs(jercorr_.nominal-jercorr_.down)*fabs(nsig));      
    }
+   
+   return corr;
+   
+}
+
+
+float Jet::jerCorrection(const int & syst ) const
+{
+   float corr = jercorr_.nominal;
+   if ( syst > 0 )  corr = jercorr_.nominal + syst*(fabs(jercorr_.nominal-jercorr_.up)  );
+   if ( syst < 0 )  corr = jercorr_.nominal + syst*(fabs(jercorr_.nominal-jercorr_.down));      
    
    return corr;
    
@@ -204,10 +217,10 @@ void Jet::jerInfo(const JetResolutionInfo & jerinfo, const float & drmin)
    jerCorrections();
 }
       
-void Jet::applyJER(const JetResolutionInfo & jerinfo, const float & drmin)
+void Jet::applyJER(const JetResolutionInfo & jerinfo, const float & drmin, const float & syst)
 {
    this -> jerInfo(jerinfo,drmin);
-   p4_ = p4_ *this->jerCorrection();
+   p4_ = p4_ *this->jerCorrection(syst);
 }
       
 
