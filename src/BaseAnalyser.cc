@@ -199,7 +199,7 @@ BaseAnalyser::~BaseAnalyser()
 // ------------ method called for each event  ------------
 
 bool BaseAnalyser::event(const int & i) { return true; }
-void BaseAnalyser::histograms(const std::string & s, const int & i) { }
+void BaseAnalyser::histograms(const std::string & s) { }
 
 std::shared_ptr<Analysis> BaseAnalyser::analysis()
 {
