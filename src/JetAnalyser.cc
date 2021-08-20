@@ -177,8 +177,18 @@ void JetAnalyser::jetHistograms( const std::string & label )
 {
    this -> jetHistograms(config_->nJetsMin(), label);
 }
+void JetAnalyser::jetHistograms(const std::string & label,  const int & n )
+{
+   this -> jetHistograms(label, config_->nJetsMin());
+}
 void JetAnalyser::jetHistograms( const int & n, const std::string & label )
 {
+   if ( label == "" )
+   {
+      std::cout << "-warning- JetAnalyser::jetHistograms - no label given for histograms (root directory)" << std::endl;
+      return;
+   }
+   
    this->output()->cd();
    if ( ! this->output()->FindObjectAny(label.c_str()) )
    {
@@ -825,6 +835,7 @@ bool JetAnalyser::onlineBJetMatching(const int & r)
 
 void JetAnalyser::fillJetHistograms(const std::string & label)
 {
+   if ( label == "" ) return;
    this->output()->cd();
    
    this->output()->cd(label.c_str());
