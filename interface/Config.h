@@ -302,6 +302,8 @@ namespace analysis {
             bool cmdl_data_;
             std::string cmdl_inputlist_;
             int cmdl_evtmax_;
+            int cmdl_jer_;
+            int cmdl_jec_;
 
             po::options_description opt_cmd_;
             po::options_description opt_cfg_;
