@@ -30,6 +30,7 @@ JetAnalyser::JetAnalyser(int argc, char * argv[]) : BaseAnalyser(argc,argv)
    jetsanalysis_  = ( analysis_->addTree<Jet> ("Jets",config_->jetsCollection()) != nullptr );
    
    applyjer_ = false;
+   applyjec_ = false;
    
    if ( config_->btagScaleFactors() != "" )
    {
@@ -48,6 +49,10 @@ JetAnalyser::JetAnalyser(int argc, char * argv[]) : BaseAnalyser(argc,argv)
       jerinfo_ = analysis_->jetResolutionInfo(config_->jerPtRes(),config_->jerSF());
       applyjer_ = ( jerinfo_ != nullptr && jetsanalysis_ );
    }
+
+   // Jet energy scale corrections are applied when producing the ntuples.
+   // Here we apply only systematic variations   
+   applyjec_ = ( config_->jecSystematics() != 0 );
    
    if ( config_->isMC() )
    {
@@ -1068,6 +1073,19 @@ void JetAnalyser::actionApplyJER()
       for ( auto & j : selectedJets_ )
          j -> applyJER(*jerinfo_,0.2,config_->jerSystematics());
    }
+   
+   cutflow(label);
+}
+
+void JetAnalyser::actionApplyJEC()
+{
+   if ( ! jetsanalysis_ || ! applyjec_ ) return;
+   
+   std::string bnpt = basename(config_->jerPtRes());
+   std::string bnsf = basename(config_->jerSF());
+   std::string label = Form("JEC systematics: %+d sig",config_->jecSystematics());
+   for ( auto & j : selectedJets_ )
+      j -> applyJEC(config_->jecSystematics());
    
    cutflow(label);
 }

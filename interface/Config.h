@@ -111,6 +111,8 @@ namespace analysis {
             std::string jerPtRes() const;
             std::string jerSF() const;
             int         jerSystematics() const;
+            int         jecSystematics() const;
+            
             std::string l1tJetsCollection() const;
 
             std::string btagAlgorithm() const;
@@ -376,6 +378,8 @@ namespace analysis {
             std::string jerptres_;
             std::string jersf_;
             int         jersyst_;
+            // JEC systematics
+            int         jecsyst_;
             //
             std::string l1tjetsCol_;
             //

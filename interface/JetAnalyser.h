@@ -52,6 +52,7 @@ namespace analysis {
             
             bool jetsanalysis_;
             bool applyjer_;
+            bool applyjec_;
             
             std::map<std::string, std::shared_ptr<BTagCalibrationReader> >bsf_reader_;
             
@@ -127,6 +128,7 @@ namespace analysis {
             /// For experts only (fills pre-defined histograms for a specific jet, applying weights)
             virtual void fillJetHistograms(const int & r = -1, const std::string & label = "x", const float & sf = 1.,const bool & workflow = false);
             virtual void actionApplyJER();
+            virtual void actionApplyJEC();
             virtual float actionApplyBtagSF(const int &, const bool & global_weight = true);
             virtual float getBtagSF(const int &);
             virtual void actionApplyBjetRegression();
