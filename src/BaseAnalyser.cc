@@ -229,6 +229,11 @@ std::shared_ptr<TH1F> BaseAnalyser::histogram(const std::string & hname)
    return h1_[hname];
 }
 
+void BaseAnalyser::histogram(const std::string & hname, std::shared_ptr<TH1F> h1)
+{
+   h1_[hname] = h1;
+}
+
 std::map<std::string, std::shared_ptr<TH1F> > BaseAnalyser::histograms()
 {
    return h1_;

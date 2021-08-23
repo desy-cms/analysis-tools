@@ -130,6 +130,8 @@ namespace analysis {
             std::map<std::string, std::shared_ptr<TH1F> > histograms();
             /// returns a given 1D histogram
             std::shared_ptr<TH1F> histogram(const std::string &);
+            /// 
+            void histogram(const std::string &, std::shared_ptr<TH1F>);
 
             /// get cutflow index
             int  cutflow();
