@@ -101,7 +101,7 @@ BaseAnalyser::BaseAnalyser(int argc, char * argv[])
       }
       f.Close();
    }
-   
+   this -> pileupHistogram();
 }
 
 BaseAnalyser::~BaseAnalyser()
