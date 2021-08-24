@@ -463,6 +463,78 @@ bool JetAnalyser::selectionJet(const int & r, const float & pt_min, const float 
    return isgood;
 }
 
+bool JetAnalyser::selectionJetPt(const int & r)
+{
+   if ( r > config_->nJetsMin() ) return true;
+   int j = r-1;
+   
+   float pt_min = config_->jetsPtMin()[j];
+   float pt_max = -1.;
+   
+   if ( config_->jetsPtMax().size() > 0 && config_->jetsPtMax()[j] > config_->jetsPtMin()[j] ) pt_max = config_->jetsPtMax()[j];
+   
+   bool isgood = this -> selectionJetPt(r,pt_min,pt_max);
+   
+   return isgood;
+}
+
+bool JetAnalyser::selectionJetPt(const int & r, const float & pt_min, const float &pt_max)
+{
+   if ( r > config_->nJetsMin() ) return true;
+   if ( (int)selectedJets_.size() < r ) return false; // is this correct?
+   
+   bool isgood = true;
+   
+   std::string label = Form("Jet %d: pt > %5.1f GeV",r,pt_min );
+   if ( pt_max > pt_min )
+      label = Form("Jet %d: pt > %5.1f GeV and pt < %5.1f GeV",r,pt_min, pt_max );
+   
+   int j = r-1;
+   
+   // kinematic selection
+   if ( selectedJets_[j] -> pt() < pt_min           && !(pt_min < 0) )  isgood = false;
+   if ( config_->jetsPtMax().size() > 0 )
+   {
+      if ( selectedJets_[j] -> pt() > pt_max && !(pt_max < pt_min ) )   isgood = false;
+   }
+   
+   cutflow(label,isgood);
+   
+   return isgood;
+}
+
+bool JetAnalyser::selectionJetEta(const int & r)
+{
+   if ( r > config_->nJetsMin() ) return true;
+   int j = r-1;
+   
+   float eta_max = config_->jetsEtaMax()[j];
+   
+   bool isgood = this -> selectionJetEta(r,eta_max);
+   
+   return isgood;
+}
+
+bool JetAnalyser::selectionJetEta(const int & r, const float &eta_max)
+{
+   if ( r > config_->nJetsMin() ) return true;
+   if ( (int)selectedJets_.size() < r ) return false; // is this correct?
+   
+   bool isgood = true;
+   
+   std::string label = Form("Jet %d: |eta| < %3.1f",r, eta_max );
+   
+   int j = r-1;
+   
+   // kinematic selection
+   if ( fabs(selectedJets_[j] -> eta()) > eta_max   && !(eta_max < 0) ) isgood = false;
+   
+   cutflow(label,isgood);
+   
+   return isgood;
+}
+
+
 
 bool JetAnalyser::selectionJetDeta(const int & r1, const int & r2, const float & delta)
 {
