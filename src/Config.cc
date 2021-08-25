@@ -46,6 +46,7 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          ("data",po::bool_switch(&cmdl_data_),"Run on data (default)")  
          ("jer",po::value <int>(&jersyst_),"JER systematic variation (sigma)")  
          ("jec",po::value <int>(&jecsyst_),"JEC systematic variation (sigma)")  
+         ("pileup",po::value <int>(&puweightsyst_),"Pileup weight systematic variation (sigma)")  
             ;
 
       // analysis info
@@ -68,6 +69,7 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
       // Corrections
       opt_cfg_.add_options()
          ("Corrections.Pileup.reweight"  , po::value <std::string>               (&puweight_)        -> default_value("")                 , "Root file containing pileup weights")
+         ("Corrections.Pileup.reweightSystematcis"  , po::value <int>            (&puweightsyst_)    -> default_value(0)                  , "Pileup weights systematic variations")
          ("Corrections.Jets.jerPtRes"    , po::value <std::string>               (&jerptres_)        -> default_value("")                 , "JER pT resolution file")
          ("Corrections.Jets.jerSF"       , po::value <std::string>               (&jersf_)           -> default_value("")                 , "JER SF file")
          ("Corrections.Jets.jerSystematics" , po::value <int>                    (&jersyst_)         -> default_value(0)                  , "JER systematic variation (sigma), default = 0")
@@ -442,6 +444,7 @@ float              Config::scale()            const { return scale_; }
 std::vector<float> Config::erasLumi()         const { return eraslumi_; }
 std::vector<std::string> Config::eras()       const { return eras_; }
 std::string        Config::pileupWeights()    const { return puweight_; }
+int                Config::pileupWeightSystematics()    const { return puweightsyst_; }
 
 std::string        Config::process()          const { return process_; }
 std::string        Config::eventsDir()        const { return eventsdir_; }

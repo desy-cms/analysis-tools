@@ -191,7 +191,8 @@ namespace analysis {
             std::string basename(const std::string &);
 
             /// apply pileup weight given a systematic variation
-            void actionApplyPileupWeight(const int & var = 0);
+            void actionApplyPileupWeight(const int & var);
+            void actionApplyPileupWeight();
 
             /**
             btag efficiencies

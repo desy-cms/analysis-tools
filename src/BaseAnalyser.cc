@@ -313,9 +313,19 @@ void BaseAnalyser::actionApplyPileupWeight(const int & var)
    else
       weight_ *= 1;
    
+   if ( var != 0 )
+   {
+      puw_label_ += Form(", syst: %+d sig",var);
+   }
+   
    cutflow(puw_label_);
    
    this -> fillPileupHistogram();
+}
+
+void BaseAnalyser::actionApplyPileupWeight()
+{
+   actionApplyPileupWeight(config_->pileupWeightSystematics());
 }
 
 void BaseAnalyser::pileupHistogram()

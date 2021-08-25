@@ -97,6 +97,7 @@ namespace analysis {
             std::vector<std::string> eras() const;
 
             std::string pileupWeights() const;
+            int         pileupWeightSystematics() const;
 
          // jets
             std::string jetsCollection() const;
@@ -340,6 +341,7 @@ namespace analysis {
             std::vector<float> eraslumi_;
 
             std::string puweight_;
+            int puweightsyst_;
 
          // generic options
             int prescale_;
