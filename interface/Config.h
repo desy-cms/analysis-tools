@@ -97,6 +97,7 @@ namespace analysis {
             std::vector<std::string> eras() const;
 
             std::string pileupWeights() const;
+            int         pileupWeightSystematics() const;
 
          // jets
             std::string jetsCollection() const;
@@ -111,6 +112,8 @@ namespace analysis {
             std::string jerPtRes() const;
             std::string jerSF() const;
             int         jerSystematics() const;
+            int         jecSystematics() const;
+            
             std::string l1tJetsCollection() const;
 
             std::string btagAlgorithm() const;
@@ -300,6 +303,8 @@ namespace analysis {
             bool cmdl_data_;
             std::string cmdl_inputlist_;
             int cmdl_evtmax_;
+            int cmdl_jer_;
+            int cmdl_jec_;
 
             po::options_description opt_cmd_;
             po::options_description opt_cfg_;
@@ -336,6 +341,7 @@ namespace analysis {
             std::vector<float> eraslumi_;
 
             std::string puweight_;
+            int puweightsyst_;
 
          // generic options
             int prescale_;
@@ -376,6 +382,8 @@ namespace analysis {
             std::string jerptres_;
             std::string jersf_;
             int         jersyst_;
+            // JEC systematics
+            int         jecsyst_;
             //
             std::string l1tjetsCol_;
             //

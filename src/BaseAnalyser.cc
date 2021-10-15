@@ -101,7 +101,7 @@ BaseAnalyser::BaseAnalyser(int argc, char * argv[])
       }
       f.Close();
    }
-   
+   this -> pileupHistogram();
 }
 
 BaseAnalyser::~BaseAnalyser()
@@ -229,6 +229,11 @@ std::shared_ptr<TH1F> BaseAnalyser::histogram(const std::string & hname)
    return h1_[hname];
 }
 
+void BaseAnalyser::histogram(const std::string & hname, std::shared_ptr<TH1F> h1)
+{
+   h1_[hname] = h1;
+}
+
 std::map<std::string, std::shared_ptr<TH1F> > BaseAnalyser::histograms()
 {
    return h1_;
@@ -308,9 +313,19 @@ void BaseAnalyser::actionApplyPileupWeight(const int & var)
    else
       weight_ *= 1;
    
+   if ( var != 0 )
+   {
+      puw_label_ += Form(", syst: %+d sig",var);
+   }
+   
    cutflow(puw_label_);
    
    this -> fillPileupHistogram();
+}
+
+void BaseAnalyser::actionApplyPileupWeight()
+{
+   actionApplyPileupWeight(config_->pileupWeightSystematics());
 }
 
 void BaseAnalyser::pileupHistogram()

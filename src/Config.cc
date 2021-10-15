@@ -39,10 +39,14 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
       opt_cmd_.add_options()
          ("help,h","Show help messages")
          ("config,c",po::value<std::string>(&cfg_),"Configuration file name")
+         ("nevents,n",po::value <int>(&cmdl_evtmax_)-> default_value(-100),"Maximum number of events")  
+         ("ntuple_list,l",po::value <std::string>(&cmdl_inputlist_)-> default_value(""),"File with list of ntuples")  
+         ("output,o",po::value <std::string>(&outputRoot_),"Output root file")  
          ("mc",po::bool_switch(&cmdl_mc_),"Run on Monte Carlo")  
          ("data",po::bool_switch(&cmdl_data_),"Run on data (default)")  
-         ("ntuple_list,l",po::value <std::string>(&cmdl_inputlist_)-> default_value(""),"File with list of ntuples")  
-         ("nevents,n",po::value <int>(&cmdl_evtmax_)-> default_value(-100),"Maximum number of events")  
+         ("jer",po::value <int>(&jersyst_),"JER systematic variation (sigma)")  
+         ("jec",po::value <int>(&jecsyst_),"JEC systematic variation (sigma)")  
+         ("pileup",po::value <int>(&puweightsyst_),"Pileup weight systematic variation (sigma)")  
             ;
 
       // analysis info
@@ -65,9 +69,11 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
       // Corrections
       opt_cfg_.add_options()
          ("Corrections.Pileup.reweight"  , po::value <std::string>               (&puweight_)        -> default_value("")                 , "Root file containing pileup weights")
+         ("Corrections.Pileup.reweightSystematcis"  , po::value <int>            (&puweightsyst_)    -> default_value(0)                  , "Pileup weights systematic variations")
          ("Corrections.Jets.jerPtRes"    , po::value <std::string>               (&jerptres_)        -> default_value("")                 , "JER pT resolution file")
          ("Corrections.Jets.jerSF"       , po::value <std::string>               (&jersf_)           -> default_value("")                 , "JER SF file")
-         ("Corrections.Jets.jerSystematics" , po::value <int>                    (&jersyst_)         -> default_value(0)                  , "JER systematic variation, default = 0")
+         ("Corrections.Jets.jerSystematics" , po::value <int>                    (&jersyst_)         -> default_value(0)                  , "JER systematic variation (sigma), default = 0")
+         ("Corrections.Jets.jecSystematics" , po::value <int>                    (&jecsyst_)         -> default_value(0)                  , "JEC systematic variation (sigma), default = 0")
          ("Corrections.BTag.SF"          , po::value <std::string>               (&btagsf_)          -> default_value("")                 , "b-tagging scale factor in CSV format")
          ("Corrections.BTag.Efficiencies", po::value <std::string>               (&btageff_)         -> default_value("")                 , "b-tagging efficiencies in root file")
          ("Corrections.Jets.bRegression" , po::value <bool>                      (&bregression_)     -> default_value(false)              , "Apply b jet energy regression")
@@ -314,6 +320,16 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          {
             nevtmax_ = cmdl_evtmax_;
          }
+//          // override jer syst
+//          if ( cmdl_jer_ > -100 )
+//          {
+//             jersyst_ = cmdl_jer_;
+//          }
+//          // override jec syst
+//          if ( cmdl_jec_ > -100 )
+//          {
+//             jecsyst_ = cmdl_jec_;
+//          }
          
          boost::algorithm::to_lower(jetsid_);
          std::transform(btagalgo_.begin(), btagalgo_.end(), btagalgo_.begin(), ::tolower);
@@ -428,6 +444,7 @@ float              Config::scale()            const { return scale_; }
 std::vector<float> Config::erasLumi()         const { return eraslumi_; }
 std::vector<std::string> Config::eras()       const { return eras_; }
 std::string        Config::pileupWeights()    const { return puweight_; }
+int                Config::pileupWeightSystematics()    const { return puweightsyst_; }
 
 std::string        Config::process()          const { return process_; }
 std::string        Config::eventsDir()        const { return eventsdir_; }
@@ -448,6 +465,7 @@ std::string        Config::jetsPuId()           const { return jetspuid_; }
 std::string        Config::jerPtRes()           const { return jerptres_; }
 std::string        Config::jerSF()              const { return jersf_; }
 int                Config::jerSystematics()     const { return jersyst_; }
+int                Config::jecSystematics()     const { return jecsyst_; }
 std::string        Config::l1tJetsCollection()  const { return l1tjetsCol_; }
 std::string        Config::btagAlgorithm()      const { return btagalgo_; }
 std::string        Config::btagScaleFactors()   const { return btagsf_; }

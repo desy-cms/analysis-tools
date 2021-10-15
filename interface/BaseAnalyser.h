@@ -130,6 +130,8 @@ namespace analysis {
             std::map<std::string, std::shared_ptr<TH1F> > histograms();
             /// returns a given 1D histogram
             std::shared_ptr<TH1F> histogram(const std::string &);
+            /// 
+            void histogram(const std::string &, std::shared_ptr<TH1F>);
 
             /// get cutflow index
             int  cutflow();
@@ -189,7 +191,8 @@ namespace analysis {
             std::string basename(const std::string &);
 
             /// apply pileup weight given a systematic variation
-            void actionApplyPileupWeight(const int & var = 0);
+            void actionApplyPileupWeight(const int & var);
+            void actionApplyPileupWeight();
 
             /**
             btag efficiencies

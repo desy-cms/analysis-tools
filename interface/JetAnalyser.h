@@ -52,6 +52,7 @@ namespace analysis {
             
             bool jetsanalysis_;
             bool applyjer_;
+            bool applyjec_;
             
             std::map<std::string, std::shared_ptr<BTagCalibrationReader> >bsf_reader_;
             
@@ -83,6 +84,14 @@ namespace analysis {
             virtual bool selectionJet(const int & r);
             /// Given the ranking 'r' of a jet, it returns whether the jet passes the pt_min and |eta_max|, optionally pt_max, where the values of the thresholds  pt_min and |eta_max|, pt_max (opt) are passed as arguments
             virtual bool selectionJet(const int & r, const float & pt_min, const float &eta_max, const float &pt_max=-1. );
+            /// Given the ranking 'r' of a jet, it returns whether the jet passes the pt_min, optionally pt_max, where the values of the thresholds  pt_min, pt_max are passed by configuration file
+            virtual bool selectionJetPt(const int & r);
+            /// Given the ranking 'r' of a jet, it returns whether the jet passes the pt_min and |eta_max|, optionally pt_max, where the values of the thresholds  pt_min and |eta_max|, pt_max (opt) are passed as arguments
+            virtual bool selectionJetPt(const int & r, const float & pt_min, const float &pt_max=-1. );
+            /// Given the ranking 'r' of a jet, it returns whether the jet passes the eta_max, where the values of the thresholds eta_max is passed by configuration file
+            virtual bool selectionJetEta(const int & r);
+            /// Given the ranking 'r' of a jet, it returns whether the jet passes the |eta_max|, where the values of the thresholds  |eta_max| is passed as arguments
+            virtual bool selectionJetEta(const int & r, const float & eta_max );
             /// Given the rankings r1 and r2 of two jets, it returns whether the jets passes the delta_eta selection; the threshold delta is passed by the configuration file
             virtual bool selectionJetDeta(const int & r1, const int &r2);
             /// Given the rankings r1 and r2 of two jets, it returns whether the jets passes the delta_eta selection; the threshold delta is passed as an argument (if delta <= 0, |delta| = delta_min; else |delta| = delta_max )
@@ -127,6 +136,7 @@ namespace analysis {
             /// For experts only (fills pre-defined histograms for a specific jet, applying weights)
             virtual void fillJetHistograms(const int & r = -1, const std::string & label = "x", const float & sf = 1.,const bool & workflow = false);
             virtual void actionApplyJER();
+            virtual void actionApplyJEC();
             virtual float actionApplyBtagSF(const int &, const bool & global_weight = true);
             virtual float getBtagSF(const int &);
             virtual void actionApplyBjetRegression();

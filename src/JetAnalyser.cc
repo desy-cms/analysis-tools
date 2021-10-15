@@ -30,6 +30,7 @@ JetAnalyser::JetAnalyser(int argc, char * argv[]) : BaseAnalyser(argc,argv)
    jetsanalysis_  = ( analysis_->addTree<Jet> ("Jets",config_->jetsCollection()) != nullptr );
    
    applyjer_ = false;
+   applyjec_ = false;
    
    if ( config_->btagScaleFactors() != "" )
    {
@@ -48,6 +49,10 @@ JetAnalyser::JetAnalyser(int argc, char * argv[]) : BaseAnalyser(argc,argv)
       jerinfo_ = analysis_->jetResolutionInfo(config_->jerPtRes(),config_->jerSF());
       applyjer_ = ( jerinfo_ != nullptr && jetsanalysis_ );
    }
+
+   // Jet energy scale corrections are applied when producing the ntuples.
+   // Here we apply only systematic variations   
+   applyjec_ = ( config_->jecSystematics() != 0 );
    
    if ( config_->isMC() )
    {
@@ -457,6 +462,78 @@ bool JetAnalyser::selectionJet(const int & r, const float & pt_min, const float 
    
    return isgood;
 }
+
+bool JetAnalyser::selectionJetPt(const int & r)
+{
+   if ( r > config_->nJetsMin() ) return true;
+   int j = r-1;
+   
+   float pt_min = config_->jetsPtMin()[j];
+   float pt_max = -1.;
+   
+   if ( config_->jetsPtMax().size() > 0 && config_->jetsPtMax()[j] > config_->jetsPtMin()[j] ) pt_max = config_->jetsPtMax()[j];
+   
+   bool isgood = this -> selectionJetPt(r,pt_min,pt_max);
+   
+   return isgood;
+}
+
+bool JetAnalyser::selectionJetPt(const int & r, const float & pt_min, const float &pt_max)
+{
+   if ( r > config_->nJetsMin() ) return true;
+   if ( (int)selectedJets_.size() < r ) return false; // is this correct?
+   
+   bool isgood = true;
+   
+   std::string label = Form("Jet %d: pt > %5.1f GeV",r,pt_min );
+   if ( pt_max > pt_min )
+      label = Form("Jet %d: pt > %5.1f GeV and pt < %5.1f GeV",r,pt_min, pt_max );
+   
+   int j = r-1;
+   
+   // kinematic selection
+   if ( selectedJets_[j] -> pt() < pt_min           && !(pt_min < 0) )  isgood = false;
+   if ( config_->jetsPtMax().size() > 0 )
+   {
+      if ( selectedJets_[j] -> pt() > pt_max && !(pt_max < pt_min ) )   isgood = false;
+   }
+   
+   cutflow(label,isgood);
+   
+   return isgood;
+}
+
+bool JetAnalyser::selectionJetEta(const int & r)
+{
+   if ( r > config_->nJetsMin() ) return true;
+   int j = r-1;
+   
+   float eta_max = config_->jetsEtaMax()[j];
+   
+   bool isgood = this -> selectionJetEta(r,eta_max);
+   
+   return isgood;
+}
+
+bool JetAnalyser::selectionJetEta(const int & r, const float &eta_max)
+{
+   if ( r > config_->nJetsMin() ) return true;
+   if ( (int)selectedJets_.size() < r ) return false; // is this correct?
+   
+   bool isgood = true;
+   
+   std::string label = Form("Jet %d: |eta| < %3.1f",r, eta_max );
+   
+   int j = r-1;
+   
+   // kinematic selection
+   if ( fabs(selectedJets_[j] -> eta()) > eta_max   && !(eta_max < 0) ) isgood = false;
+   
+   cutflow(label,isgood);
+   
+   return isgood;
+}
+
 
 
 bool JetAnalyser::selectionJetDeta(const int & r1, const int & r2, const float & delta)
@@ -1068,6 +1145,19 @@ void JetAnalyser::actionApplyJER()
       for ( auto & j : selectedJets_ )
          j -> applyJER(*jerinfo_,0.2,config_->jerSystematics());
    }
+   
+   cutflow(label);
+}
+
+void JetAnalyser::actionApplyJEC()
+{
+   if ( ! jetsanalysis_ || ! applyjec_ ) return;
+   
+   std::string bnpt = basename(config_->jerPtRes());
+   std::string bnsf = basename(config_->jerSF());
+   std::string label = Form("JEC systematics: %+d sig",config_->jecSystematics());
+   for ( auto & j : selectedJets_ )
+      j -> applyJEC(config_->jecSystematics());
    
    cutflow(label);
 }

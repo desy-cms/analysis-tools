@@ -223,6 +223,11 @@ void Jet::applyJER(const JetResolutionInfo & jerinfo, const float & drmin, const
    p4_ = p4_ *this->jerCorrection(syst);
 }
       
+void Jet::applyJEC(const float & syst)
+{
+   p4_ = p4_*(1.+syst*this->jecUncert());
+}
+      
 
 
 //
