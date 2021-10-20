@@ -172,6 +172,9 @@ namespace analysis {
             std::string triggerObjectsL1Jets()   const;
             std::string triggerObjectsCaloJets() const;
             std::string triggerObjectsPFJets()   const;
+            int         triggerObjectsNJets()    const;
+            int         triggerObjectsNBJets()   const;
+            int         triggerObjectsNMuons()   const;
 
             /// L1 muon trigger emulation
             std::string triggerEmulateL1Muons()       const;
@@ -431,6 +434,9 @@ namespace analysis {
             std::string trgObjsL1Jets_;
             std::string trgObjsCaloJets_;
             std::string trgObjsPFJets_;
+            int         trgObjsNJets_;
+            int         trgObjsNBJets_;
+            int         trgObjsNMuons_;
 
          /// L1 muon trigger emulation
             std::string l1muonemul_;

@@ -178,10 +178,13 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
       // trigger objects
       opt_cfg_.add_options()
          ("Trigger.Objects.directory"    , po::value<std::string>                (&triggerObjDir_)   -> default_value("slimmedPatTrigger"), "Name of the trigger objects directory")
+         ("Trigger.Objects.BTag.N"       , po::value<int>                        (&trgObjsNBJets_)   -> default_value(-1)                 , "N btag jets to be matched")
          ("Trigger.Objects.BTag.Calo"    , po::value<std::string>                (&trgObjsBJets_)    -> default_value("")                 , "Trigger objects for btag jets")
+         ("Trigger.Objects.Jets.N"       , po::value<int>                        (&trgObjsNJets_)    -> default_value(-1)                  , "N jets to be matched")
          ("Trigger.Objects.Jets.L1"      , po::value<std::string>                (&trgObjsL1Jets_)   -> default_value("")                 , "Trigger objects for L1 jets")
          ("Trigger.Objects.Jets.Calo"    , po::value<std::string>                (&trgObjsCaloJets_) -> default_value("")                 , "Trigger objects for Calo jets")
          ("Trigger.Objects.Jets.PF"      , po::value<std::string>                (&trgObjsPFJets_)   -> default_value("")                 , "Trigger objects for PF jets")
+         ("Trigger.Objects.Muons.N"      , po::value<int>                        (&trgObjsNMuons_)   -> default_value(-1)                 , "N muons to be matched")
          ("Trigger.Objects.Muons.L1"     , po::value<std::string>                (&trgObjsL1Muons_)  -> default_value("")                 , "Trigger objects for L1 muons")
          ("Trigger.Objects.Muons.L3"     , po::value<std::string>                (&trgObjsL3Muons_)  -> default_value("")                 , "Trigger objects for L3 muons")
          ("Trigger.Objects.BTag.Calo.MatchDeltaR"    , po::value<float>    (&matchTrgCaloBJetsDrMax_)    -> default_value(0.3)                 , "Max deltaR for btag jets")
@@ -520,6 +523,9 @@ std::string        Config::triggerObjectsBJets()    const { return trgObjsBJets_
 std::string        Config::triggerObjectsL1Jets()   const { return trgObjsL1Jets_; }
 std::string        Config::triggerObjectsCaloJets() const { return trgObjsCaloJets_; }
 std::string        Config::triggerObjectsPFJets()   const { return trgObjsPFJets_; }
+int                Config::triggerObjectsNJets()    const { return trgObjsNJets_; }
+int                Config::triggerObjectsNBJets()   const { return trgObjsNBJets_; }
+int                Config::triggerObjectsNMuons()   const { return trgObjsNMuons_; }
 
 float         Config::triggerMatchL1MuonsDrMax()       const { return matchTrgL1MuonsDrMax_;      }
 float         Config::triggerMatchL3MuonsDrMax()       const { return matchTrgL3MuonsDrMax_;      }
