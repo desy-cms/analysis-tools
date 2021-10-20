@@ -97,6 +97,7 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          ("Jets.dEtaMin"                 , po::value <float>                     (&jetsdetamin_)     -> default_value(-1.)                , "Minimum delta eta between jets")
          ("Jets.dPhiMin"                 , po::value <float>                     (&jetsdphimin_)     -> default_value(-1.)                , "Minimum delta phi between jets")
          ("Jets.dPhiMax"                 , po::value <float>                     (&jetsdphimax_)     -> default_value(-1.)                , "Maximum delta phi between jets")
+         ("Jets.muonsdRMax"              , po::value <float>                     (&jetsmuonsdrmax_)  -> default_value(0.4)                , "Maximum delta R between a jet and a muon")
          ("Jets.withMuons"               , po::value <bool>                      (&jetswithmuons_)   -> default_value(false)              , "Flag to associate muons to jets");
 
       // histograms
@@ -499,6 +500,7 @@ float Config::jetsDrMin()           const { return jetsdrmin_;   }
 float Config::jetsPtImbalanceMax()  const { return jetsptimbalmax_;  }
 float Config::jetsPtImbalanceMin()  const { return jetsptimbalmin_;  }
 bool  Config::jetsWithMuons()       const { return jetswithmuons_; }
+float Config::jetsMuonsDRMax()      const { return jetsmuonsdrmax_; }
 
 // muons
 std::string        Config::muonsCollection()    const { return muonsCol_; }
