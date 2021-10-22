@@ -100,9 +100,9 @@ bool Analyser::muonJet(const int & r)
 
    int j = r-1;
    auto jet = selectedJets_[j];
-   jet -> addMuon(selectedMuons_);
+   jet -> addMuon(selectedMuons_,config_->jetsMuonsDRMax());
    bool isMuonJet = (jet -> muon() != nullptr);
-   cutflow(Form("Jet %d: Jet-muon association",r),isMuonJet);
+   cutflow(Form("Jet %d: Jet-muon association (delta_R < %4.2f)",r, config_->jetsMuonsDRMax()),isMuonJet);
    
    return isMuonJet;
    
