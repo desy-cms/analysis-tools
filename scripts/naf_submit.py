@@ -142,6 +142,7 @@ def submission():
    
    ntuples = args.ntuples
    json = args.json
+   outroot = args.output
    config = args.config
    events_max = -1
    if args.events_max:
@@ -174,6 +175,12 @@ def submission():
                json = configJson[1]
       else:
          json = None
+      configOutput = getConfigParameter( config, "output" )
+      if not outroot:
+         if configOutput:
+            outroot = configOutput[1]
+         
+      
          
    # checking if require files exist
    if ntuples:
@@ -222,6 +229,8 @@ def submission():
          replaceConfigParameter(os.path.basename(config), 'ntuplesList', os.path.basename(ntuples))
          if events_max:
             replaceConfigParameter(os.path.basename(config), 'eventsMax', events_max)
+         if outroot:
+            replaceConfigParameter(os.path.basename(config), 'output', outroot)
    
       
       splitcmd = "split.csh" + " " + str(args.nfiles) + " " + os.path.basename(ntuples)
@@ -496,6 +505,7 @@ parser_submission = parser.add_argument_group('submission','prepare and submit j
 parser_submission.add_argument("--exe"    , "-e"  , dest="exe"                                 , help="Executable  (REQUIRED)")
 parser_submission.add_argument("--config" , "-c"  , dest="config"                              , help="Configuration file  (REQUIRED)")
 parser_submission.add_argument("--ntuples", "-n"  , dest="ntuples"                             , help="List of ntuples file")
+parser_submission.add_argument("--output" , "-o"  , dest="output"                              , help="Name of output root file")
 parser_submission.add_argument("--nfiles" , "-x"  , dest="nfiles"         , type=int, default=1, help="Number of ntuple files per job")
 parser_submission.add_argument("--json"   , "-j"  , dest="json"                                , help="JSON file with certified data")
 parser_submission.add_argument("--label"  , "-l"  , dest="label"                               , help="user label for the submission")
