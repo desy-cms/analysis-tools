@@ -1,5 +1,17 @@
 // From CMSSW_10_2_22 CondTools/BTau/test/BTagCalibrationStandalone.cpp
 
+// WARNING!  https://twiki.cern.ch/twiki/bin/view/CMS/BTagCalibration#Standalone
+/* Run2 Legacy: https://twiki.cern.ch/twiki/bin/view/CMS/BTagCalibration
+   Important: If you want to continue using the BTagCalibration tool you need to
+   adapt the code to the new naming convention of the inputs yourself. This is no
+   longer supported by BTV starting with UL.
+   
+   
+   **** PRE-LEGACY RUN2 ****
+   If you need to run on pre-legacy SF modify the variables op and jf below!
+   
+*/
+
 #include "Analysis/Tools/interface/BTagCalibrationStandalone.h"
 #include <iostream>
 #include <exception>
@@ -75,14 +87,28 @@ throw std::exception();
   }
 
   // make parameters
-  unsigned op = stoi(vec[0]);
+//  unsigned op = atoi(vec[0].c_str());   // pre-legacy run2
+  std::map<char,int> legacy_op;
+  legacy_op['L']=0;
+  legacy_op['M']=1;
+  legacy_op['T']=2;
+  legacy_op['3']=3;
+  unsigned op = legacy_op[vec[0][0]];
+  
   if (op > 3) {
 std::cerr << "ERROR in BTagCalibration: "
           << "Invalid csv line; OperatingPoint > 3: "
           << csvLine;
 throw std::exception();
   }
-  unsigned jf = stoi(vec[3]);
+  
+//  unsigned jf = atoi(vec[3].c_str());   // pre-legacy run2
+  std::map<int,int> legacy_jf;
+  legacy_jf[5]=0;
+  legacy_jf[4]=1;
+  legacy_jf[0]=2;
+  unsigned jf = legacy_jf[atoi(vec[3].c_str())];
+  
   if (jf > 2) {
 std::cerr << "ERROR in BTagCalibration: "
           << "Invalid csv line; JetFlavor > 2: "
@@ -94,12 +120,12 @@ throw std::exception();
     vec[1],
     vec[2],
     BTagEntry::JetFlavor(jf),
-    stof(vec[4]),
-    stof(vec[5]),
-    stof(vec[6]),
-    stof(vec[7]),
-    stof(vec[8]),
-    stof(vec[9])
+    atof(vec[4].c_str()),
+    atof(vec[5].c_str()),
+    atof(vec[6].c_str()),
+    atof(vec[7].c_str()),
+    atof(vec[8].c_str()),
+    atof(vec[9].c_str())
   );
 }
 
