@@ -1590,6 +1590,8 @@ bool JetAnalyser::jetCorrections()
 
 void JetAnalyser::actionApplyBtagEfficiency(const int & rank)
 {
+   if ( rank > config_->nBJetsMin() ) return true;
+   
    if ( ! jetsanalysis_ ||  ! isMC_ ) return;
    std::string label = Form("Jet %d: offline btag weight applied",rank);
    int j = rank-1;
