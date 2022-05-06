@@ -1165,6 +1165,8 @@ void JetAnalyser::actionApplyJEC()
 float JetAnalyser::actionApplyBtagSF(const int & r, const bool & global_weight)
 {
    float sf = 1.;
+   if ( r > config_->nBJetsMin() ) return sf;
+
    if ( ! config_-> isMC() || config_->btagScaleFactors() == "" ) return sf;  // will not apply btag SF
    if ( ! config_->signalRegion() && r == config_->revBtagJet() ) return sf;
    
