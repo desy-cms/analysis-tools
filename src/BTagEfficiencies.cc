@@ -12,6 +12,7 @@ BTagEfficiencies::BTagEfficiencies()
    filename_ = "";
    readonly_ = "";
    eff_ = 1.;
+   etabins_ = {"0.0","2.5"};
 }
 
 BTagEfficiencies::BTagEfficiencies(const std::string & filename, const bool & readonly):
@@ -24,6 +25,9 @@ BTagEfficiencies::BTagEfficiencies(const std::string & filename, const bool & re
    std::string filext = "";
    int dotpos = filename_.find_last_of(".");
    if ( dotpos > 0 ) filext = filename_.substr(dotpos+1);
+   
+   etabins_.clear();
+   etabins_.push_back("0.0");
    
    if ( filext == "root" )
    {
@@ -40,8 +44,13 @@ BTagEfficiencies::BTagEfficiencies(const std::string & filename, const bool & re
          std::string etabin = name;
          etabin.erase(0,etabin.find_last_of("_")+1);
          geff_[flavour][etabin] = (TGraphAsymmErrors*) f -> Get(name.c_str());
+         auto etabin_i = etabin;
+         auto etabin_f = etabin;
+         etabin_i.erase(etabin_i.find_first_of("-"));
+         etabin_f.erase(0,etabin_f.find_last_of("-")+1);
+         if ( flavour == "b" )
+            etabins_.push_back(etabin_f);
       }
-      
       // open the root file
       
       // fill the Tgraphs geff_, e.g. geff_["udsg"]["0.0-0.5"] = ...
@@ -68,12 +77,12 @@ float BTagEfficiencies::efficiency(const std::string & flavour, const float & pt
 {
    // e.g. eff_ = TGraph / TSpline3 -> Eval() given the flavour pt and eta of the jet
    float eff = 1.;
-   // need to improve this to not hard code
    std::string etabin = "";
-   if ( 0.0 <= fabs(eta) && fabs(eta) < 0.5 ) etabin = "0.0-0.5";
-   if ( 0.5 <= fabs(eta) && fabs(eta) < 1.0 ) etabin = "0.5-1.0";
-   if ( 1.0 <= fabs(eta) && fabs(eta) < 1.4 ) etabin = "1.0-1.4";
-   if ( 1.4 <= fabs(eta) && fabs(eta) < 2.2 ) etabin = "1.4-2.2";
+   
+   for ( size_t i = 0; i < etabins_.size()-1; ++i )
+   {
+      if ( std::stof(etabins_[i]) <= fabs(eta) && fabs(eta) < std::stof(etabins_[i+1]) ) etabin = etabins_[i]+"-"+etabins_[i+1];
+   }
    
    if ( etabin == "" )
    {

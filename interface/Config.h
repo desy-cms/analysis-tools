@@ -305,6 +305,7 @@ namespace analysis {
             
             bool cmdl_mc_;
             bool cmdl_data_;
+            bool cmdl_bweight_;
             std::string cmdl_inputlist_;
             int cmdl_evtmax_;
             int cmdl_jer_;

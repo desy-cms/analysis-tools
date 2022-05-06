@@ -47,6 +47,7 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          ("jer",po::value <int>(&jersyst_),"JER systematic variation (sigma)")  
          ("jec",po::value <int>(&jecsyst_),"JEC systematic variation (sigma)")  
          ("pileup",po::value <int>(&puweightsyst_),"Pileup weight systematic variation (sigma)")  
+         ("btagweight",po::bool_switch(&cmdl_bweight_),"Apply btag weight defined in the config file")  
             ;
 
       // analysis info
@@ -348,6 +349,7 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          if ( jersf_    != ""  && jersf_.rfind("tools:",0) == 0    )    jersf_.replace(0,6,calibpath+"/");
          if ( btagsf_   != ""  && btagsf_.rfind("tools:",0) == 0   )    btagsf_.replace(0,6,calibpath+"/");
          if ( btageff_  != ""  && btageff_.rfind("tools:",0) == 0  )    btageff_.replace(0,6,calibpath+"/");
+         if ( !cmdl_bweight_  )                                         btageff_="";
          if ( puweight_ != ""  && puweight_.rfind("tools:",0) == 0 )    puweight_.replace(0,6,calibpath+"/");
 
          eventinfo_     =  Form("%s/%s/%s" , process_.c_str(), eventsdir_.c_str() , eventinfo_.c_str()      );

@@ -124,14 +124,14 @@ queue
    with open(f'{jobdir}/job.submit', 'w') as condor_file:
       print(condor_submit,file=condor_file)
 
-def createJobScript(exedir,jobid, exe, cfg):
+def createJobScript(exedir,jobid, exe, cfg, opts):
    js = """
 if [[ ! -e "{}" ]]; then
    cd {}
 fi
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH_STORED
-{} -c {}
-   """.format(cfg,jobid,exe,cfg)
+{} -c {} {}
+   """.format(cfg,jobid,exe,cfg,opts)
    js_name  = f'{exedir}/job.sh'
    with open(js_name, 'w') as job_script:
       print(js,file=job_script)
@@ -260,7 +260,7 @@ def submission():
             copyfile(tmpdir+"/"+os.path.basename(config),exedir+"/"+os.path.basename(config))      
             condorcmd = "condor_scripts.csh" + " " + jobid + " " + args.exe + " " + os.path.basename(config)
             createCondorSubmit(cwd+'/'+exedir)
-            createJobScript(exedir,jobid,args.exe,os.path.basename(config))
+            createJobScript(exedir,jobid,args.exe,os.path.basename(config),args.opts)
          else:
             condorcmd = "condor_scripts.csh" + " " + jobid + " " + args.exe
          # make the submissions
@@ -509,6 +509,7 @@ parser_submission.add_argument("--output" , "-o"  , dest="output"               
 parser_submission.add_argument("--nfiles" , "-x"  , dest="nfiles"         , type=int, default=1, help="Number of ntuple files per job")
 parser_submission.add_argument("--json"   , "-j"  , dest="json"                                , help="JSON file with certified data")
 parser_submission.add_argument("--label"  , "-l"  , dest="label"                               , help="user label for the submission")
+parser_submission.add_argument("--opts"           , dest="opts"                                , help="additional options for the macro execution (job.sh)")
 parser_submission.add_argument("--events"         , dest="events_max"     , default="-1"       , help="override eventsMax in the config file (default = -1)")
 parser_submission.add_argument("--test"           , dest="njobs"                               , help="*** expert only ***:produce njobs, no automatic submission")
 
@@ -521,7 +522,10 @@ parser_status.add_argument("--expert"         , dest="expert"         , action="
 args = parser.parse_args()
 
 dash = '  ----------------------------------------------------------------------------------------------------------'
-   
+
+if args.opts:
+   args.opts = args.opts.replace('xx_','--')
+
 if args.dir:
    if not os.path.exists(args.dir):
       print("Directory", args.dir, "does not exist")

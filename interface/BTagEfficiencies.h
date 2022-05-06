@@ -45,6 +45,8 @@ namespace analysis {
             float eff_;
             /// btag efficiency graphs: mapping to flavour and eta range
             std::map<std::string, std::map<std::string, TGraphAsymmErrors *> > geff_;
+            /// eta bins
+            std::vector<std::string> etabins_;
      };
   } 
 }          

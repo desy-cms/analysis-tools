@@ -1165,6 +1165,8 @@ void JetAnalyser::actionApplyJEC()
 float JetAnalyser::actionApplyBtagSF(const int & r, const bool & global_weight)
 {
    float sf = 1.;
+   if ( r > config_->nBJetsMin() ) return sf;
+
    if ( ! config_-> isMC() || config_->btagScaleFactors() == "" ) return sf;  // will not apply btag SF
    if ( ! config_->signalRegion() && r == config_->revBtagJet() ) return sf;
    
@@ -1590,6 +1592,8 @@ bool JetAnalyser::jetCorrections()
 
 void JetAnalyser::actionApplyBtagEfficiency(const int & rank)
 {
+   if ( rank > config_->nBJetsMin() ) return;
+   
    if ( ! jetsanalysis_ ||  ! isMC_ ) return;
    std::string label = Form("Jet %d: offline btag weight applied",rank);
    int j = rank-1;
