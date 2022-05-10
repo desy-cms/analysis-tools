@@ -1,6 +1,6 @@
 import os
 import glob
-from ROOT import TFile, TH1F, TH2F, TGraphAsymmErrors
+from ROOT import TFile, TH1F, TH2F, TGraphAsymmErrors, TH1
 
 
 
@@ -60,7 +60,7 @@ class Process:
          for b in self.m_bins:
             f = [s for s in ld if b in s]
             if len(f) == 0:
-               print('No file for bin '+b+'. Skipping!')
+               print(alias+': No file for bin '+b+'. Skipping!')
                continue
             if len(f) > 1:
                print('There is more than 1 file with bin '+b+'. The first one, '+f[0]+' will be considered')
