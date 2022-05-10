@@ -60,7 +60,7 @@ namespace analysis {
             
             std::vector<std::string> flavours_;
             
-            BTagEfficiencies btagEfficiencies_;
+            BTagEfficiencies btagEfficiencies_[3];
             
             
          
@@ -144,7 +144,7 @@ namespace analysis {
             virtual void jetSwap(const int &, const int &);
             virtual bool selectionJetQGlikelihood(const int &, const float &);
             virtual bool selectionJetQGlikelihood(const int &);
-            virtual void actionApplyBtagEfficiency(const int &);
+            virtual void actionApplyBtagEfficiency(const int & rank, const int & model=1);
 //            virtual float btagEfficiency(const int &);
             /// multiple actions: apply JER and b-tag regression corrections
             virtual bool jetCorrections();

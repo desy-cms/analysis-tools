@@ -251,7 +251,7 @@ namespace analysis {
             bool histogramJetsPerFlavour() const;
 
          // btag
-            std::string btagEfficiencies() const;
+            std::string btagEfficiencies(const int & model) const;
 
          // ========================
 
@@ -491,7 +491,7 @@ namespace analysis {
             float btagwpxxx_;
             int nbjetsmin_;
             // btag efficiency
-            std::string btageff_;
+            std::string btageff_[3];
 
 
          // general

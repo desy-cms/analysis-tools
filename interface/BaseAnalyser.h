@@ -81,7 +81,7 @@ namespace analysis {
             /// 2D histograms mapping
             std::map<std::string, std::shared_ptr<TH2F> > h2_;
 
-            std::map<std::string, std::shared_ptr<TGraphAsymmErrors> > btageff_;
+            std::map<std::string, std::shared_ptr<TGraphAsymmErrors> > btageff_[3];
 
             bool genpartsanalysis_;
             bool genjetsanalysis_;
@@ -199,7 +199,7 @@ namespace analysis {
 
             Given as TGraphAsymmErrors for each flavour
             */
-            std::map<std::string, std::shared_ptr<TGraphAsymmErrors> > btagEfficiencies() const;
+            std::map<std::string, std::shared_ptr<TGraphAsymmErrors> > btagEfficiencies(const int & model) const;
 
             /// root tree
             void analyserTree();

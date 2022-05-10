@@ -76,7 +76,9 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          ("Corrections.Jets.jerSystematics" , po::value <int>                    (&jersyst_)         -> default_value(0)                  , "JER systematic variation (sigma), default = 0")
          ("Corrections.Jets.jecSystematics" , po::value <int>                    (&jecsyst_)         -> default_value(0)                  , "JEC systematic variation (sigma), default = 0")
          ("Corrections.BTag.SF"          , po::value <std::string>               (&btagsf_)          -> default_value("")                 , "b-tagging scale factor in CSV format")
-         ("Corrections.BTag.Efficiencies", po::value <std::string>               (&btageff_)         -> default_value("")                 , "b-tagging efficiencies in root file")
+         ("Corrections.BTag.Efficiencies1", po::value <std::string>              (&btageff_[0])      -> default_value("")                 , "b-tagging efficiencies in root file")
+         ("Corrections.BTag.Efficiencies2", po::value <std::string>              (&btageff_[1])      -> default_value("")                 , "b-tagging efficiencies in root file")
+         ("Corrections.BTag.Efficiencies3", po::value <std::string>              (&btageff_[2])      -> default_value("")                 , "b-tagging efficiencies in root file")
          ("Corrections.Jets.bRegression" , po::value <bool>                      (&bregression_)     -> default_value(false)              , "Apply b jet energy regression")
          ("Corrections.force"            , po::value <bool>                      (&apply_correct_)   -> default_value(false)              , "Apply corrections internally when above are defined");
 
@@ -348,8 +350,15 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          if ( jerptres_ != ""  && jerptres_.rfind("tools:",0) == 0 )    jerptres_.replace(0,6,calibpath+"/");
          if ( jersf_    != ""  && jersf_.rfind("tools:",0) == 0    )    jersf_.replace(0,6,calibpath+"/");
          if ( btagsf_   != ""  && btagsf_.rfind("tools:",0) == 0   )    btagsf_.replace(0,6,calibpath+"/");
-         if ( btageff_  != ""  && btageff_.rfind("tools:",0) == 0  )    btageff_.replace(0,6,calibpath+"/");
-         if ( !cmdl_bweight_  )                                         btageff_="";
+         if ( btageff_[0]  != ""  && btageff_[0].rfind("tools:",0) == 0  )    btageff_[0].replace(0,6,calibpath+"/");
+         if ( btageff_[1]  != ""  && btageff_[1].rfind("tools:",0) == 0  )    btageff_[1].replace(0,6,calibpath+"/");
+         if ( btageff_[2]  != ""  && btageff_[2].rfind("tools:",0) == 0  )    btageff_[2].replace(0,6,calibpath+"/");
+         if ( !cmdl_bweight_  )
+         {
+            btageff_[0]="";
+            btageff_[1]="";
+            btageff_[2]="";
+         }
          if ( puweight_ != ""  && puweight_.rfind("tools:",0) == 0 )    puweight_.replace(0,6,calibpath+"/");
 
          eventinfo_     =  Form("%s/%s/%s" , process_.c_str(), eventsdir_.c_str() , eventinfo_.c_str()      );
@@ -551,7 +560,7 @@ int                Config::seed()               const { return seed_;     }
 bool               Config::pythia8()            const { return pythia8_;  }
 
 // btag
-std::string        Config::btagEfficiencies()             const  { return btageff_; }
+std::string        Config::btagEfficiencies(const int & model)             const  { return btageff_[model-1]; }
 float              Config::btagWP(const std::string & wp) const
 {
    if ( wp == "loose"  ) return btagwploose_ ;
