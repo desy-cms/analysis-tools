@@ -398,7 +398,8 @@ def status(submission_dir, failed_only=False):
       jobid = js['jobid']
       if js['termination']:
          finished = '\u2705'  # check
-         error = '\u2705 '  # check
+#         error = '\u2705 '  # check
+         error = ' '  # check
 #         if js['error']:
 #            finished = '\u2705'
          if js['error'] and not js['abortion']:

@@ -39,9 +39,12 @@ JetAnalyser::JetAnalyser(int argc, char * argv[]) : BaseAnalyser(argc,argv)
       bsf_reader_["tight"]  = analysis_->btagCalibration(config_->btagAlgorithm(), config_->btagScaleFactors(), "tight");
    }
    
-   if ( config_->btagEfficiencies() != "" )
+   for ( int mb = 0; mb < 3 ; ++mb )
    {
-      btagEfficiencies_ = BTagEfficiencies(config_->btagEfficiencies());
+      if ( config_->btagEfficiencies(mb+1) != "" )
+      {
+         btagEfficiencies_[mb] = BTagEfficiencies(config_->btagEfficiencies(mb+1));
+      }
    }
    
    if ( config_->jerPtRes() != "" && config_->jerSF() != "" && this->genJetsAnalysis() ) // FIXME: check if files exist
@@ -1590,18 +1593,18 @@ bool JetAnalyser::jetCorrections()
       
 }
 
-void JetAnalyser::actionApplyBtagEfficiency(const int & rank)
+void JetAnalyser::actionApplyBtagEfficiency(const int & rank, const int & model)
 {
    if ( rank > config_->nBJetsMin() ) return;
    
    if ( ! jetsanalysis_ ||  ! isMC_ ) return;
-   std::string label = Form("Jet %d: offline btag weight applied",rank);
+   std::string label = Form("Jet %d: offline btag weight applied (model %d)",rank,model);
    int j = rank-1;
    auto jet = selectedJets_[j];
    if ( config_ -> useJetsExtendedFlavour() )
-      weight_ *= btagEfficiencies_.efficiency(jet->extendedFlavour(),jet->pt(),jet->eta());
+      weight_ *= btagEfficiencies_[model-1].efficiency(jet->extendedFlavour(),jet->pt(),jet->eta());
    else
-      weight_ *= btagEfficiencies_.efficiency(jet->flavour(),jet->pt(),jet->eta());
+      weight_ *= btagEfficiencies_[model-1].efficiency(jet->flavour(),jet->pt(),jet->eta());
    cutflow(label);
 }
 

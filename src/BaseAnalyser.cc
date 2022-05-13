@@ -88,18 +88,21 @@ BaseAnalyser::BaseAnalyser(int argc, char * argv[])
    if( isData_ && config_->json() != "" ) analysis_->processJsonFile(config_->json());
    
    // btag efficiencies
-   if ( config_->btagEfficiencies() != "" )
+   for ( int mb = 0; mb < 3; ++mb )
    {
-      TFile f(config_->btagEfficiencies().c_str(),"old");
-      auto list = f.GetListOfKeys();
-      for ( int i = 0; i < list -> GetSize(); ++i)
+      if ( config_->btagEfficiencies(mb+1) != "" )
       {
-         TString item(list -> At(i) -> GetName());
-         if ( ! item.BeginsWith("eff_")) continue;
-         item.Remove(0,4);
-         btageff_[item.Data()] = std::shared_ptr<TGraphAsymmErrors>((TGraphAsymmErrors*)f.Get(("eff_"+item).Data()));
+         TFile f(config_->btagEfficiencies(mb+1).c_str(),"old");
+         auto list = f.GetListOfKeys();
+         for ( int i = 0; i < list -> GetSize(); ++i)
+         {
+            TString item(list -> At(i) -> GetName());
+            if ( ! item.BeginsWith("eff_")) continue;
+            item.Remove(0,4);
+            btageff_[mb][item.Data()] = std::shared_ptr<TGraphAsymmErrors>((TGraphAsymmErrors*)f.Get(("eff_"+item).Data()));
+         }
+         f.Close();
       }
-      f.Close();
    }
    this -> pileupHistogram();
 }
@@ -390,9 +393,9 @@ std::string BaseAnalyser::basename(const std::string & name)
    
 }
 
-std::map<std::string, std::shared_ptr<TGraphAsymmErrors> > BaseAnalyser::btagEfficiencies() const
+std::map<std::string, std::shared_ptr<TGraphAsymmErrors> > BaseAnalyser::btagEfficiencies(const int& model) const
 {
-   return btageff_;
+   return btageff_[model-1];
 }
 
 

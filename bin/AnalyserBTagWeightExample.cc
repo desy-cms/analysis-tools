@@ -29,7 +29,7 @@ int main(int argc, char ** argv)
       if ( ! analyser.selectionJet(1)           )   continue;  // selection  : jet1 pt and eta 
       if ( ! analyser.selectionJet(2)           )   continue;  // selection  : jet2 pt and eta 
       analyser.fillJetHistograms("nobtag_selection");               // histograms : jets fill
-      if ( config->btagEfficiencies() == "" )
+      if ( config->btagEfficiencies(1) == "" )
       {
          if ( ! analyser.selectionBJet(1)          )   continue;  // apply btag selection jet 1
          analyser.actionApplyBtagSF(1);
