@@ -418,11 +418,11 @@ Jet * Jet::fsrJet()
 void Jet::addMuon(const std::shared_ptr<Muon> m)
 {
    if ( m == nullptr ) return;
-   if ( muon_ != nullptr )
-   {
-      std::cout << "A muon is already associated to this jet" << std::endl;
-      return;
-   }
+//   if ( muon_ != nullptr )
+//   {
+//      std::cout << "A muon is already associated to this jet" << std::endl;
+//      return;
+//   }
    muon_ = m;
 }
 
