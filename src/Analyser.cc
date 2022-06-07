@@ -45,7 +45,7 @@ bool Analyser::event(const int & i)
    cutflow_ = -1;
    weight_ = 1.;  // reset weight at the beginning of the event analysis
   
-   cutflow("Total events read"); 
+   cutflow(config_->sampleName()); 
    
    // Generator weight
    if ( isMC_ )

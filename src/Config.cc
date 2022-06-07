@@ -346,6 +346,10 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          {
             inputlist_.replace(0,6,ntuplepath+"/");
          }
+         std::vector<std::string> il_parts;
+         boost::split(il_parts, inputlist_, [](char c){return c == '/';});
+         auto ip_size = il_parts.size();
+         samplename_ = Form("%s/%s/%s/%s",il_parts[ip_size-4].c_str(),il_parts[ip_size-3].c_str(),il_parts[ip_size-2].c_str(),il_parts[ip_size-1].c_str());
          if ( json_     != ""  && json_.rfind("tools:",0) == 0     )    json_.replace(0,6,calibpath+"/");
          if ( jerptres_ != ""  && jerptres_.rfind("tools:",0) == 0 )    jerptres_.replace(0,6,calibpath+"/");
          if ( jersf_    != ""  && jersf_.rfind("tools:",0) == 0    )    jersf_.replace(0,6,calibpath+"/");
@@ -442,6 +446,7 @@ std::string        Config::configFile()       const { return cfg_; }
 
 // analysis info
 std::string        Config::ntuplesList()      const { return inputlist_; }
+std::string        Config::sampleName()       const { return samplename_; }
 std::string        Config::eventInfo()        const { return eventinfo_; }
 std::string        Config::crossSectionTree() const { return xsectiontree_; }
 std::string        Config::crossSectionType() const { return xsectiontype_; }
