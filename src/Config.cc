@@ -342,14 +342,15 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          std::transform(btagalgo_.begin(), btagalgo_.end(), btagalgo_.begin(), ::tolower);
 
 //         inputlist_ = Form("%s/test/%s", toolspath.c_str(), inputlist_.c_str());
+         samplename_ = "";
          if ( inputlist_.rfind("tools:",0) == 0 )
          {
+            std::vector<std::string> il_parts;
+            boost::split(il_parts, inputlist_, [](char c){return c == '/';});
+            auto ip_size = il_parts.size();
+            samplename_ = Form("%s/%s/%s/%s",il_parts[ip_size-4].c_str(),il_parts[ip_size-3].c_str(),il_parts[ip_size-2].c_str(),il_parts[ip_size-1].c_str());
             inputlist_.replace(0,6,ntuplepath+"/");
          }
-         std::vector<std::string> il_parts;
-         boost::split(il_parts, inputlist_, [](char c){return c == '/';});
-         auto ip_size = il_parts.size();
-         samplename_ = Form("%s/%s/%s/%s",il_parts[ip_size-4].c_str(),il_parts[ip_size-3].c_str(),il_parts[ip_size-2].c_str(),il_parts[ip_size-1].c_str());
          if ( json_     != ""  && json_.rfind("tools:",0) == 0     )    json_.replace(0,6,calibpath+"/");
          if ( jerptres_ != ""  && jerptres_.rfind("tools:",0) == 0 )    jerptres_.replace(0,6,calibpath+"/");
          if ( jersf_    != ""  && jersf_.rfind("tools:",0) == 0    )    jersf_.replace(0,6,calibpath+"/");
