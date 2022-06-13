@@ -442,6 +442,12 @@ void Jet::addMuon(std::vector< std::shared_ptr<Muon> > muons, const float & dr)
 
 void Jet::rmMuon()
 {
+// deprecated
+   muon_ = nullptr;
+}
+
+void Jet::removeMuon()
+{
    muon_ = nullptr;
 }
 

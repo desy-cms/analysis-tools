@@ -251,8 +251,10 @@ namespace analysis {
             void addMuon(std::shared_ptr<Muon>);
             /// associate a muon to the jet from a collection of muons 
             void addMuon(std::vector< std::shared_ptr<Muon> > muons, const float & dr = 0.4);
-            /// remove muon association to the jet
+            /// remove muon association to the jet (deprecated)
             void rmMuon();
+            /// remove muon association to the jet
+            void removeMuon();
             
             /// GenJet matching
             void generatedJet(std::shared_ptr<GenJet>);
