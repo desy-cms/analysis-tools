@@ -159,6 +159,7 @@ namespace analysis {
             std::vector<float> muonsPtMax() const;
             std::vector<float> muonsEtaMax() const;
             std::string muonsId() const;
+            bool muonsVeto() const;
             std::string l1tMuonsCollection() const;
 
          // muon-muon
@@ -429,6 +430,7 @@ namespace analysis {
             std::vector<float> muonsetamax_;
             std::string muonsid_;
             std::string l1tmuonsCol_;
+            bool muonsveto_;
 
          // trigger
             std::string triggerCol_;

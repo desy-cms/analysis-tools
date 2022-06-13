@@ -136,7 +136,8 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          ("Muons.nMin"                   , po::value <int>                       (&nmuonsmin_)       -> default_value(0)                  , "Minimum number of muons")
          ("Muons.nMax"                   , po::value <int>                       (&nmuonsmax_)       -> default_value(-1)                 , "Maximum number of muons")
          ("Muons.dRMin"                  , po::value <float>                     (&muonsdrmin_)      -> default_value(-1.)                , "Minimum delta R between muons")
-         ("Muons.dRMax"                  , po::value <float>                     (&muonsdrmax_)      -> default_value(-1.)                , "Maximum delta R between muons");
+         ("Muons.dRMax"                  , po::value <float>                     (&muonsdrmax_)      -> default_value(-1.)                , "Maximum delta R between muons")
+         ("Muons.veto"                   , po::value <bool>                      (&muonsveto_)       -> default_value(false)              , "Veto events containing muons");
 
       // trigger
       opt_cfg_.add_options()
@@ -527,6 +528,7 @@ std::vector<float> Config::muonsPtMin()         const { return muonsptmin_; }
 std::vector<float> Config::muonsPtMax()         const { return muonsptmax_; }
 std::vector<float> Config::muonsEtaMax()        const { return muonsetamax_; }
 std::string        Config::muonsId()            const { return muonsid_; }
+bool               Config::muonsVeto()          const { return muonsveto_; }
 std::string        Config::l1tMuonsCollection() const { return l1tmuonsCol_; }
 
 // muon-muon
