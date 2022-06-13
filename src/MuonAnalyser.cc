@@ -205,7 +205,10 @@ bool MuonAnalyser::selectionMuons()
             ++muon;
       }
    }
-   if ( (int)selectedMuons_.size() < config_->nMuonsMin() ) return false;
+   if ( ! config_->muonsVeto() )
+   {
+      if ( (int)selectedMuons_.size() < config_->nMuonsMin() ) return false;
+   }
 
    h1_["cutflow"] -> Fill(cutflow_,weight_);
 //
@@ -223,8 +226,6 @@ bool MuonAnalyser::selectionMuonId()
    if ( std::string(h1_["cutflow"] -> GetXaxis()-> GetBinLabel(cutflow_+1)) == "" )
       h1_["cutflow"] -> GetXaxis()-> SetBinLabel(cutflow_+1,Form("MuonId: %s",config_->muonsId().c_str()));
 
-//   if ( ! muonsanalysis_ ) return false;
-
    auto muon = std::begin(selectedMuons_);
    while ( muon != std::end(selectedMuons_) )
    {
@@ -233,7 +234,10 @@ bool MuonAnalyser::selectionMuonId()
       else
          ++muon;
    }
-   if ( selectedMuons_.size() == 0 ) return false;
+   if ( ! config_->muonsVeto() )
+   {
+      if ( (int)selectedMuons_.size() < 1 ) return false;
+   }
 
 
    h1_["cutflow"] -> Fill(cutflow_,weight_);
@@ -245,10 +249,12 @@ bool MuonAnalyser::selectionNMuons()
 {
    if ( ! muonsanalysis_ ) return true;  // will skip this selection
 
-
    ++cutflow_;
 
-   if  ((int)selectedMuons_.size() < config_->nMuonsMin()) return false;
+   if ( ! config_->muonsVeto() )
+   {
+      if  ((int)selectedMuons_.size() < config_->nMuonsMin()) return false;
+   }
 
    if ( std::string(h1_["cutflow"] -> GetXaxis()-> GetBinLabel(cutflow_+1)) == "" )
       h1_["cutflow"] -> GetXaxis()-> SetBinLabel(cutflow_+1,Form("NMuons >= %d",config_->nMuonsMin()));
@@ -314,7 +320,7 @@ bool MuonAnalyser::onlineMuonMatching(const bool & matched_only)
 
    ++cutflow_;
    std::string label = Form("Online muon matching: L1 (deltaR < %4.3f) and L3 (deltaR < %4.3f)",config_-> triggerMatchL1MuonsDrMax(),config_-> triggerMatchL3MuonsDrMax());
-   if ( matched_only ) label = Form("Muons selected! Online muon matching: L1 (deltaR < %4.3f) and L3 (deltaR < %4.3f)",config_-> triggerMatchL1MuonsDrMax(),config_-> triggerMatchL3MuonsDrMax());
+   if ( matched_only ) label = Form("Muons selected: Online muon matching: L1 (deltaR < %4.3f) and L3 (deltaR < %4.3f)",config_-> triggerMatchL1MuonsDrMax(),config_-> triggerMatchL3MuonsDrMax());
    if ( std::string(h1_["cutflow"] -> GetXaxis()-> GetBinLabel(cutflow_+1)) == "" )
       h1_["cutflow"] -> GetXaxis()-> SetBinLabel(cutflow_+1,label.c_str());
 
