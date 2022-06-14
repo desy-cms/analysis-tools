@@ -68,6 +68,7 @@ namespace analysis {
             std::string configFile() const;
          // analysis control
             std::string ntuplesList() const;
+            std::string sampleName() const;
             std::string eventInfo() const;
             std::string crossSectionTree() const;
             std::string crossSectionType() const;
@@ -158,6 +159,7 @@ namespace analysis {
             std::vector<float> muonsPtMax() const;
             std::vector<float> muonsEtaMax() const;
             std::string muonsId() const;
+            bool muonsVeto() const;
             std::string l1tMuonsCollection() const;
 
          // muon-muon
@@ -316,6 +318,7 @@ namespace analysis {
 
          // analysis control
             std::string inputlist_;
+            std::string samplename_;
             std::string eventinfo_;
             std::string process_;
             std::string eventsdir_;
@@ -427,6 +430,7 @@ namespace analysis {
             std::vector<float> muonsetamax_;
             std::string muonsid_;
             std::string l1tmuonsCol_;
+            bool muonsveto_;
 
          // trigger
             std::string triggerCol_;

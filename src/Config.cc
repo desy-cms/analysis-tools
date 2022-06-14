@@ -136,7 +136,8 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          ("Muons.nMin"                   , po::value <int>                       (&nmuonsmin_)       -> default_value(0)                  , "Minimum number of muons")
          ("Muons.nMax"                   , po::value <int>                       (&nmuonsmax_)       -> default_value(-1)                 , "Maximum number of muons")
          ("Muons.dRMin"                  , po::value <float>                     (&muonsdrmin_)      -> default_value(-1.)                , "Minimum delta R between muons")
-         ("Muons.dRMax"                  , po::value <float>                     (&muonsdrmax_)      -> default_value(-1.)                , "Maximum delta R between muons");
+         ("Muons.dRMax"                  , po::value <float>                     (&muonsdrmax_)      -> default_value(-1.)                , "Maximum delta R between muons")
+         ("Muons.veto"                   , po::value <bool>                      (&muonsveto_)       -> default_value(false)              , "Veto events containing muons");
 
       // trigger
       opt_cfg_.add_options()
@@ -342,8 +343,13 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          std::transform(btagalgo_.begin(), btagalgo_.end(), btagalgo_.begin(), ::tolower);
 
 //         inputlist_ = Form("%s/test/%s", toolspath.c_str(), inputlist_.c_str());
+         samplename_ = "";
          if ( inputlist_.rfind("tools:",0) == 0 )
          {
+            std::vector<std::string> il_parts;
+            boost::split(il_parts, inputlist_, [](char c){return c == '/';});
+            auto ip_size = il_parts.size();
+            samplename_ = Form("%s/%s/%s/%s",il_parts[ip_size-4].c_str(),il_parts[ip_size-3].c_str(),il_parts[ip_size-2].c_str(),il_parts[ip_size-1].c_str());
             inputlist_.replace(0,6,ntuplepath+"/");
          }
          if ( json_     != ""  && json_.rfind("tools:",0) == 0     )    json_.replace(0,6,calibpath+"/");
@@ -442,6 +448,7 @@ std::string        Config::configFile()       const { return cfg_; }
 
 // analysis info
 std::string        Config::ntuplesList()      const { return inputlist_; }
+std::string        Config::sampleName()       const { return samplename_; }
 std::string        Config::eventInfo()        const { return eventinfo_; }
 std::string        Config::crossSectionTree() const { return xsectiontree_; }
 std::string        Config::crossSectionType() const { return xsectiontype_; }
@@ -521,6 +528,7 @@ std::vector<float> Config::muonsPtMin()         const { return muonsptmin_; }
 std::vector<float> Config::muonsPtMax()         const { return muonsptmax_; }
 std::vector<float> Config::muonsEtaMax()        const { return muonsetamax_; }
 std::string        Config::muonsId()            const { return muonsid_; }
+bool               Config::muonsVeto()          const { return muonsveto_; }
 std::string        Config::l1tMuonsCollection() const { return l1tmuonsCol_; }
 
 // muon-muon

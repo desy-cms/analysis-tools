@@ -75,7 +75,7 @@ namespace analysis {
             virtual bool selectionMuonDr(const int & r1, const int & r2, const float & delta);
 
 
-            virtual bool onlineMuonMatching();
+            virtual bool onlineMuonMatching(const bool & matched_only = true);
             virtual bool onlineL1MuonMatching(const int &);
             virtual bool onlineL3MuonMatching(const int &);
             virtual void muonHistograms(const std::string &, const int & n = 1);
