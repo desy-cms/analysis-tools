@@ -221,6 +221,7 @@ void Jet::applyJER(const JetResolutionInfo & jerinfo, const float & drmin, const
 {
    this -> jerInfo(jerinfo,drmin);
    p4_ = p4_ *this->jerCorrection(syst);
+   jerp4_ = p4_;
 }
       
 void Jet::applyJEC(const float & syst)
@@ -254,6 +255,7 @@ void Jet::applyBjetRegression()
    float phi = p4_.Phi();
    float e   = p4_.E()*this->bRegCorr();
    p4_.SetPtEtaPhiE(pt,eta,phi,e);
+   bregp4_ = p4_;
 }
       
 
@@ -332,6 +334,9 @@ bool  Jet::pileupJetIdFullId(const std::string & wp) const
 }
 
 float Jet::offlineBtagWeight()                          const { return offBtagWeight_;   }
+
+TLorentzVector Jet::jerP4() const { return jerp4_; }
+TLorentzVector Jet::bregP4() const { return bregp4_; }
 
 
 // Sets                                                             
