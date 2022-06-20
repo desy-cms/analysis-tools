@@ -334,7 +334,7 @@ namespace analysis {
             /// final state radiation
             Jet * fsr_;
             /// 4-momentum before FSR correction
-            TLorentzVector uncorrJetp4_;
+            TLorentzVector origJetp4_;
             
             /// 4-momentum after JER
             TLorentzVector jerp4_;
