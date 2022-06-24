@@ -24,7 +24,7 @@ Jet::Jet() : Candidate()
    btagAlgo_ = "";
    fsr_ = nullptr;
    muon_ = nullptr;
-   uncorrJetp4_ = p4_;
+   origJetp4_ = p4_;
    genjet_ = nullptr;
    jermatch_ = false;
    offBtagWeight_ = 1.;
@@ -36,7 +36,7 @@ Jet::Jet(const float & pt, const float & eta, const float & phi, const float & e
    btagAlgo_ = "";
    fsr_ = nullptr;
    muon_ = nullptr;
-   uncorrJetp4_ = p4_;
+   origJetp4_ = p4_;
    genjet_ = nullptr;
    jermatch_ = false;
    offBtagWeight_ = 1.;
@@ -151,9 +151,9 @@ void Jet::jerCorrections()
    if ( jermatch_ )
    {
       // to avoid problems with regression corrections, use "uncorrected" 
-      c     += (sf-1)*((this->pt() - genjet_->pt())/uncorrJetp4_.Pt());
-      cup   += (sfup-1)*((this->pt() - genjet_->pt())/uncorrJetp4_.Pt());
-      cdown += (sfdown-1)*((this->pt() - genjet_->pt())/uncorrJetp4_.Pt());
+      c     += (sf-1)*((this->pt() - genjet_->pt())/origJetp4_.Pt());
+      cup   += (sfup-1)*((this->pt() - genjet_->pt())/origJetp4_.Pt());
+      cdown += (sfdown-1)*((this->pt() - genjet_->pt())/origJetp4_.Pt());
 //      std::cout << "match   : ";
    }
    else
@@ -221,6 +221,7 @@ void Jet::applyJER(const JetResolutionInfo & jerinfo, const float & drmin, const
 {
    this -> jerInfo(jerinfo,drmin);
    p4_ = p4_ *this->jerCorrection(syst);
+   jerp4_ = p4_;
 }
       
 void Jet::applyJEC(const float & syst)
@@ -254,6 +255,7 @@ void Jet::applyBjetRegression()
    float phi = p4_.Phi();
    float e   = p4_.E()*this->bRegCorr();
    p4_.SetPtEtaPhiE(pt,eta,phi,e);
+   bregp4_ = p4_;
 }
       
 
@@ -283,9 +285,9 @@ double Jet::btagSFsys(std::shared_ptr<BTagCalibrationReader> reader, const std::
    if ( reader == nullptr ) return sf;
    
 // to avoid problems with other corrections   
-   if ( this->flavour(flavalgo) == 5 ) sf = reader->eval_auto_bounds(systype, BTagEntry::FLAV_B,    fabs(uncorrJetp4_.Eta()), uncorrJetp4_.Pt() ); 
-   if ( this->flavour(flavalgo) == 4 ) sf = reader->eval_auto_bounds(systype, BTagEntry::FLAV_C,    fabs(uncorrJetp4_.Eta()), uncorrJetp4_.Pt() ); 
-   if ( this->flavour(flavalgo) == 0 ) sf = reader->eval_auto_bounds(systype, BTagEntry::FLAV_UDSG, fabs(uncorrJetp4_.Eta()), uncorrJetp4_.Pt() );
+   if ( this->flavour(flavalgo) == 5 ) sf = reader->eval_auto_bounds(systype, BTagEntry::FLAV_B,    fabs(origJetp4_.Eta()), origJetp4_.Pt() ); 
+   if ( this->flavour(flavalgo) == 4 ) sf = reader->eval_auto_bounds(systype, BTagEntry::FLAV_C,    fabs(origJetp4_.Eta()), origJetp4_.Pt() ); 
+   if ( this->flavour(flavalgo) == 0 ) sf = reader->eval_auto_bounds(systype, BTagEntry::FLAV_UDSG, fabs(origJetp4_.Eta()), origJetp4_.Pt() );
    
    return sf;
 }
@@ -332,6 +334,9 @@ bool  Jet::pileupJetIdFullId(const std::string & wp) const
 }
 
 float Jet::offlineBtagWeight()                          const { return offBtagWeight_;   }
+
+TLorentzVector Jet::jerP4() const { return jerp4_; }
+TLorentzVector Jet::bregP4() const { return bregp4_; }
 
 
 // Sets                                                             
@@ -406,7 +411,7 @@ void Jet::addFSR(Jet* j)
 
 void Jet::rmFSR()
 {
-   p4_ = uncorrJetp4_;
+   p4_ = p4_ - fsr_->p4();
    fsr_ = nullptr;
 }
 

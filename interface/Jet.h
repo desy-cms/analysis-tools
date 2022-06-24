@@ -158,6 +158,11 @@ namespace analysis {
             float offlineBtagWeight() const;
             
                
+            /// 4-momentum after JER
+            TLorentzVector jerP4() const;
+            /// 4-momentum after b-regression
+            TLorentzVector bregP4() const;
+            
             // Sets
             /// sets the isPuppi value
             void  isPuppi(const bool &);
@@ -329,7 +334,13 @@ namespace analysis {
             /// final state radiation
             Jet * fsr_;
             /// 4-momentum before FSR correction
-            TLorentzVector uncorrJetp4_;
+            TLorentzVector origJetp4_;
+            
+            /// 4-momentum after JER
+            TLorentzVector jerp4_;
+            
+            /// 4-momentum after b-regression
+            TLorentzVector bregp4_;
             
             /// generated jet
             std::shared_ptr<GenJet> genjet_;

@@ -1584,10 +1584,10 @@ bool JetAnalyser::selectionBJetProbLight(const int & r )
 bool JetAnalyser::jetCorrections()
 {
 // CORRECTIONS
-   // b energy regression
-      if ( this->config()->bRegression() )  this->actionApplyBjetRegression();
    // Jet energy resolution smearing
       this->actionApplyJER();
+   // b energy regression
+      if ( this->config()->bRegression() )  this->actionApplyBjetRegression();
       
       return true;
       
@@ -1601,10 +1601,11 @@ void JetAnalyser::actionApplyBtagEfficiency(const int & rank, const int & model)
    std::string label = Form("Jet %d: offline btag weight applied (model %d)",rank,model);
    int j = rank-1;
    auto jet = selectedJets_[j];
+   // Use jet 4-momentum after JER to not use b-regression
    if ( config_ -> useJetsExtendedFlavour() )
-      weight_ *= btagEfficiencies_[model-1].efficiency(jet->extendedFlavour(),jet->pt(),jet->eta());
+      weight_ *= btagEfficiencies_[model-1].efficiency(jet->extendedFlavour(),jet->jerP4().Pt(),jet->jerP4().Eta());
    else
-      weight_ *= btagEfficiencies_[model-1].efficiency(jet->flavour(),jet->pt(),jet->eta());
+      weight_ *= btagEfficiencies_[model-1].efficiency(jet->flavour(),jet->jerP4().Pt(),jet->jerP4().Eta());
    cutflow(label);
 }
 
