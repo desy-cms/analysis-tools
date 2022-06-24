@@ -134,7 +134,6 @@ class AnalysisHistograms:
             flv_all = ['all']
       for pbin, pfile in self.m_proc.rootFiles().items():  # need to think better these loops to avoid more loops below
          ls = self.m_proc.luminosityScale()[pbin]
-         print('anal_tools: lumi scale: ',pbin,ls,self.m_proc.crossSections()[pbin],self.m_proc.alias())
          h1[pbin] = {}
          pbins.append(pbin)
          tfile = TFile( pfile, 'OLD' )
