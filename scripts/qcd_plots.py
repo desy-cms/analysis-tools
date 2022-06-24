@@ -12,7 +12,7 @@ from argparse import HelpFormatter
 
 from Analysis.Tools.utils import Process, AnalysisHistograms
 
-from ROOT import TFile,TCanvas, TMultiGraph,TLine, TRatioPlot, gStyle, TH1, Double
+from ROOT import TFile,TCanvas, TMultiGraph,TLine, TRatioPlot, gStyle, TH1, Double, gROOT
 from ROOT import kRed, kBlue, kBlack, kMagenta, kGreen, kCyan
 from rootpy.interactive import wait
 
@@ -21,21 +21,36 @@ import Analysis.Tools.tdrstyle as tdrstyle
 
 TH1.SetDefaultSumw2()
 
-#set the tdr style
+#set the tdr style (why some setting don't work? using gStyle??? - not all settings work w/ gStyle???)
 tdrstyle.setTDRStyle()
+
+# More styles
 
 #change the CMS_lumi variables (see CMS_lumi.py)
 CMS_lumi.lumi_7TeV = "4.8 fb^{-1}"
 CMS_lumi.lumi_8TeV = "18.3 fb^{-1}"
 CMS_lumi.writeExtraText = 1
-CMS_lumi.extraText = "Preliminary"
+CMS_lumi.extraText = "Simulation"
 CMS_lumi.lumi_sqrtS = "13 TeV" # used with iPeriod = 0, e.g. for simulation-only plots (default is an empty string)
 
-#gStyle.SetOptStat(0)
-#gStyle.SetOptTitle(0)
-#gStyle.SetLegendBorderSize(0)
+iPos = 0
+if( iPos==0 ): CMS_lumi.relPosX = 0.12
 
-textSize = 0.032
+# 
+# Simple example of macro: plot with CMS name and lumi text
+#  (this script does not pretend to work in all configurations)
+# iPeriod = 1*(0/1 7 TeV) + 2*(0/1 8 TeV)  + 4*(0/1 13 TeV) 
+# For instance: 
+#               iPeriod = 3 means: 7 TeV + 8 TeV
+#               iPeriod = 7 means: 7 TeV + 8 TeV + 13 TeV 
+#               iPeriod = 0 means: free form (uses lumi_sqrtS)
+# Initiated by: Gautier Hamel de Monchenault (Saclay)
+# Translated in Python by: Joshua Hardenbrook (Princeton)
+# Updated by:   Dinko Ferencek (Rutgers)
+#
+
+iPeriod = 0
+
 xbins = []
 for i in xrange(0,120,10):
    xbins.append(i)
@@ -56,8 +71,13 @@ axbins = array.array('d', xbins)
 # -------------------------------------------------------      
 
 def make_plots(histos1,histos2=None,legend1=None,legend2=None,legend_title=None,combined=False,ratio=None,ratio_range=None,flavour=False):
+
    global output_name
-   global x_range
+   global x_range, y_range
+   global iPos
+   global H_ref,W_ref,H,W,T,B,L,R
+   global textSize
+   
    flavours = ['b','c','udsg','bb','cc']
    canvas = {}
    ratioplots  = {}
@@ -65,12 +85,23 @@ def make_plots(histos1,histos2=None,legend1=None,legend2=None,legend_title=None,
    histos1_rb = {}
    histos2_rb = {}
    
-   cw = 820
-   ch = 640
+   xmin,xmax = get_range(x_range)
+   ymin = -1
+   ymax = -1
+   if y_range:
+      ymin,ymax = get_range(y_range)
+
    if ratio:
-      ch = 820
-#      textSize = 0.025
-   
+      H_ref = 840
+      textSize = 0.036
+   H = H_ref
+   W = W_ref
+   # references for T, B, L, R
+   T = 0.080*H_ref
+   B = 0.150*H_ref 
+   L = 0.135*W_ref
+   R = 0.065*W_ref
+
    if not histos1 and not histos2:
       print("No histograms to plot")
       quit()
@@ -96,7 +127,7 @@ def make_plots(histos1,histos2=None,legend1=None,legend2=None,legend_title=None,
             if not flavour and flv != 'all':
                continue
             c_title = 'c_{}{}_{}'.format(var,obj,flv)
-            canvas[var][obj][flv]  = TCanvas( c_title, c_title, 2000, 10, cw, ch )
+            canvas[var][obj][flv]  = TCanvas( c_title, c_title, 2000, 10, W, H )
             c = canvas[var][obj][flv]
             ratioplots[var][obj][flv] = None
             hmax_sf = 1.5
@@ -108,9 +139,9 @@ def make_plots(histos1,histos2=None,legend1=None,legend2=None,legend_title=None,
                h1 = histos1_rb[var][obj][flv]
 #               h1 = histos1[var][obj][flv]
 #               h1.Rebin(25)
-#            else:
-#               h1 = histos1[var][obj][flv]
-#               h1.Rebin(25)
+            else:
+               h1 = histos1[var][obj][flv]
+               h1.Rebin(10)
             h1.SetName('{}_h1'.format(h1.GetName()))
             h1max = h1.GetMaximum()
             h2 = None
@@ -121,45 +152,63 @@ def make_plots(histos1,histos2=None,legend1=None,legend2=None,legend_title=None,
                   h2 = histos2_rb[var][obj][flv]
 #                  h2 = histos2[var][obj][flv]
 #                  h2.Rebin(25)
-#               else:
-#                  h2 = histos2[var][obj][flv]
-#                  h2.Rebin(25)
+               else:
+                  h2 = histos2[var][obj][flv]
+                  h2.Rebin(10)
                h2.SetName('{}_h2'.format(h2.GetName()))
                h2max = h2.GetMaximum()
-               if h1max < h2max:
-                  h1.SetMaximum(h2max*hmax_sf)
+               if y_range:
+                  h1.SetMaximum(ymax)
+                  h1.SetMinimum(ymin)
+               else:
+                  if h1max < h2max:
+                     h1.SetMaximum(h2max*hmax_sf)
                prep_histogram(h2,color=kRed,title=legend2)
             # Simple plotting of histograms
             if not ratio:
+               h1.GetXaxis().SetRangeUser(xmin,xmax)
                h1.Draw()
                if h2:
                   h2.Draw('same')
                legends[var][obj][flv] = prep_canvas(c,legend_title=legend_title)
+               #draw the lumi text on the canvas
+               CMS_lumi.CMS_lumi(c, iPeriod, iPos)
+               c.cd()
+               c.Update()
+               c.RedrawAxis()
             else:
                ratioplots[var][obj][flv] = TRatioPlot(h1,h2,"divsym")
                rp = ratioplots[var][obj][flv]
                prep_ratioplots(rp)
                rp.Draw()
-               legends[var][obj][flv] = mod_ratioplots(rp,title=ratio,legend_title=legend_title)
-               ymin,ymax = get_range(ratio_range)
-               rp.GetLowerRefYaxis().SetRangeUser(ymin,ymax)
-               xmin,xmax = get_range(x_range)
+               legends[var][obj][flv] = mod_ratioplots(rp,c,title=ratio,legend_title=legend_title)
+               ylmin,ylmax = get_range(ratio_range)
+               rp.GetLowerRefYaxis().SetRangeUser(ylmin,ylmax)
                rp.GetUpperRefXaxis().SetRangeUser(xmin,xmax)
-
+               rp.GetLowerRefXaxis().SetRangeUser(xmin,xmax)
+#               c.Update()
+#               c.Draw()
+               
+               #draw the lumi text on the canvas
+               CMS_lumi.CMS_lumi(rp.GetUpperPad(), iPeriod, iPos)
+               c.cd()
                c.Update()
-               c.Draw()
-               c.SaveAs('{}_{}_{}_{}.png'.format(output_name,var,obj,flv))
+               c.RedrawAxis()
+            
+            
+            c.SaveAs('{}_{}_{}_{}.png'.format(output_name,var,obj,flv))
                
             if 'm_jet12_h1' in h1.GetName(): 
                output = TFile.Open('{}_m_jet12.root'.format(output_name),'recreate')
-               m12_graph = rp.GetLowerRefGraph()
-               m12_graph.Write()
+               if ratio:
+                  m12_graph = rp.GetLowerRefGraph()
+                  m12_graph.Write()
                h1.Write()
                h2.Write()
                output.Close()
             
             
-   wait()
+#   wait()
             
 # ------------------------------------------------------- 
  
@@ -181,37 +230,53 @@ def get_range(r):
 def prep_ratioplots(rp,title=None):
    rp.SetH1DrawOpt("e")
    rp.SetH2DrawOpt("e")
-   rp.GetLowYaxis().SetNdivisions(505)
+   rp.GetLowYaxis().SetNdivisions(6,5,0)
 
 # ------------------------------------------------------- 
  
-def mod_ratioplots(rp,title=None,legend_title=None):
+def mod_ratioplots(rp, canvas,title=None,legend_title=None):
+   canvas.SetFillColor(0)
+   canvas.SetBorderMode(0)
+   canvas.SetFrameFillStyle(0)
+   canvas.SetFrameBorderMode(0)
+   canvas.SetLeftMargin( L/W )
+   canvas.SetRightMargin( R/W )
+   canvas.SetTopMargin( T/H )
+   canvas.SetBottomMargin( B/H )
+#   canvas.SetTickx(0)
+#   canvas.SetTicky(0)
    
    rp.GetLowerRefYaxis().SetTitle(title)
-   rp.GetLowerRefYaxis().SetTitleOffset(1.6)
-   rp.GetUpperRefYaxis().SetTitleOffset(1.6)
-   rp.GetLowerRefXaxis().SetTitleOffset(1.3)
+   rp.GetLowerRefYaxis().SetTitleOffset(1.95)
+   rp.GetUpperRefYaxis().SetTitleOffset(1.95)
+   rp.GetLowerRefXaxis().SetTitleOffset(1.2)
    rp.GetLowerRefGraph().SetLineColor(kBlack)
    rp.GetLowerRefGraph().SetLineWidth(2)
    rp.GetLowerRefGraph().SetMarkerStyle(20)
    rp.GetLowerRefGraph().SetMarkerColor(kBlack)
    rp.RangeAxisChanged()
    
-   rp.SetLeftMargin(0.135)
-   rp.SetRightMargin(0.065)
-   rp.SetUpTopMargin(0.080)
-   rp.SetLowBottomMargin(0.35)
-#   rp.SetUpBottomMargin(0.4)
-   rp.SetLowTopMargin(0.01)
+   rp.SetLeftMargin(L/W)
+   rp.SetRightMargin(R/W)
+   rp.SetUpTopMargin(T/H)
+#    rp.SetLowBottomMargin(0.35)
+# #   rp.SetUpBottomMargin(0.4)
+#    rp.SetLowTopMargin(0.01)
 
    
+   rp.GetLowerRefXaxis().SetLabelFont(42)
+   rp.GetLowerRefXaxis().SetTitleFont(42)
+   rp.GetLowerRefYaxis().SetLabelFont(42)
+   rp.GetLowerRefYaxis().SetTitleFont(42)
+   rp.GetUpperRefYaxis().SetLabelFont(42)
+   rp.GetUpperRefYaxis().SetTitleFont(42)
    rp.GetLowerRefXaxis().SetLabelSize(textSize)
    rp.GetLowerRefXaxis().SetTitleSize(textSize)
    rp.GetLowerRefYaxis().SetLabelSize(textSize)
    rp.GetLowerRefYaxis().SetTitleSize(textSize)
    rp.GetUpperRefYaxis().SetLabelSize(textSize)
    rp.GetUpperRefYaxis().SetTitleSize(textSize)
-
+   
 #   rp.SetSplitFraction(0.5)
 #   rp.SetSeparationMargin(0.)
    # SetSplitFraction does not work!? Brute force...
@@ -223,10 +288,11 @@ def mod_ratioplots(rp,title=None,legend_title=None):
    
    ## LEGEND
    if legend_title:
-      legend = rp.GetUpperPad().BuildLegend(0.50,0.72,0.935,0.915,legend_title)
+      legend = rp.GetUpperPad().BuildLegend(0.50,0.70,0.935,0.895,legend_title)
    else:
-      legend = rp.GetUpperPad().BuildLegend(0.50,0.78,0.935,0.915)
-   legend.SetTextSize(textSize)
+      legend = rp.GetUpperPad().BuildLegend(0.50,0.76,0.935,0.895)
+   legend.SetTextFont(42)
+   legend.SetTextSize(0.04)
    
    return legend
    
@@ -235,15 +301,23 @@ def mod_ratioplots(rp,title=None,legend_title=None):
 # ------------------------------------------------------- 
  
 def prep_canvas(canvas,legend_title=None):
-   canvas.SetLeftMargin(0.135)
-   canvas.SetRightMargin(0.065)
-   canvas.SetTopMargin(0.080)
-   canvas.SetBottomMargin(0.120)
+   canvas.SetFillColor(0)
+   canvas.SetBorderMode(0)
+   canvas.SetFrameFillStyle(0)
+   canvas.SetFrameBorderMode(0)
+   canvas.SetLeftMargin( L/W )
+   canvas.SetRightMargin( R/W )
+   canvas.SetTopMargin( T/H )
+   canvas.SetBottomMargin( B/H )
+#   canvas.SetTickx(0)
+#   canvas.SetTicky(0)
+   
    if legend_title:
-      legend = canvas.BuildLegend(0.50,0.72,0.935,0.915,legend_title)
+      legend = canvas.BuildLegend(0.50,0.70,0.935,0.895,legend_title)
    else:
-      legend = canvas.BuildLegend(0.50,0.78,0.935,0.915)
-   legend.SetTextSize(textSize)
+      legend = canvas.BuildLegend(0.50,0.76,0.935,0.895)
+   legend.SetTextFont(42)
+   legend.SetTextSize(0.035)
    
    return legend
 
@@ -252,17 +326,33 @@ def prep_canvas(canvas,legend_title=None):
  
     
 def prep_histogram(h,title=None,color=kBlack):
+   xmin,xmax = get_range(x_range)
+   h.GetXaxis().SetRangeUser(xmin,xmax)
+
    h.SetLineColor(color)
-   h.SetLineWidth(2)
    h.SetMarkerColor(color)
    h.SetMarkerStyle(20)
-   h.GetYaxis().SetTitle('events')
-   h.GetYaxis().SetTitleOffset(1.6)
-   h.GetXaxis().SetTitleOffset(1.3)
-   h.GetXaxis().SetLabelSize(0.04)
-   h.GetXaxis().SetTitleSize(0.04)
-   h.GetYaxis().SetLabelSize(0.04)
-   h.GetYaxis().SetTitleSize(0.04)
+   h.SetLineWidth(2)
+   
+   xAxis = h.GetXaxis()
+   xmin,xmax = get_range(x_range)
+   xAxis.SetRangeUser(xmin,xmax)
+   xAxis.SetNdivisions(6,5,0)
+   xAxis.SetTitleOffset(1.2)
+   xAxis.SetLabelFont(42)
+   xAxis.SetTitleFont(42)
+   xAxis.SetLabelSize(textSize)
+   xAxis.SetTitleSize(textSize)
+
+   yAxis = h.GetYaxis()
+   yAxis.SetNdivisions(6,5,0)
+   yAxis.SetTitle('Events')
+   yAxis.SetTitleOffset(1.4)
+   yAxis.SetLabelFont(42)
+   yAxis.SetTitleFont(42)
+   yAxis.SetLabelSize(textSize)
+   yAxis.SetTitleSize(textSize)
+   
    if title:
       h.SetTitle(title)
 
@@ -302,10 +392,20 @@ def histograms(path,process,hdir,observables,combined=False):
 
 def main():
    global output_name
-   global x_range
+   global x_range, y_range
+   global textSize
+   
+   global tdrStyle
+   
+   global H_ref,W_ref,H,W,T,B,L,R
+   
+   
    output_name = 'qcd_plots_output'
+   H_ref = 600
+   W_ref = 800
    
-   
+   textSize = 0.05
+      
    obs1 = ['pt_jet','eta_jet','phi_jet']
    obs2 = ['m_jet']
    flavours = ['b','c','udsg','bb','cc']
@@ -322,6 +422,7 @@ def main():
    parser.add_argument("--ratio"           , dest="ratio"                            , help="ratio plots title")   
    parser.add_argument("--ratio_range"     , dest="ratio_range", default="0,2"       , help="ratio plots range")   
    parser.add_argument("--x_range"         , dest="x_range"    , default="260,2000"  , help="x-axis range")   
+   parser.add_argument("--y_range"         , dest="y_range"                          , help="x-axis range")   
    parser.add_argument("--output"          , dest="output"                           , help="name for output files")   
    args = parser.parse_args()
 
@@ -344,6 +445,7 @@ def main():
    if args.output:
       output_name = args.output
    x_range = args.x_range
+   y_range = args.y_range
       
    legs = []   
    histos = []
