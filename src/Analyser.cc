@@ -92,6 +92,9 @@ bool Analyser::event(const int & i)
    // PILEUP RE-WEIGHT
    this->actionApplyPileupWeight(); 
 
+   // Prefiring weights
+   this->actionApplyPrefiringWeight();
+
    return ok;
    
 }

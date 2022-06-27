@@ -215,6 +215,10 @@ namespace analysis {
             /// return status of an emulated l1 trigger 
             bool triggerEmulated(const std::string &);
 
+            /// apply prefiring weight given a systematic variation
+            void actionApplyPrefiringWeight(const int & var);
+            void actionApplyPrefiringWeight();
+
 
       };
    }

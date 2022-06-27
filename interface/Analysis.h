@@ -99,7 +99,6 @@ namespace analysis {
             
             /// fixedGridRhoAll
             double rho();
-            
 
             // Trees
             template<class Object>
@@ -177,6 +176,9 @@ namespace analysis {
             std::shared_ptr<PileupWeight> pileupWeights(const std::string & );
             std::shared_ptr<MuonIdWeight> muonIDWeights(const std::string & );
 
+            /// L1 prefiring weights
+            double prefiringWeight(const int & var = 0);
+
             // ----------member data ---------------------------
          protected:
 
@@ -234,6 +236,14 @@ namespace analysis {
             PDF    pdf_;
             
             double rho_;
+
+
+            // L1 prefiring weights
+            double prefw_;
+            double prefw_up_;
+            double prefw_down_;
+            
+
 
             int nevents_;
 

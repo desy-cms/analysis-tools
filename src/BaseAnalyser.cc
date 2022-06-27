@@ -496,3 +496,23 @@ bool BaseAnalyser::triggerEmulated(const std::string & name)
 {
    return trg_emul_[name];
 }
+
+void BaseAnalyser::actionApplyPrefiringWeight(const int & var)
+{
+   if ( ! config_->isMC() ) return;
+   if ( ! config_->prefiringWeight() ) return;
+
+   std::string prefw_label = "Prefiring weight";
+ 
+   weight_ *= analysis_->prefiringWeight(var);
+   
+   if ( var != 0 )  prefw_label += Form(", syst: %+d sig",var);
+   
+   cutflow(prefw_label);
+   
+}
+void BaseAnalyser::actionApplyPrefiringWeight()
+{
+   actionApplyPrefiringWeight(config_->prefiringWeightSystematics());
+}
+
