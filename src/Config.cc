@@ -48,7 +48,8 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          ("jec",po::value <int>(&jecsyst_),"JEC systematic variation (sigma)")  
          ("pileup",po::value <int>(&puweightsyst_),"Pileup weight systematic variation (sigma)")  
          ("btagweight",po::bool_switch(&cmdl_bweight_),"Apply btag weight defined in the config file")  
-            ;
+         ("prefiring",po::value <int>(&prefwsyst_),"Prefiring weight systematic variation (sigma)")  
+           ;
 
       // analysis info
       opt_cfg_.add_options()
@@ -80,6 +81,7 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          ("Corrections.BTag.Efficiencies2", po::value <std::string>              (&btageff_[1])      -> default_value("")                 , "b-tagging efficiencies in root file")
          ("Corrections.BTag.Efficiencies3", po::value <std::string>              (&btageff_[2])      -> default_value("")                 , "b-tagging efficiencies in root file")
          ("Corrections.Jets.bRegression" , po::value <bool>                      (&bregression_)     -> default_value(false)              , "Apply b jet energy regression")
+         ("Corrections.PrefiringWeight" , po::value <bool>                       (&prefw_)           -> default_value(true)              , "Apply L1 prefiring weight")
          ("Corrections.force"            , po::value <bool>                      (&apply_correct_)   -> default_value(false)              , "Apply corrections internally when above are defined");
 
       // jets
@@ -468,6 +470,7 @@ std::vector<std::string> Config::eras()       const { return eras_; }
 std::string        Config::pileupWeights()    const { return puweight_; }
 int                Config::pileupWeightSystematics()    const { return puweightsyst_; }
 
+
 std::string        Config::process()          const { return process_; }
 std::string        Config::eventsDir()        const { return eventsdir_; }
 
@@ -504,6 +507,8 @@ int                Config::revBtagJet()         const { return revbtagjet_; }
 bool               Config::useJetsExtendedFlavour() const { return usejetsextflv_; }
 bool               Config::doDijet()            const { return dodijet_ ; }
 int                Config::nBJetsMin()          const { return nbjetsmin_; }
+bool               Config::prefiringWeight()    const { return prefw_; }
+int                Config::prefiringWeightSystematics() const { return prefwsyst_;    }
 
 std::vector<float>  Config::jetsQGmin() const { return qgmin_; }
 std::vector<float>  Config::jetsQGmax() const { return qgmax_; }

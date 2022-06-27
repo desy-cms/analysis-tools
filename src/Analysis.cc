@@ -57,6 +57,11 @@ Analysis::Analysis(std::shared_ptr<Config> cfg)
    it = std::find(branches.begin(),branches.end(),"pdfx2");        if ( it != branches.end() ) t_event_  -> SetBranchAddress( (*it).c_str(), &pdf_.x.second);
    
    it = std::find(branches.begin(),branches.end(),"rho");          if ( it != branches.end() ) t_event_  -> SetBranchAddress( (*it).c_str(), &rho_);
+
+   it = std::find(branches.begin(),branches.end(),"nonPrefiringProb");     if ( it != branches.end() ) t_event_  -> SetBranchAddress( (*it).c_str(), &prefw_);
+   it = std::find(branches.begin(),branches.end(),"nonPrefiringProbUp");   if ( it != branches.end() ) t_event_  -> SetBranchAddress( (*it).c_str(), &prefw_up_);
+   it = std::find(branches.begin(),branches.end(),"nonPrefiringProbDwon"); if ( it != branches.end() ) t_event_  -> SetBranchAddress( (*it).c_str(), &prefw_down_);
+
    
 //   t_event_ -> SetBranchAddress("nPileup", &n_pu_);
 //   t_event_ -> SetBranchAddress("nTruePileup", &n_true_pu_);
@@ -115,6 +120,12 @@ Analysis::Analysis(const std::string & inputFilelist, const std::string & evtinf
    it = std::find(branches.begin(),branches.end(),"pdfx2");        if ( it != branches.end() ) t_event_  -> SetBranchAddress( (*it).c_str(), &pdf_.x.second);
    
    it = std::find(branches.begin(),branches.end(),"rho");          if ( it != branches.end() ) t_event_  -> SetBranchAddress( (*it).c_str(), &rho_);
+
+   it = std::find(branches.begin(),branches.end(),"nonPrefiringProb");     if ( it != branches.end() ) t_event_  -> SetBranchAddress( (*it).c_str(), &prefw_);
+   it = std::find(branches.begin(),branches.end(),"nonPrefiringProbUp");   if ( it != branches.end() ) t_event_  -> SetBranchAddress( (*it).c_str(), &prefw_up_);
+   it = std::find(branches.begin(),branches.end(),"nonPrefiringProbDwon"); if ( it != branches.end() ) t_event_  -> SetBranchAddress( (*it).c_str(), &prefw_down_);
+
+
    
 //   t_event_ -> SetBranchAddress("nPileup", &n_pu_);
 //   t_event_ -> SetBranchAddress("nTruePileup", &n_true_pu_);
@@ -632,4 +643,16 @@ int Analysis::seed(const std::string & name)
 void Analysis::config(std::shared_ptr<Config> cfg)
 {
    config_ = cfg;
+}
+
+double Analysis::prefiringWeight(const int & var)
+{
+   double w = prefw_;
+   if ( var < 0 ) w = prefw_down_;
+   if ( var > 0 ) w = prefw_up_;
+
+   w = w - var*fabs(prefw_ - w);
+   
+   return w;
+
 }

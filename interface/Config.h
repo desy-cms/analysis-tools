@@ -133,6 +133,8 @@ namespace analysis {
             bool doDijet() const;
             bool doDijetFlavour() const;
             int nBJetsMin() const;
+            bool prefiringWeight() const;
+            int  prefiringWeightSystematics() const;
 
             std::vector<float>  jetsQGmin() const;
             std::vector<float>  jetsQGmax() const;
@@ -351,6 +353,8 @@ namespace analysis {
             std::string puweight_;
             int puweightsyst_;
 
+            int prefwsyst_;
+
          // generic options
             int prescale_;
             int n_;
@@ -419,6 +423,8 @@ namespace analysis {
             std::vector<int> dijet_ranks_;
 
             bool bregression_;
+
+            bool prefw_;
 
 
          // muons
