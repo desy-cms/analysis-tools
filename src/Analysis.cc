@@ -31,38 +31,38 @@ Analysis::Analysis(std::shared_ptr<Config> cfg)
    // event info (must be in the tree always)
    t_event_ = new TChain(config_->eventInfo().c_str());
    t_event_ -> AddFileInfoList(fileList_);
-   
+
    std::vector<std::string> branches;
    TObjArray * treeBranches = t_event_->GetListOfBranches();
    for ( int i = 0 ; i < treeBranches->GetEntries() ; ++i )
       branches.push_back(treeBranches->At(i)->GetName());
-   
+
    t_event_ -> SetBranchAddress("event", &event_);
    t_event_ -> SetBranchAddress("run", &run_);
    t_event_ -> SetBranchAddress("lumisection", &lumi_);
-   
+
    // For backward compatibility
    std::vector<std::string>::iterator it;
    it = std::find(branches.begin(),branches.end(),"nPileup");      if ( it != branches.end() ) t_event_  -> SetBranchAddress( (*it).c_str(), &n_pu_);
    it = std::find(branches.begin(),branches.end(),"nTruePileup");  if ( it != branches.end() ) t_event_  -> SetBranchAddress( (*it).c_str(), &n_true_pu_);
-   
+
    it = std::find(branches.begin(),branches.end(),"lumiPileup");   if ( it != branches.end() ) t_event_  -> SetBranchAddress( (*it).c_str(), &lumi_pu_);
    it = std::find(branches.begin(),branches.end(),"instantLumi");  if ( it != branches.end() ) t_event_  -> SetBranchAddress( (*it).c_str(), &inst_lumi_);
-   
+
    it = std::find(branches.begin(),branches.end(),"genWeight");    if ( it != branches.end() ) t_event_  -> SetBranchAddress( (*it).c_str(), &genWeight_);
    it = std::find(branches.begin(),branches.end(),"genScale");     if ( it != branches.end() ) t_event_  -> SetBranchAddress( (*it).c_str(), &genScale_);
    it = std::find(branches.begin(),branches.end(),"pdfid1");       if ( it != branches.end() ) t_event_  -> SetBranchAddress( (*it).c_str(), &pdf_.id.first);
    it = std::find(branches.begin(),branches.end(),"pdfid2");       if ( it != branches.end() ) t_event_  -> SetBranchAddress( (*it).c_str(), &pdf_.id.second);
    it = std::find(branches.begin(),branches.end(),"pdfx1");        if ( it != branches.end() ) t_event_  -> SetBranchAddress( (*it).c_str(), &pdf_.x.first);
    it = std::find(branches.begin(),branches.end(),"pdfx2");        if ( it != branches.end() ) t_event_  -> SetBranchAddress( (*it).c_str(), &pdf_.x.second);
-   
+
    it = std::find(branches.begin(),branches.end(),"rho");          if ( it != branches.end() ) t_event_  -> SetBranchAddress( (*it).c_str(), &rho_);
 
    it = std::find(branches.begin(),branches.end(),"nonPrefiringProb");     if ( it != branches.end() ) t_event_  -> SetBranchAddress( (*it).c_str(), &prefw_);
    it = std::find(branches.begin(),branches.end(),"nonPrefiringProbUp");   if ( it != branches.end() ) t_event_  -> SetBranchAddress( (*it).c_str(), &prefw_up_);
-   it = std::find(branches.begin(),branches.end(),"nonPrefiringProbDwon"); if ( it != branches.end() ) t_event_  -> SetBranchAddress( (*it).c_str(), &prefw_down_);
+   it = std::find(branches.begin(),branches.end(),"nonPrefiringProbDown"); if ( it != branches.end() ) t_event_  -> SetBranchAddress( (*it).c_str(), &prefw_down_);
 
-   
+
 //   t_event_ -> SetBranchAddress("nPileup", &n_pu_);
 //   t_event_ -> SetBranchAddress("nTruePileup", &n_true_pu_);
 
@@ -74,16 +74,16 @@ Analysis::Analysis(std::shared_ptr<Config> cfg)
    } else {
      is_mc_ = false;
    }
-   
+
    btageff_algo_    = "";
    btageff_flavour_ = "";
-   
+
    mylumi_= -1.;
 
-   
+
    //if(is_mc_) crossSection();
 
-   
+
 }
 Analysis::Analysis(const std::string & inputFilelist, const std::string & evtinfo)
 {
@@ -94,31 +94,31 @@ Analysis::Analysis(const std::string & inputFilelist, const std::string & evtinf
    // event info (must be in the tree always)
    t_event_ = new TChain(evtinfo.c_str());
    t_event_ -> AddFileInfoList(fileList_);
-   
+
    std::vector<std::string> branches;
    TObjArray * treeBranches = t_event_->GetListOfBranches();
    for ( int i = 0 ; i < treeBranches->GetEntries() ; ++i )
       branches.push_back(treeBranches->At(i)->GetName());
-   
+
    t_event_ -> SetBranchAddress("event", &event_);
    t_event_ -> SetBranchAddress("run", &run_);
    t_event_ -> SetBranchAddress("lumisection", &lumi_);
-   
+
    // For backward compatibility
    std::vector<std::string>::iterator it;
    it = std::find(branches.begin(),branches.end(),"nPileup");      if ( it != branches.end() ) t_event_  -> SetBranchAddress( (*it).c_str(), &n_pu_);
    it = std::find(branches.begin(),branches.end(),"nTruePileup");  if ( it != branches.end() ) t_event_  -> SetBranchAddress( (*it).c_str(), &n_true_pu_);
-   
+
    it = std::find(branches.begin(),branches.end(),"lumiPileup");   if ( it != branches.end() ) t_event_  -> SetBranchAddress( (*it).c_str(), &lumi_pu_);
    it = std::find(branches.begin(),branches.end(),"instantLumi");  if ( it != branches.end() ) t_event_  -> SetBranchAddress( (*it).c_str(), &inst_lumi_);
-   
+
    it = std::find(branches.begin(),branches.end(),"genWeight");    if ( it != branches.end() ) t_event_  -> SetBranchAddress( (*it).c_str(), &genWeight_);
    it = std::find(branches.begin(),branches.end(),"genScale");     if ( it != branches.end() ) t_event_  -> SetBranchAddress( (*it).c_str(), &genScale_);
    it = std::find(branches.begin(),branches.end(),"pdfid1");       if ( it != branches.end() ) t_event_  -> SetBranchAddress( (*it).c_str(), &pdf_.id.first);
    it = std::find(branches.begin(),branches.end(),"pdfid2");       if ( it != branches.end() ) t_event_  -> SetBranchAddress( (*it).c_str(), &pdf_.id.second);
    it = std::find(branches.begin(),branches.end(),"pdfx1");        if ( it != branches.end() ) t_event_  -> SetBranchAddress( (*it).c_str(), &pdf_.x.first);
    it = std::find(branches.begin(),branches.end(),"pdfx2");        if ( it != branches.end() ) t_event_  -> SetBranchAddress( (*it).c_str(), &pdf_.x.second);
-   
+
    it = std::find(branches.begin(),branches.end(),"rho");          if ( it != branches.end() ) t_event_  -> SetBranchAddress( (*it).c_str(), &rho_);
 
    it = std::find(branches.begin(),branches.end(),"nonPrefiringProb");     if ( it != branches.end() ) t_event_  -> SetBranchAddress( (*it).c_str(), &prefw_);
@@ -126,7 +126,7 @@ Analysis::Analysis(const std::string & inputFilelist, const std::string & evtinf
    it = std::find(branches.begin(),branches.end(),"nonPrefiringProbDwon"); if ( it != branches.end() ) t_event_  -> SetBranchAddress( (*it).c_str(), &prefw_down_);
 
 
-   
+
 //   t_event_ -> SetBranchAddress("nPileup", &n_pu_);
 //   t_event_ -> SetBranchAddress("nTruePileup", &n_true_pu_);
 
@@ -138,13 +138,13 @@ Analysis::Analysis(const std::string & inputFilelist, const std::string & evtinf
    } else {
      is_mc_ = false;
    }
-   
+
    btageff_algo_    = "";
    btageff_flavour_ = "";
-   
+
    mylumi_= -1.;
 
-   
+
    //if(is_mc_) crossSection();
 
 }
@@ -165,17 +165,17 @@ void Analysis::event(const int & event, const bool & addCollections)
    // Initialisation for backward compatibility
    n_pu_ = -1;
    n_true_pu_ = -1;
-   
+
    genWeight_ = -1.;
    genScale_  = -1.;
    pdf_.id.first  = 0;
    pdf_.id.second = 0;
    pdf_.x.first  = -1.;
    pdf_.x.second = -1.;
-   
+
    t_event_ -> GetEntry(event);
    if ( !addCollections) return;
-   
+
    for ( auto & tree : t_any_ )
    {
       std::string name = tree.first;
@@ -194,7 +194,7 @@ void Analysis::event(const int & event, const bool & addCollections)
       if ( type == "RecoMuon" )       this->addCollection<RecoMuon>(name);
       if ( type == "RecoTrack" )      this->addCollection<RecoTrack>(name);
    }
-   
+
 }
 
 
@@ -333,10 +333,10 @@ float Analysis::scaleLuminosity(const float & lumi)
    float lumiScale = 1.;
    mylumi_ = lumi;
    if ( mylumi_ < 0 ) return lumiScale;
-   
+
    lumiScale  = mylumi_/this->luminosity();
    return lumiScale;
-   
+
 }
 
 void   Analysis::listCrossSections()
@@ -449,7 +449,7 @@ int Analysis::processJsonFile(const std::string & fileName)
    using boost::property_tree::ptree;
    ptree pt;
    read_json(fileName , pt);
-   
+
    for (auto & element: pt)
    {
       int run = std::stoi(element.first);
@@ -463,7 +463,7 @@ int Analysis::processJsonFile(const std::string & fileName)
       }
       if ( lumiranges.size()%2 != 0 ) return -1;
 //      std::sort(lumiranges.begin(), lumiranges.end());  // not really needed
-      
+
       json_[run] = lumiranges;
    }
    return 0;
@@ -472,7 +472,7 @@ int Analysis::processJsonFile(const std::string & fileName)
 bool Analysis::selectJson()
 {
 	bool isGood = false;
-   
+
    std::vector<int> lumiranges = json_[run_];
    for ( size_t i = 0 ; i< lumiranges.size() ; i += 2 )
    {
@@ -493,7 +493,7 @@ void Analysis::addBtagEfficiencies(const std::string & filename)
       btageff_flavour_ = field[0];
       btageff_algo_    = field[1];
    }
-   
+
    TList * mylist = fileBtagEff_->GetListOfKeys();
    for ( int i = 0 ; i < mylist->GetSize() ; ++i  )
    {
@@ -504,7 +504,7 @@ void Analysis::addBtagEfficiencies(const std::string & filename)
 //      if ( className == "TH2D" )
 //         h2_btageff_[objName] = (TH2D*) fileBtagEff_->Get(objName.c_str());
    }
-   
+
 }
 
 float Analysis::btagEfficiency(const analysis::tools::Jet & jet, const int & rank)
@@ -528,13 +528,13 @@ float Analysis::btagEfficiency(const analysis::tools::Jet & jet, const int & ran
    }
    float pt = jet.pt();
    float eta = fabs(jet.eta());
-   
+
    std::string hname = Form("h_%sjet%s_eff_pt_eta",flav.c_str(),srank.c_str());
 
    int bin = h2_btageff_[hname] -> FindBin(pt,eta);
-   
+
    eff = h2_btageff_[hname] -> GetBinContent(bin);
-         
+
    return eff;
 }
 
@@ -544,17 +544,17 @@ void triggerNames(std::string &trueTriggerNames,const char *myTriggerNames, TTre
 {
 	TObjArray *mycopy = (TObjArray *)t_Trig->GetListOfBranches()->Clone();
 	TString names;
-	
+
 	for (int i = 0; i < mycopy -> GetEntries(); ++i)
 	{
 		names = mycopy->At(i)->GetName();
 		if( names.Contains(myTriggerNames) ) trueTriggerNames = (std::string)mycopy->At(i)->GetName();
 		std::cout<<"name = "<<names<<std::endl;
 	}
-	
+
 }
 */
-      
+
 std::shared_ptr<JetResolutionInfo> Analysis::jetResolutionInfo(const std::string & f_jer, const std::string & f_jersf)
 {
    JetResolution res = JetResolution(f_jer);
@@ -562,21 +562,21 @@ std::shared_ptr<JetResolutionInfo> Analysis::jetResolutionInfo(const std::string
    jerinfo_ = std::make_shared<JetResolutionInfo>(JetResolutionInfo{res,sf});
    return jerinfo_;
 }
-      
+
 std::shared_ptr<PileupWeight> Analysis::pileupWeights(const std::string & f_pu)
 {
    puweights_ = std::make_shared<PileupWeight>(PileupWeight(f_pu));
    return puweights_;
 }
 
-      
+
 std::shared_ptr<MuonIdWeight> Analysis::muonIDWeights(const std::string & f_muID )
 {
    muonIDweights_ = std::make_shared<MuonIdWeight>(MuonIdWeight(f_muID));
    return muonIDweights_;
 }
 
-      
+
 std::shared_ptr<BTagCalibrationReader> Analysis::btagCalibration(const std::string & tagger,
                                 const std::string & filename,
                                 const std::string & wp,
@@ -585,34 +585,34 @@ std::shared_ptr<BTagCalibrationReader> Analysis::btagCalibration(const std::stri
 {
    std::string wps = wp;
    std::transform(wps.begin(), wps.end(), wps.begin(), ::tolower);
-   
+
    BTagEntry::OperatingPoint op = BTagEntry::OP_MEDIUM;
    if ( wps == "loose" )    op = BTagEntry::OP_LOOSE;
    if ( wps == "medium" )   op = BTagEntry::OP_MEDIUM;
    if ( wps == "tight" )    op = BTagEntry::OP_TIGHT;
    if ( wps == "reshape" )  op = BTagEntry::OP_RESHAPING;
-   
+
    btagcalib_     = std::shared_ptr<BTagCalibration>      ( new BTagCalibration(tagger,filename));
    btagcalibread_ = std::shared_ptr<BTagCalibrationReader>( new BTagCalibrationReader(op,sysType,otherSysTypes) );
-   
-   
+
+
    btagcalibread_ -> load(*btagcalib_,             // calibration instance
                      BTagEntry::FLAV_B,           // btag flavour - B
-                     "comb");                     // measurement type   
-   
+                     "comb");                     // measurement type
+
    btagcalibread_ -> load(*btagcalib_,             // calibration instance
                      BTagEntry::FLAV_C,           // btag flavour - C
-                     "comb");                     // measurement type   
-   
+                     "comb");                     // measurement type
+
    btagcalibread_ -> load(*btagcalib_,             // calibration instance
                      BTagEntry::FLAV_UDSG,        // btag flavour - UDSG
-                     "incl");                     // measurement type   
-   
-   
+                     "incl");                     // measurement type
+
+
    return btagcalibread_;
-   
+
 }
-      
+
 
 std::shared_ptr<BTagCalibrationReader> Analysis::btagCalibration()
 {
@@ -632,11 +632,11 @@ int Analysis::seed(const std::string & name)
    int seed = 1;
    std::ifstream f(name.c_str(),std::ios_base::in);
    if ( ! f.good() )   return -1;
-   
+
    f >> seed;
    f.close();
    if ( seed < 1 )     return -1;
-   
+
    return seed;
 }
 
@@ -650,9 +650,9 @@ double Analysis::prefiringWeight(const int & var)
    double w = prefw_;
    if ( var < 0 ) w = prefw_down_;
    if ( var > 0 ) w = prefw_up_;
+   // up is lower
+   w = prefw_ - var*fabs((prefw_ - w));
 
-   w = w - var*fabs(prefw_ - w);
-   
    return w;
 
 }
