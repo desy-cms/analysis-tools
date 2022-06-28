@@ -81,7 +81,7 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          ("Corrections.BTag.Efficiencies2", po::value <std::string>              (&btageff_[1])      -> default_value("")                 , "b-tagging efficiencies in root file")
          ("Corrections.BTag.Efficiencies3", po::value <std::string>              (&btageff_[2])      -> default_value("")                 , "b-tagging efficiencies in root file")
          ("Corrections.Jets.bRegression" , po::value <bool>                      (&bregression_)     -> default_value(false)              , "Apply b jet energy regression")
-         ("Corrections.PrefiringWeight" , po::value <bool>                       (&prefw_)           -> default_value(true)              , "Apply L1 prefiring weight")
+         ("Corrections.PrefiringWeight"  , po::value <bool>                      (&prefw_)           -> default_value(false)              , "Apply L1 prefiring weight")
          ("Corrections.force"            , po::value <bool>                      (&apply_correct_)   -> default_value(false)              , "Apply corrections internally when above are defined");
 
       // jets
