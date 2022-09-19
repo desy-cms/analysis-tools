@@ -45,7 +45,6 @@
 #include "Analysis/Tools/interface/MuonIdWeight.h"
 #include "Analysis/Tools/interface/JetOnlineTriggerEfficiencies.h"
 
-
 #include "Analysis/Tools/interface/Config.h"
 
 //#include "CondFormats/JetMETObjects/interface/JetCorrectorParameters.h"
