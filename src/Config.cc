@@ -66,7 +66,7 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          ("Info.isMC"                    , po::value <bool>                      (&isMC_)            -> default_value(false)              ,"Flag for MC dataset")
          ("Info.fullGenWeight"           , po::value <bool>                      (&fullgenweight_)   -> default_value(false)              ,"Flag for full gen weight of MC samples, otherwise only sign")
          ("Info.signalRegion"            , po::value <bool>                      (&signalregion_)    -> default_value(true)               ,"Flag for signal region")
-         ("Info.validationRegion"        , po::value <bool>                      (&validationregion_)-> default_value(false)              ,"Flag for validation region")
+         ("Info.validationRegion"        , po::value <bool>                      (&validationregion_)-> default_value(false)              ,"Flag for validation region") 
          ("Info.eventsMax"               , po::value <int>                       (&nevtmax_)         -> default_value(-1)                 , "Maximum number of events")
          ("Info.seed"                    , po::value <int>                       (&seed_)            -> default_value(-1)                 , "Seed value for random numbers");
 

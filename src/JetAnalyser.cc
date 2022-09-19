@@ -838,7 +838,7 @@ bool JetAnalyser::selectionBJet(const int & r )
 //   if ( ! config_->signalRegion() && r == config_->revBtagJet() ) return this->selectionNonBJet(r);
    if ( ! config_->signalRegion() && ! config_->validationRegion() && r == config_->revBtagJet() ) return this->selectionNonBJet(r);
    if ( ! config_->signalRegion() && config_->validationRegion() && r == config_->revBtagJet() ) return this->selectionSemiBJet(r);
-
+   
    if (config_->signalRegion() && config_->validationRegion())
    std::cout<<std::endl<<"WARNING, selected signalRegion == TRUE and validationRegion == TRUE. Running on Signal Region"<<std::endl;
 
