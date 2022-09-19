@@ -152,7 +152,7 @@ namespace analysis {
             virtual void actionApplyJetOnlineSF();
             virtual void applyJetOnlineSF(const int & r);
             analysis::tools::JetTriggerEfficiencies * jte; // variable to call the function to find scale factor
-
+            
       };
    }
 }

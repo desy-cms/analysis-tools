@@ -87,7 +87,7 @@ namespace analysis {
             
             std::string process() const;
             std::string eventsDir() const;
-
+            
             std::string seedFile() const;
             int seed() const;
 
