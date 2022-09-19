@@ -123,6 +123,7 @@ namespace analysis {
             virtual bool selectionBJetProbLight(const int &);
             virtual ScaleFactors btagSF(const int &, const std::string &);
             virtual bool selectionNonBJet(const int &);
+            virtual bool selectionSemiBJet(const int &);
             virtual bool onlineJetMatching(const int &);
             virtual bool onlineBJetMatching(const int &);
             /// Creates pre-defined histograms in directory 'label' for analysis with 'n' jets
@@ -148,6 +149,9 @@ namespace analysis {
 //            virtual float btagEfficiency(const int &);
             /// multiple actions: apply JER and b-tag regression corrections
             virtual bool jetCorrections();
+            virtual void actionApplyJetOnlineSF();
+            virtual void applyJetOnlineSF(const int & r);
+            analysis::tools::JetTriggerEfficiencies * jte; // variable to call the function to find scale factor
 
       };
    }

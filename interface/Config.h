@@ -77,6 +77,7 @@ namespace analysis {
             int  nEventsMax() const;
             bool isMC() const;
             bool signalRegion() const;
+            bool validationRegion() const;
             bool blind() const;
             bool override() const;
             bool nlo() const;
@@ -112,7 +113,9 @@ namespace analysis {
             std::string jetsPuId() const;
             std::string jerPtRes() const;
             std::string jerSF() const;
+            std::string onlinejetSF() const;
             int         jerSystematics() const;
+            int         onlinejetSystematics() const;
             int         jecSystematics() const;
             
             std::string l1tJetsCollection() const;
@@ -313,6 +316,7 @@ namespace analysis {
             std::string cmdl_inputlist_;
             int cmdl_evtmax_;
             int cmdl_jer_;
+            int cmdl_jetsf_;
             int cmdl_jec_;
 
             po::options_description opt_cmd_;
@@ -331,6 +335,7 @@ namespace analysis {
             int nevtmax_;
             bool isMC_;
             bool signalregion_;
+            bool validationregion_;
             bool blind_;
             bool override_;
             bool nlo_;
@@ -397,6 +402,9 @@ namespace analysis {
             int         jersyst_;
             // JEC systematics
             int         jecsyst_;
+            // Online Jet Trigger efficiency correction and systematics
+            std::string onljetsf_;
+            int         onljetsyst_;
             //
             std::string l1tjetsCol_;
             //
