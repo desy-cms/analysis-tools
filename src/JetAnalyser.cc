@@ -66,12 +66,17 @@ JetAnalyser::JetAnalyser(int argc, char * argv[]) : BaseAnalyser(argc,argv)
          flavours_.push_back("bb");
       }
    }
+   
+   if(config_->onlinejetSF() != "")
+   jte = new JetTriggerEfficiencies(config_->onlinejetSF());
+
 //   histograms("jet",config_->nJetsMin());
 
 }
 
 JetAnalyser::~JetAnalyser()
 {
+   delete jte;
    // do anything here that needs to be done at desctruction time
    // (e.g. close files, deallocate resources etc.)
 }
@@ -830,7 +835,12 @@ bool JetAnalyser::selectionBJet(const int & r )
 {
    if ( config_->nJetsMin() < config_->nBJetsMin() || config_->nBJetsMin() < 1 || r > config_->nBJetsMin() ||  (int)(config_->jetsBtagWP()).size() < config_->nBJetsMin() ) return true;
    
-   if ( ! config_->signalRegion() && r == config_->revBtagJet() ) return this->selectionNonBJet(r);
+//   if ( ! config_->signalRegion() && r == config_->revBtagJet() ) return this->selectionNonBJet(r);
+   if ( ! config_->signalRegion() && ! config_->validationRegion() && r == config_->revBtagJet() ) return this->selectionNonBJet(r);
+   if ( ! config_->signalRegion() && config_->validationRegion() && r == config_->revBtagJet() ) return this->selectionSemiBJet(r);
+
+   if (config_->signalRegion() && config_->validationRegion())
+   std::cout<<std::endl<<"WARNING, selected signalRegion == TRUE and validationRegion == TRUE. Running on Signal Region"<<std::endl;
 
    int j = r-1;
    if ( config_->btagWP(config_->jetsBtagWP()[j]) < 0 ) return true; // there is no selection here, so will not update the cutflow
@@ -857,6 +867,25 @@ bool JetAnalyser::selectionNonBJet(const int & r )
    
    // jet  non btag
    isgood = ( btag(*selectedJets_[j],config_->btagAlgorithm()) < config_->btagWP(config_->revBtagWP()) );
+   
+   cutflow(label,isgood);
+   
+   return isgood;
+}
+
+
+bool JetAnalyser::selectionSemiBJet(const int & r )
+{
+   if ( config_->btagWP(config_->revBtagWP()) < 0 ) return true; // there is no selection here, so will not update the cutflow
+   
+   bool isgood = true;
+   int j = r-1;
+
+   std::string label = Form("Jet %d: %s %6.4f (%s) < btag < %6.4f (%s) [semi btag]",r,config_->btagAlgorithm().c_str(),config_->btagWP(config_->revBtagWP()),config_->revBtagWP().c_str(),config_->btagWP(config_->jetsBtagWP()[j]),config_->jetsBtagWP()[j].c_str());
+   
+   
+   // jet  non btag
+   isgood = ( btag(*selectedJets_[j],config_->btagAlgorithm()) > config_->btagWP(config_->revBtagWP()) &&  btag(*selectedJets_[j],config_->btagAlgorithm()) < config_->btagWP(config_->jetsBtagWP()[j]) );
    
    cutflow(label,isgood);
    
@@ -1586,6 +1615,8 @@ bool JetAnalyser::jetCorrections()
 // CORRECTIONS
    // Jet energy resolution smearing
       this->actionApplyJER();
+   // Jet online trigger scale factor
+      this->actionApplyJetOnlineSF();   
    // b energy regression
       if ( this->config()->bRegression() )  this->actionApplyBjetRegression();
       
@@ -1610,5 +1641,63 @@ void JetAnalyser::actionApplyBtagEfficiency(const int & rank, const int & model)
 }
 
 
+void JetAnalyser::actionApplyJetOnlineSF()
+{
+ 
+// Jet Online Corrections to be applied to MC
+
+   if ( ! jetsanalysis_ || ! config_->isMC() || selectedJets_.size() < 2) return; //check and print error message
+
+
+   std::string label = "WARNING: NO Jet Online Scale factor (*** missing Scale Factor Info and/or GenJet collection ***)";
+   
+
+   if ( config_->onlinejetSF() != "")
+   {
+      std::string bnsf = basename(config_->onlinejetSF());
+      label = Form("Jet Online Scale Factor (%s)",bnsf.c_str());
+
+      if ( config_->onlinejetSystematics() != 0 )
+      {
+         if (fabs(config_->onlinejetSystematics()) == 1 || fabs(config_->onlinejetSystematics()) == 2)
+         label = Form("Jet Online Scale Factor: (%s), syst: %+d sig",bnsf.c_str(),config_->onlinejetSystematics());
+         else
+         {
+            std::string label = Form("WARNING: NO Jet Online Scale factor (*** missing Scale Factor Info for syst = %+d sig ***)",config_->onlinejetSystematics());       
+            cutflow(label);
+            return;
+         }  
+      }
+
+      this->applyJetOnlineSF(1); // apply online jet kinematic trigger efficiency scale factor on jet i
+      cutflow(Form("Jet 1: %s",label.c_str()));
+      this->applyJetOnlineSF(2); 
+      cutflow(Form("Jet 2: %s",label.c_str()));
+      return;
+   }
+   
+   cutflow(label);
+
+}     
+
+
+void JetAnalyser::applyJetOnlineSF(const int & r) 
+{
+// Jet Online Corrections to be applied to MC
+
+   int j = r-1;
+   double sf = 1;
+
+//to do: check label when no file, check when data
+
+   if ( ! jetsanalysis_ || ! config_->isMC() || selectedJets_.size() < 2) return;
+   if ( config_->onlinejetSF() == "")  return;
+
+   sf *= jte->findSF(selectedJets_[j]->eta(),selectedJets_[j]->pt(), config_->onlinejetSystematics());
+   
+   weight_ *= sf; //apply sf to event weight]
+
+   return;
+}
 
 
