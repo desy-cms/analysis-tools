@@ -227,7 +227,7 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          ("User.min"                     , po::value <float>                     (&min_)             -> default_value(-1.)                , "some minimum value")
          ("User.max"                     , po::value <float>                     (&max_)             -> default_value(-1.)                , "some maximum value")
          ("User.scale"                   , po::value <float>                     (&scale_)           -> default_value(-1.)                , "Overall scale for histograms")
-         ("User.workflow"                , po::value <int>                       (&workflow_)        -> default_value(1)                  , "Workflow index defined by user")
+         ("User.workflow"                , po::value <int>                       (&workflow_)        -> default_value(-1)                 , "Workflow index defined by user")
          ("User.prescale"                , po::value <int>                       (&prescale_)        -> default_value(1)                  , "Prescale factor")
          ("User.n"                       , po::value <int>                       (&n_)               -> default_value(-1)                 , "Some integer")
          ("User.index"                   , po::value <int>                       (&index_)           -> default_value(-1)                 , "Some User index for user")
@@ -615,7 +615,17 @@ bool  Config::histogramJetsRegionSplit() const { return histjets_rsplit_ ; }
 bool  Config::histogramJetsPerFlavour()  const { return histjets_flavour_ ; }
 
 
-std::string Config::outputRoot() const { return outputRoot_ ; }
+std::string Config::outputRoot() const
+{ 
+   // adding workflow number to the output file
+   std::string outputRootWF = outputRoot_;
+   if ( workflow_ < 1 ) return outputRootWF;
+   auto dotpos = outputRoot_.find_last_of(".");
+   std::string wf =  Form("_wf%d", workflow_);
+   if ( dotpos!= std::string::npos )
+      outputRootWF.insert(dotpos, Form("_wf%d", workflow_));
+   return outputRootWF ;
+}
 std::string Config::json() const { return json_ ; }
 
 
