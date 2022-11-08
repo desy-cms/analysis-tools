@@ -17,7 +17,6 @@ int main(int argc, char * argv[])
 
    std::string opt = "";
    if  ( argc == 3 )  opt = std::string(argv[2]);
-   std::cout << "option = " << opt << std::endl;
    bool do_csv = false;
    std::string csv_filename = "";
    std::ofstream csvfile;
@@ -37,9 +36,8 @@ int main(int argc, char * argv[])
    printf("+%s+\n", std::string(170,'-').c_str());
    if ( do_csv )
    {
-      std::cout << csv_filename << std::endl;     
       csvfile.open(csv_filename.c_str());
-      csvfile << h->GetTitle()<<";n events;ratio wrt first;ratio wrt previous" << std::endl;
+      csvfile << h->GetTitle()<<";label;n events;ratio wrt first;ratio wrt previous" << std::endl;
    }
    int firstbin = 2;
    for ( int i = 1; i <= h ->GetNbinsX(); ++i )
@@ -53,18 +51,18 @@ int main(int argc, char * argv[])
       if ( i == 1 )
       {
          printf("| %2d - %-103s |    %10.1f |   %16s |  %19s |\n",i-1,label.c_str(),n,"-","-");
-         csvfile << i-1 << " - " << label << ";" << n << ";" << ";" << ";" << std::endl;
+         csvfile << i-1 << ";" << label << ";" << n << ";" << ";" << ";" << std::endl;
       }
       else if ( i == 2 )
       {
          printf("| %2d - %-103s |    %10.1f |   %16.6f |  %19s |\n",i-1,label.c_str(),n,rn1,"-");
-         csvfile << i-1 << " - " << label << ";" << n << ";" << rn1 << ";" << std::endl;
+         csvfile << i-1 << ";" << label << ";" << n << ";" << rn1 << ";" << std::endl;
       }
       else
       {
          rni = h-> GetBinContent(i)/h->GetBinContent(i-1);
          printf("| %2d - %-103s |    %10.1f |   %16.6f |     %16.6f |\n",i-1,label.c_str(),n,rn1,rni);
-         csvfile << i-1 << " - " << label << ";" << n << ";" << rn1 << ";" << rni << std::endl;
+         csvfile << i-1 << ";" << label << ";" << n << ";" << rn1 << ";" << rni << std::endl;
       }
       
    }
