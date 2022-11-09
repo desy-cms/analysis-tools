@@ -100,7 +100,7 @@ namespace analysis {
             std::vector< std::shared_ptr<TriggerObject> > triggerObjectsPFJets();
             std::vector< std::shared_ptr<TriggerObject> > triggerObjectsL1Muons();
             std::vector< std::shared_ptr<TriggerObject> > triggerObjectsL3Muons();
-            
+            std::vector< std::shared_ptr<TriggerObject> > triggerObjectsBJets();
             
             std::vector< std::shared_ptr<L1TJet> > l1tJets();
             std::vector< std::shared_ptr<L1TJet> > selectedL1TJets();
