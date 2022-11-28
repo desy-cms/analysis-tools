@@ -516,3 +516,21 @@ void BaseAnalyser::actionApplyPrefiringWeight()
    actionApplyPrefiringWeight(config_->prefiringWeightSystematics());
 }
 
+void BaseAnalyser::add1DHistogram(const std::string & label, const std::string & name, const std::string & title, const int & nbins, const float & min, const float & max)
+{
+   this->output()->cd();
+   if (!this->output()->FindObjectAny(label.c_str()))
+   {
+      std::cout << "-warning- BaseAnalyser::add1DHistogram - directory with label " << label << " does not exist!" << std::endl;
+      return;
+   }
+   this->output()->cd(label.c_str());
+   h1_[Form("%s_%s", name.c_str(), label.c_str())] = std::make_shared<TH1F>(Form("%s_%s", name.c_str(), label.c_str()), Form("%s_%s", name.c_str(), label.c_str()), nbins, min, max);
+
+   this->output()->cd();
+}
+
+void BaseAnalyser::fill1DHistogram(const std::string & label, const std::string & name, const float & value, const float & weight)
+{
+   h1_[Form("%s_%s", name.c_str(), label.c_str())]->Fill(value, weight);
+}
