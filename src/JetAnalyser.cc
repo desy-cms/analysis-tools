@@ -967,23 +967,31 @@ bool JetAnalyser::onlineBJetMatching(const std::vector<int> & ranks, const int &
       rank_list += std::to_string(r)+", ";
    rank_list.pop_back();
    rank_list.pop_back();
-
    std::string label = Form("Online b jet match (deltaR < %4.3f), at least %d of jets %s", config_->triggerMatchCaloBJetsDrMax(), nmin,rank_list.c_str());
 
-   int match_counter = 0 ;
+   auto matched_ranks = this->onlineBJetMatching(ranks);
+   isgood = (int(matched_ranks.size()) >= nmin);
+   cutflow(label, isgood);
+
+   return isgood;
+}
+
+std::vector<int> JetAnalyser::onlineBJetMatching(const std::vector<int> & ranks)
+{
+   std::vector<int> matched_ranks;
+   if (config_->triggerObjectsBJets() == "")
+      return ranks;
+
    for ( auto & r : ranks )
    {
       int j = r - 1;
       std::shared_ptr<Jet> jet = selectedJets_[j];
       if ( jet->matched(config_->triggerObjectsBJets()) )
-         ++match_counter;
+         matched_ranks.push_back(r);
    }
-   isgood = (match_counter >= nmin);
-
-   cutflow(label, isgood);
-
-   return isgood;
+   return matched_ranks;
 }
+
 
 
 void JetAnalyser::fillJetHistograms(const std::string &label)
