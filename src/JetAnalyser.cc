@@ -208,7 +208,9 @@ void JetAnalyser::jetHistograms(const int &n, const std::string &label)
 
    n_hjets_ = n;
 
-   h1_[Form("jet_hist_weight_%s", label.c_str())] = std::make_shared<TH1F>(Form("jet_hist_weight_%s", label.c_str()), Form("jet_hist_weight_%s", label.c_str()), 1, 0., 1.);
+   //h1_[Form("jet_hist_weight_%s", label.c_str())] = std::make_shared<TH1F>(Form("jet_hist_weight_%s", label.c_str()), Form("jet_hist_weight_%s", label.c_str()), 1, 0., 1.);
+   this->add1DHistogram(label,"jet_hist_weight","",1,0.,1);
+   this->output()->cd(label.c_str()); // TODO need to find a way to remove this line
 
    // btag variable binning
    float min1 = 0.0;
@@ -1007,7 +1009,9 @@ void JetAnalyser::fillJetHistograms(const std::string &label)
    if (n > config_->nJetsMin())
       n = config_->nJetsMin();
 
-   h1_[Form("jet_hist_weight_%s", label.c_str())]->Fill(0., weight_);
+   //h1_[Form("jet_hist_weight_%s", label.c_str())]->Fill(0., weight_);
+   this->fill1DHistogram(label,"jet_hist_weight",0., weight_);
+   this->output()->cd(label.c_str()); // TODO need to find a way to remove this line
 
    for (int j = 0; j < n; ++j)
    {
