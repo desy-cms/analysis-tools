@@ -525,12 +525,21 @@ void BaseAnalyser::add1DHistogram(const std::string & label, const std::string &
       return;
    }
    this->output()->cd(label.c_str());
-   h1_[Form("%s_%s", name.c_str(), label.c_str())] = std::make_shared<TH1F>(Form("%s_%s", name.c_str(), label.c_str()), Form("%s_%s", name.c_str(), label.c_str()), nbins, min, max);
+
+   std::string hist_tag = Form("%s_%s", name.c_str(), label.c_str());
+   std::string hist_title = title;
+   if ( title == "") hist_title = hist_tag;
+   std::string hist_name = name;
+
+   h1_[hist_tag] = std::make_shared<TH1F>(hist_name.c_str(), hist_title.c_str(), nbins, min, max);
 
    this->output()->cd();
 }
 
 void BaseAnalyser::fill1DHistogram(const std::string & label, const std::string & name, const float & value, const float & weight)
 {
-   h1_[Form("%s_%s", name.c_str(), label.c_str())]->Fill(value, weight);
+   std::string hist_tag = Form("%s_%s", name.c_str(), label.c_str());
+   this->output()->cd(label.c_str());
+   h1_[hist_tag]->Fill(value, weight);
+   this->output()->cd();
 }
