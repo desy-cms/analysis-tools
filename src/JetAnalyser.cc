@@ -1749,3 +1749,34 @@ void JetAnalyser::actionApplyBtagEfficiency(const int &rank, const int &model)
       weight_ *= btagEfficiencies_[model - 1].efficiency(jet->flavour(), jet->jerP4().Pt(), jet->jerP4().Eta());
    cutflow(label);
 }
+
+
+std::vector< std::shared_ptr<Jet> > JetAnalyser::removeSelectedJets(const std::vector<int> & ranks)
+{
+   std::vector< std::shared_ptr<Jet> > jets;
+   for ( size_t i = 0; i < selectedJets_.size(); ++i)
+   {
+      int r = i+1;
+      if ( std::find(ranks.begin(), ranks.end(), r) != ranks.end() ) continue;
+      jets.push_back(selectedJets_[i]);
+   }
+   return jets;
+
+}
+std::vector< std::shared_ptr<Jet> > JetAnalyser::keepSelectedJets(const std::vector<int> & ranks)
+{
+   std::vector< std::shared_ptr<Jet> > jets;
+   for ( size_t i = 0; i < selectedJets_.size(); i++)
+   {
+      int r = i+1;
+      if ( std::find(ranks.begin(), ranks.end(), r) == ranks.end() ) continue;
+      jets.push_back(selectedJets_[i]);
+   }
+   return jets;
+
+}
+
+void JetAnalyser::selectedJets(const std::vector< std::shared_ptr<Jet> > & jets )
+{
+   selectedJets_ = jets;
+}
