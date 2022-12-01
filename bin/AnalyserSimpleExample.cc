@@ -64,9 +64,8 @@ int main(int argc, char ** argv)
       if ( ! analyser.selectionHLT()           )   continue;
       // jets 1 and 2 matching to online jets and btag
       if ( ! analyser.onlineJetMatching(1)     )   continue;
-      if ( ! analyser.onlineBJetMatching(1)    )   continue;
       if ( ! analyser.onlineJetMatching(2)     )   continue;
-      if ( ! analyser.onlineBJetMatching(2)    )   continue;
+      if ( ! analyser.onlineBJetMatching({1,2,3},2))   continue;
       // muon trigger matching
       if ( ! analyser.onlineMuonMatching()     )   continue;
       

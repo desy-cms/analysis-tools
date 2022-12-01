@@ -219,6 +219,12 @@ namespace analysis {
             void actionApplyPrefiringWeight(const int & var);
             void actionApplyPrefiringWeight();
 
+            /// add histogram
+            virtual void add1DHistogram(const std::string & label, const std::string & name, const std::string & title, const int & nbins, const float & min, const float & max);
+            /// fill added histogram 
+            virtual void fill1DHistogram(const std::string & label, const std::string & name, const float & value, const float & weight = 1.);
+
+
 
       };
    }

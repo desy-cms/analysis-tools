@@ -239,6 +239,16 @@ std::vector< std::shared_ptr<TriggerObject> > TriggerAnalyser::triggerObjectsL3M
    return objects;
 }
 
+std::vector< std::shared_ptr<TriggerObject> > TriggerAnalyser::triggerObjectsBJets()
+{
+   auto collection = analysis_->collection<TriggerObject>(config_->triggerObjectsBJets());
+   std::vector< std::shared_ptr<TriggerObject> > objects;
+   for ( int j = 0 ; j < collection->size() ; ++j )
+      objects.push_back(std::make_shared<TriggerObject>(collection->at(j)));
+   return objects;
+}
+
+
 bool  TriggerAnalyser::l1tJetsAnalysis() const
 {
    return l1tjetsanalysis_;
