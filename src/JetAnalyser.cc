@@ -164,6 +164,7 @@ bool JetAnalyser::analysisWithJets()
    for (int j = 0; j < jets->size(); ++j)
    {
       jets_.push_back(std::make_shared<Jet>(jets->at(j)));
+      jets_.back()->btag(btag(*jets_.back(), config_->btagAlgorithm())); // give to each jet its btag value
    }
 
    selectedJets_ = jets_;
