@@ -1791,3 +1791,10 @@ std::vector< std::shared_ptr<Jet> > JetAnalyser::btagSortedJets( const std::vect
    std::sort(sortedJets.begin(),sortedJets.end(),btagOrdering);
    return sortedJets;
 }
+
+std::vector< std::shared_ptr<Jet> > JetAnalyser::concatenateJets( const std::vector< std::shared_ptr<Jet> > & jets1 ,const std::vector< std::shared_ptr<Jet> > & jets2)
+{
+   std::vector< std::shared_ptr<Jet> > jets = jets1;
+   jets.insert(jets.end(),jets2.begin(),jets2.end());
+   return jets;
+}
