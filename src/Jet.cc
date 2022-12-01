@@ -55,7 +55,8 @@ Jet::~Jet()
 //
 // Gets
 bool  Jet::isPuppi()                               const { return isPuppi_;    } 
-float Jet::btag(const std::string & algo)          const { return btags_.at(algo);         }                   
+float Jet::btag(const std::string & algo)          const { return btags_.at(algo);         }
+float Jet::btag()                                  const { return btag_; }
 int   Jet::flavour()                               const { return flavour_.at("Hadron");   }                   
 int   Jet::flavour(const std::string & definition) const { return flavour_.at(definition); }                   
 bool  Jet::idLoose()                               const { return idloose_;                }                   

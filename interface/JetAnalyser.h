@@ -69,6 +69,8 @@ namespace analysis {
          public:
             /// vector of pointers of the selectedJets
             std::vector< std::shared_ptr<Jet> > selectedJets();
+            /// vector of pointers of the selectedJets
+            void selectedJets(const std::vector< std::shared_ptr<Jet> > &);
             /// vector of pointers of all jets from the "Jets" collection
             std::vector< std::shared_ptr<Jet> > jets();
             
@@ -154,6 +156,14 @@ namespace analysis {
             /// multiple actions: apply JER and b-tag regression corrections
             virtual bool jetCorrections();
 
+            /// remove selected jets
+            std::vector< std::shared_ptr<Jet> > removeSelectedJets(const std::vector<int> & );
+            /// keep selected jets
+            std::vector< std::shared_ptr<Jet> > keepSelectedJets(const std::vector<int> & );
+            /// sort jets according to btag score
+            std::vector< std::shared_ptr<Jet> > btagSortedJets( const std::vector< std::shared_ptr<Jet> > & );
+            /// append vectors of jets
+            std::vector< std::shared_ptr<Jet> > concatenateJets( const std::vector< std::shared_ptr<Jet> > & ,const std::vector< std::shared_ptr<Jet> > & );
       };
    }
 }

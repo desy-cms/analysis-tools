@@ -18,6 +18,9 @@
 using namespace analysis;
 using namespace analysis::tools;
 
+bool btagOrdering( const std::shared_ptr<Jet> & j1, const std::shared_ptr<Jet> & j2){ return ( j1->btag() > j2->btag() );}
+
+
 JetAnalyser::JetAnalyser()
 {
 }
@@ -164,6 +167,7 @@ bool JetAnalyser::analysisWithJets()
    for (int j = 0; j < jets->size(); ++j)
    {
       jets_.push_back(std::make_shared<Jet>(jets->at(j)));
+      jets_.back()->btag(btag(*jets_.back(), config_->btagAlgorithm())); // give to each jet its btag value
    }
 
    selectedJets_ = jets_;
@@ -1748,4 +1752,49 @@ void JetAnalyser::actionApplyBtagEfficiency(const int &rank, const int &model)
    else
       weight_ *= btagEfficiencies_[model - 1].efficiency(jet->flavour(), jet->jerP4().Pt(), jet->jerP4().Eta());
    cutflow(label);
+}
+
+
+std::vector< std::shared_ptr<Jet> > JetAnalyser::removeSelectedJets(const std::vector<int> & ranks)
+{
+   std::vector< std::shared_ptr<Jet> > jets;
+   for ( size_t i = 0; i < selectedJets_.size(); ++i)
+   {
+      int r = i+1;
+      if ( std::find(ranks.begin(), ranks.end(), r) != ranks.end() ) continue;
+      jets.push_back(selectedJets_[i]);
+   }
+   return jets;
+
+}
+std::vector< std::shared_ptr<Jet> > JetAnalyser::keepSelectedJets(const std::vector<int> & ranks)
+{
+   std::vector< std::shared_ptr<Jet> > jets;
+   for ( size_t i = 0; i < selectedJets_.size(); i++)
+   {
+      int r = i+1;
+      if ( std::find(ranks.begin(), ranks.end(), r) == ranks.end() ) continue;
+      jets.push_back(selectedJets_[i]);
+   }
+   return jets;
+
+}
+
+void JetAnalyser::selectedJets(const std::vector< std::shared_ptr<Jet> > & jets )
+{
+   selectedJets_ = jets;
+}
+
+std::vector< std::shared_ptr<Jet> > JetAnalyser::btagSortedJets( const std::vector< std::shared_ptr<Jet> > & jets )
+{
+   std::vector< std::shared_ptr<Jet> > sortedJets = jets;
+   std::sort(sortedJets.begin(),sortedJets.end(),btagOrdering);
+   return sortedJets;
+}
+
+std::vector< std::shared_ptr<Jet> > JetAnalyser::concatenateJets( const std::vector< std::shared_ptr<Jet> > & jets1 ,const std::vector< std::shared_ptr<Jet> > & jets2)
+{
+   std::vector< std::shared_ptr<Jet> > jets = jets1;
+   jets.insert(jets.end(),jets2.begin(),jets2.end());
+   return jets;
 }
