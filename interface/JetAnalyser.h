@@ -157,11 +157,11 @@ namespace analysis {
             virtual bool jetCorrections();
 
             /// remove selected jets
-            std::vector< std::shared_ptr<Jet> > removeSelectedJets(const std::vector<int> &);
+            std::vector< std::shared_ptr<Jet> > removeSelectedJets(const std::vector<int> & );
             /// keep selected jets
-            std::vector< std::shared_ptr<Jet> > keepSelectedJets(const std::vector<int> &);
+            std::vector< std::shared_ptr<Jet> > keepSelectedJets(const std::vector<int> & );
 
-
+            std::vector< std::shared_ptr<Jet> > btagSortedJets( const std::vector< std::shared_ptr<Jet> > & );
       };
    }
 }

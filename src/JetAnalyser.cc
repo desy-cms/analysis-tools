@@ -18,6 +18,9 @@
 using namespace analysis;
 using namespace analysis::tools;
 
+bool btagOrdering( const std::shared_ptr<Jet> & j1, const std::shared_ptr<Jet> & j2){ return ( j1->btag() > j2->btag() );}
+
+
 JetAnalyser::JetAnalyser()
 {
 }
@@ -1780,4 +1783,11 @@ std::vector< std::shared_ptr<Jet> > JetAnalyser::keepSelectedJets(const std::vec
 void JetAnalyser::selectedJets(const std::vector< std::shared_ptr<Jet> > & jets )
 {
    selectedJets_ = jets;
+}
+
+std::vector< std::shared_ptr<Jet> > JetAnalyser::btagSortedJets( const std::vector< std::shared_ptr<Jet> > & jets )
+{
+   std::vector< std::shared_ptr<Jet> > sortedJets = jets;
+   std::sort(sortedJets.begin(),sortedJets.end(),btagOrdering);
+   return sortedJets;
 }
