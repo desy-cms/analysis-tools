@@ -69,6 +69,8 @@ namespace analysis {
             bool  isPuppi()                     const;
             /// returns the btag value of algorithm
             float btag(const std::string & )    const;
+            /// returns the btag value set by btag(float)
+            float btag()                        const;
             /// returns the flavour with the Hadron definition (=0 for data)
             int   flavour()                     const;
             /// returns the flavour given a definition (=0 for data)
