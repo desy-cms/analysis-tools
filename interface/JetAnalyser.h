@@ -160,10 +160,15 @@ namespace analysis {
             std::vector< std::shared_ptr<Jet> > removeSelectedJets(const std::vector<int> & );
             /// keep selected jets
             std::vector< std::shared_ptr<Jet> > keepSelectedJets(const std::vector<int> & );
+            /// sort jets according to pt
+            std::vector< std::shared_ptr<Jet> > ptSortedJets( const std::vector< std::shared_ptr<Jet> > & );
             /// sort jets according to btag score
             std::vector< std::shared_ptr<Jet> > btagSortedJets( const std::vector< std::shared_ptr<Jet> > & );
             /// append vectors of jets
             std::vector< std::shared_ptr<Jet> > concatenateJets( const std::vector< std::shared_ptr<Jet> > & ,const std::vector< std::shared_ptr<Jet> > & );
+
+            /// FSR corrections given a vector with the main jets and vector with FSR candidates, deltaR max for matching
+            void fsrCorrections( const std::vector< std::shared_ptr<Jet> > &, const std::vector< std::shared_ptr<Jet> > & , const float & deltaR_max = 0.8 );
       };
    }
 }

@@ -19,6 +19,7 @@ using namespace analysis;
 using namespace analysis::tools;
 
 bool btagOrdering( const std::shared_ptr<Jet> & j1, const std::shared_ptr<Jet> & j2){ return ( j1->btag() > j2->btag() );}
+bool jetptOrdering( const std::shared_ptr<Jet> & j1, const std::shared_ptr<Jet> & j2){ return ( j1->pt() > j2->pt() );}
 
 
 JetAnalyser::JetAnalyser()
@@ -1730,8 +1731,7 @@ bool JetAnalyser::jetCorrections()
    // Jet energy resolution smearing
    this->actionApplyJER();
    // b energy regression
-   if (this->config()->bRegression())
-      this->actionApplyBjetRegression();
+   this->actionApplyBjetRegression();
 
    return true;
 }
@@ -1785,6 +1785,13 @@ void JetAnalyser::selectedJets(const std::vector< std::shared_ptr<Jet> > & jets 
    selectedJets_ = jets;
 }
 
+std::vector< std::shared_ptr<Jet> > JetAnalyser::ptSortedJets( const std::vector< std::shared_ptr<Jet> > & jets )
+{
+   std::vector< std::shared_ptr<Jet> > sortedJets = jets;
+   std::sort(sortedJets.begin(),sortedJets.end(),jetptOrdering);
+   return sortedJets;
+}
+
 std::vector< std::shared_ptr<Jet> > JetAnalyser::btagSortedJets( const std::vector< std::shared_ptr<Jet> > & jets )
 {
    std::vector< std::shared_ptr<Jet> > sortedJets = jets;
@@ -1797,4 +1804,21 @@ std::vector< std::shared_ptr<Jet> > JetAnalyser::concatenateJets( const std::vec
    std::vector< std::shared_ptr<Jet> > jets = jets1;
    jets.insert(jets.end(),jets2.begin(),jets2.end());
    return jets;
+}
+
+void JetAnalyser::fsrCorrections( const std::vector< std::shared_ptr<Jet> > & main_jets, const std::vector< std::shared_ptr<Jet> > & fsr_candidates, const float & deltaR_max)
+{
+   std::string label = "*** Applying FSR corrections";
+   for ( auto & fsr: fsr_candidates )
+   {
+      for ( auto & jet: main_jets )
+      {
+         if ( jet->deltaR(*fsr) < deltaR_max )
+         {
+            jet->addFSR(fsr.get());
+            break;
+         }
+      }
+   }
+   cutflow(label);
 }
