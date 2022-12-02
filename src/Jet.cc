@@ -403,7 +403,7 @@ void Jet::addFSR(Jet* j)
    if ( j == nullptr ) return;
    if ( fsr_ != nullptr )
    {
-      std::cout << "FSR jet will not be added because FSR already exists" << std::endl;
+      // std::cout << "FSR jet will not be added because FSR already exists" << std::endl;
       return;
    }
    fsr_ = j;
