@@ -58,7 +58,8 @@ using namespace JME;
 namespace analysis {
    namespace tools {
 
-      class Analysis {
+      class Analysis
+      {
          public:
             Analysis(const std::string & inputFilelist, const std::string & evtinfo = "MssmHbb/Events/EventInfo");
             Analysis(std::shared_ptr<Config> cfg);
@@ -132,9 +133,13 @@ namespace analysis {
             double luminosity(const std::string & title);
 
             // Trigger results
+            /// Open the TriggerResults tree and make it Friend, loop over all triggers, HLT and L1, retrieving if fired and prescale
             bool triggerResults(const std::string & path);
+            /// Given a trigger name, HLT or L1 returns if fired or not
             bool triggerResult(const std::string & trig);
+            /// Given a trigger name, HLT or L1 returns the prescale
             int triggerPrescale(const std::string & trig);
+            /// Given a list of trigger names, HLT and L1, returns a map containing the prescales
             std::map<std::string,int> triggerPrescale(const std::vector<std::string> & trigs);
 
             // Generator Filter
@@ -206,9 +211,8 @@ namespace analysis {
             // pileup weight
             std::shared_ptr<PileupWeight> puweights_;
 	    
-	    // muonID weight
-	    std::shared_ptr<MuonIdWeight> muonIDweights_;
-
+	         // muonID weight
+	         std::shared_ptr<MuonIdWeight> muonIDweights_;
 
             std::map<std::string, double> xsections_;
             std::map<std::string, bool> triggerResults_;
@@ -242,8 +246,6 @@ namespace analysis {
             double prefw_;
             double prefw_up_;
             double prefw_down_;
-            
-
 
             int nevents_;
 
@@ -386,36 +388,7 @@ namespace analysis {
       }
       
 // ========================================================
-      inline void        Analysis::tag(const std::string & t) { std::cout << "Tag " << t << " has been defined." << std::endl ;
-      																			 tag_ = t;     }
-      inline std::string Analysis::tag()                      { return tag_ ; }
       
-
-      inline int   Analysis::numberEvents() { return nevents_;   }
-      inline int   Analysis::size()         { return nevents_;   }
-      inline int   Analysis::event()        { return event_;     }
-      inline int   Analysis::run()          { return run_  ;     }
-      inline int   Analysis::lumiSection()  { return lumi_ ;     }
-      inline bool  Analysis::isMC()         { return is_mc_ ;    }
-      
-      inline int   Analysis::nPileup()      { return n_pu_;      }
-      inline float Analysis::nTruePileup()  { return n_true_pu_; }
-      
-      inline float Analysis::lumiPileup()   { return lumi_pu_;   }
-      inline float Analysis::instantLumi()  { return inst_lumi_;}
-      
-      inline double Analysis::genWeight()   { return genWeight_; }
-      inline double Analysis::genScale()    { return genScale_;  }
-      inline PDF    Analysis::pdf()         { return pdf_;       }
-      inline double Analysis::rho()         { return rho_; }
-      
-      inline void Analysis::btagEfficienciesAlgo(const std::string & algo )      { btageff_algo_    = algo; }
-      inline void Analysis::btagEfficienciesFlavour(const std::string & flavour) { btageff_flavour_ = flavour; }
-      
-      inline std::string Analysis::fileFullName()     { return std::string(t_event_ -> GetFile() -> GetName()) ;    }
-      
-//      inline std::string Analysis::getGenParticleCollection() { return genParticleCollection_; }
-
    }
 }
 
