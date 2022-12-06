@@ -77,6 +77,9 @@ bool Analyser::event(const int & i)
    
    if ( this->genJetsAnalysis() )
       cutflow(Form("Using GenJets collection: %s",(config_->genJetsCollection()).c_str()));
+
+   if ( this->primaryVertexAnalysis())
+      cutflow(Form("Using Primary Vertex Collection: %s",(config_->primaryVertexCollection()).c_str()));
       
    if ( this -> l1tJetsAnalysis() )
       cutflow(Form("Using L1TJet collection: %s", (config_->l1tJetsCollection()).c_str()));
@@ -119,4 +122,30 @@ bool Analyser::preselection()
       if ( ! this->selectionJetPileupId()    )   return false;
       return true;
       
+}
+
+bool Analyser::selectionPrimaryVertex()
+{
+   if ( ! this->primaryVertexAnalysis() ) return true;
+
+   auto pvs = analysis_->collection<Vertex>("PrimaryVertex");
+   std::shared_ptr<Vertex> pv = std::make_shared<Vertex>(pvs->at(0));
+   auto fake = pv->fake();
+   auto rho  = pv->rho();
+   auto ndof = pv->ndof();
+   auto absz = fabs(pv->z());
+
+   // a bit confusing, maybe ok
+   std::string notfake = "!fake";
+   if ( ! config_->primaryVertexNotFake() ) notfake = "fake";
+   std::string label = Form("Primary vertex selection: %s && ndof>%3.1f && |z|<%3.1f && rho<%3.1f", notfake.c_str(),config_->primaryVertexNdofMin(),config_->primaryVertexAbsZMax(),config_->primaryVertexRhoMax());
+
+   bool goodPV = (           (!fake && config_->primaryVertexNotFake()) );
+   goodPV =      ( goodPV && (ndof   > config_->primaryVertexNdofMin()) );
+   goodPV =      ( goodPV && (absz   < config_->primaryVertexAbsZMax()) ); 
+   goodPV =      ( goodPV && (rho    < config_->primaryVertexRhoMax() ) );
+
+   cutflow(label, goodPV);
+
+   return goodPV;
 }

@@ -66,6 +66,8 @@ namespace analysis {
             virtual bool muonJet(const int & );
             /// multiple actions: perform muon Id, jet Id and jet pileup Id selections
             virtual bool preselection();
+            /// primary vertex selection
+            virtual bool selectionPrimaryVertex();
       };
    }
 }

@@ -86,6 +86,9 @@ namespace analysis {
             bool genpartsanalysis_;
             bool genjetsanalysis_;
 
+            /// primary vertex
+            bool primaryvtxanalysis_;
+
             /// pileup weight
             std::shared_ptr<PileupWeight> puweights_;
             
@@ -171,6 +174,8 @@ namespace analysis {
             bool genParticlesAnalysis() const;
             /// returns whether analysis of gen jets can be done
             bool genJetsAnalysis() const;
+            /// returns whether analysis of primary vertex can be done
+            bool primaryVertexAnalysis() const;
 
             /// returns pointer to pileup weights (MC-only)
             std::shared_ptr<PileupWeight> pileupWeights() const;
