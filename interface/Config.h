@@ -229,7 +229,7 @@ namespace analysis {
          // vertices
             std::string primaryVertexCollection() const;
             bool        primaryVertexNotFake()    const;
-            int         primaryVertexNdofMin()    const;
+            float       primaryVertexNdofMin()    const;
             float       primaryVertexAbsZMax()    const;
             float       primaryVertexRhoMax()     const;
 
@@ -502,7 +502,7 @@ namespace analysis {
          // vertices
             std::string primaryVtxCol_;
             bool  primaryVtxNotFake_;
-            int   primaryVtxNdofMin_;
+            float primaryVtxNdofMin_;
             float primaryVtxAbsZMax_;
             float primaryVtxRhoMax_ ;
 

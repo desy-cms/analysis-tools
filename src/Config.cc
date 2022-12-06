@@ -215,7 +215,7 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
       opt_cfg_.add_options()
          ("Vertices.primaryVertex"          , po::value <std::string>            (&primaryVtxCol_)       -> default_value("")            , "Name of the primary vertex collection")
          ("Vertices.primaryVertex.notFake"  , po::value <bool>                   (&primaryVtxNotFake_)   -> default_value(true)          , "Primary vertex not fake")
-         ("Vertices.primaryVertex.ndofMin"  , po::value <int>                    (&primaryVtxNdofMin_)   -> default_value(5)             , "Primary vertex minimum ndof")
+         ("Vertices.primaryVertex.ndofMin"  , po::value <float>                  (&primaryVtxNdofMin_)   -> default_value(4.)            , "Primary vertex minimum ndof")
          ("Vertices.primaryVertex.absZMax"  , po::value <float>                  (&primaryVtxAbsZMax_)   -> default_value(24.)           , "Primary vertex maximum abs Z")
          ("Vertices.primaryVertex.rhoMax"   , po::value <float>                  (&primaryVtxRhoMax_)    -> default_value(2.)            , "Primary vertex maximum Rho");
 
@@ -579,7 +579,7 @@ std::string        Config::genParticlesCollection()  const { return genpartsCol_
 // vertices
 std::string Config::primaryVertexCollection() const { return primaryVtxCol_    ; }
 bool        Config::primaryVertexNotFake()    const { return primaryVtxNotFake_; }
-int         Config::primaryVertexNdofMin()    const { return primaryVtxNdofMin_; }
+float       Config::primaryVertexNdofMin()    const { return primaryVtxNdofMin_; }
 float       Config::primaryVertexAbsZMax()    const { return primaryVtxAbsZMax_; }
 float       Config::primaryVertexRhoMax()     const { return primaryVtxRhoMax_ ; }
 
