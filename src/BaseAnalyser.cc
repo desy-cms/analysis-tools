@@ -38,6 +38,7 @@ BaseAnalyser::BaseAnalyser(int argc, char * argv[])
    xsection_ = -1.;
    genpartsanalysis_ = false;
    genjetsanalysis_  = false;
+   primaryvtxanalysis_ = false;
     
    // the heavy stuff
    config_   = std::make_shared<Config>(argc,argv);
@@ -81,6 +82,8 @@ BaseAnalyser::BaseAnalyser(int argc, char * argv[])
       genpartsanalysis_  = ( analysis_->addTree<GenParticle> ("GenParticles",config_->genParticlesCollection()) != nullptr );
       // gen jets analysis
       genjetsanalysis_  = ( analysis_->addTree<GenJet> ("GenJets",config_->genJetsCollection()) != nullptr );
+      // primary vertex analysis
+      primaryvtxanalysis_ = ( analysis_->addTree<Vertex> ("PrimaryVertex",config_->primaryVertexCollection()) != nullptr );
       
    }
    
@@ -171,7 +174,7 @@ BaseAnalyser::~BaseAnalyser()
 //      std::cout << "output root file: " << config_->outputRoot() << std::endl;
       hout_ -> cd();
       hout_ -> Write();
-      hout_->Close();
+      hout_ -> Close();
       // print workflow using the Workflow macro
       try
       {
@@ -282,6 +285,11 @@ bool  BaseAnalyser::genParticlesAnalysis() const
 bool  BaseAnalyser::genJetsAnalysis() const
 {
    return genjetsanalysis_;
+}
+
+bool  BaseAnalyser::primaryVertexAnalysis() const
+{
+   return primaryvtxanalysis_;
 }
 
 float BaseAnalyser::crossSection() const

@@ -211,6 +211,13 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          ("Generator.genParticles"       , po::value <std::string>               (&genpartsCol_)     -> default_value("")                 , "Name of the gen particle collection")
          ("Generator.genJets"            , po::value <std::string>               (&genjetsCol_)      -> default_value("")                 , "Name of the gen jets collection");
 
+      // vertices
+      opt_cfg_.add_options()
+         ("Vertices.primaryVertex"          , po::value <std::string>            (&primaryVtxCol_)       -> default_value("")            , "Name of the primary vertex collection")
+         ("Vertices.primaryVertex.notFake"  , po::value <bool>                   (&primaryVtxNotFake_)   -> default_value(true)          , "Primary vertex not fake")
+         ("Vertices.primaryVertex.ndofMin"  , po::value <float>                  (&primaryVtxNdofMin_)   -> default_value(4.)            , "Primary vertex minimum ndof")
+         ("Vertices.primaryVertex.absZMax"  , po::value <float>                  (&primaryVtxAbsZMax_)   -> default_value(24.)           , "Primary vertex maximum abs Z")
+         ("Vertices.primaryVertex.rhoMax"   , po::value <float>                  (&primaryVtxRhoMax_)    -> default_value(2.)            , "Primary vertex maximum Rho");
 
       // general
       opt_cfg_.add_options()
@@ -384,6 +391,9 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
             l1tjetsCol_    =  Form("%s/%s/%s" , process_.c_str(), eventsdir_.c_str() , l1tjetsCol_.c_str()     );
          if ( l1tmuonsCol_ != "")
             l1tmuonsCol_   =  Form("%s/%s/%s" , process_.c_str(), eventsdir_.c_str() , l1tmuonsCol_.c_str()    );
+         if ( primaryVtxCol_ != "" )
+            primaryVtxCol_   =  Form("%s/%s/%s" , process_.c_str(), eventsdir_.c_str() , primaryVtxCol_.c_str()    );
+          
 
          if ( njetsmax_ < njetsmin_ ) njetsmax_ = -1;
          if ( njetsmin_ < 0 && njetsmax_ > 0 ) njetsmin_ = 0;
@@ -565,6 +575,13 @@ float         Config::triggerMatchCaloBJetsDrMax()     const { return matchTrgCa
 // generator level
 std::string        Config::genJetsCollection()       const { return genjetsCol_; }
 std::string        Config::genParticlesCollection()  const { return genpartsCol_; }
+
+// vertices
+std::string Config::primaryVertexCollection() const { return primaryVtxCol_    ; }
+bool        Config::primaryVertexNotFake()    const { return primaryVtxNotFake_; }
+float       Config::primaryVertexNdofMin()    const { return primaryVtxNdofMin_; }
+float       Config::primaryVertexAbsZMax()    const { return primaryVtxAbsZMax_; }
+float       Config::primaryVertexRhoMax()     const { return primaryVtxRhoMax_ ; }
 
 // seed
 std::string        Config::seedFile()           const { return seedfile_; }

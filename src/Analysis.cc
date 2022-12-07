@@ -62,27 +62,17 @@ Analysis::Analysis(std::shared_ptr<Config> cfg)
    it = std::find(branches.begin(),branches.end(),"nonPrefiringProbUp");   if ( it != branches.end() ) t_event_  -> SetBranchAddress( (*it).c_str(), &prefw_up_);
    it = std::find(branches.begin(),branches.end(),"nonPrefiringProbDown"); if ( it != branches.end() ) t_event_  -> SetBranchAddress( (*it).c_str(), &prefw_down_);
 
-
-//   t_event_ -> SetBranchAddress("nPileup", &n_pu_);
-//   t_event_ -> SetBranchAddress("nTruePileup", &n_true_pu_);
-
    nevents_ = t_event_ -> GetEntries();
 
    t_event_ -> GetEntry(1); // Check whether it's mc simulation
-   if (run_ == 1) {         // A bit stupid, but it's only solution that I found for the moment
+   is_mc_ = false;
+   if (run_ == 1)         // A bit stupid, but it's only solution that I found for the moment
      is_mc_ = true;
-   } else {
-     is_mc_ = false;
-   }
 
    btageff_algo_    = "";
    btageff_flavour_ = "";
 
    mylumi_= -1.;
-
-
-   //if(is_mc_) crossSection();
-
 
 }
 Analysis::Analysis(const std::string & inputFilelist, const std::string & evtinfo)
@@ -125,27 +115,17 @@ Analysis::Analysis(const std::string & inputFilelist, const std::string & evtinf
    it = std::find(branches.begin(),branches.end(),"nonPrefiringProbUp");   if ( it != branches.end() ) t_event_  -> SetBranchAddress( (*it).c_str(), &prefw_up_);
    it = std::find(branches.begin(),branches.end(),"nonPrefiringProbDwon"); if ( it != branches.end() ) t_event_  -> SetBranchAddress( (*it).c_str(), &prefw_down_);
 
-
-
-//   t_event_ -> SetBranchAddress("nPileup", &n_pu_);
-//   t_event_ -> SetBranchAddress("nTruePileup", &n_true_pu_);
-
    nevents_ = t_event_ -> GetEntries();
 
    t_event_ -> GetEntry(1); // Check whether it's mc simulation
-   if (run_ == 1) {         // A bit stupid, but it's only solution that I found for the moment
+   if (run_ == 1)           // A bit stupid, but it's only solution that I found for the moment
      is_mc_ = true;
-   } else {
-     is_mc_ = false;
-   }
+
 
    btageff_algo_    = "";
    btageff_flavour_ = "";
 
    mylumi_= -1.;
-
-
-   //if(is_mc_) crossSection();
 
 }
 
@@ -174,8 +154,9 @@ void Analysis::event(const int & event, const bool & addCollections)
    pdf_.x.second = -1.;
 
    t_event_ -> GetEntry(event);
-   if ( !addCollections) return;
+   if ( ! addCollections ) return;
 
+   // add collections
    for ( auto & tree : t_any_ )
    {
       std::string name = tree.first;
@@ -196,8 +177,6 @@ void Analysis::event(const int & event, const bool & addCollections)
    }
 
 }
-
-
 
 // ===========================================================
 // ===============         Trees             =================
@@ -231,13 +210,13 @@ void Analysis::treeInit_(const std::string & unique_name, const std::string & pa
 bool Analysis::triggerResults(const std::string & path)
 {
    t_triggerResults_  = new TChain(path.c_str());
-   int ok = t_triggerResults_ -> AddFileInfoList(fileList_);
-   t_event_ -> AddFriend(t_triggerResults_);
+   int ok = t_triggerResults_ -> AddFileInfoList(fileList_);   
    if ( ok == 0 )
    {
       std::cout << "tree does not exist" << std::endl;
       return false;
    }
+   t_event_ -> AddFriend(t_triggerResults_);
    TObjArray * triggerBranches = t_triggerResults_ -> GetListOfBranches();
    for ( int i = 0 ; i < triggerBranches->GetEntries() ; ++i )
    {
@@ -255,20 +234,17 @@ bool Analysis::triggerResults(const std::string & path)
    }
    return true;
 }
-
 bool Analysis::triggerResult(const std::string & trig)
 {
    if ( trig == "" ) return true;
    if ( t_triggerResults_ == NULL ) return false;
    return triggerResults_[trig];
 }
-
 int Analysis::triggerPrescale(const std::string & trig)
 {
 //   if ( t_triggerResults_ == NULL ) return -1.;
    return triggerResultsPS_["ps_"+trig];
 }
-
 std::map<std::string,int> Analysis::triggerPrescale(const std::vector<std::string> & trigs)
 {
    std::map<std::string,int> ps;
@@ -278,8 +254,6 @@ std::map<std::string,int> Analysis::triggerPrescale(const std::vector<std::strin
    }
    return ps;
 }
-
-
 // ===========================================================
 // =================   METADATA   ============================
 // ===========================================================
@@ -306,7 +280,6 @@ int Analysis::crossSections(const std::string & path)
    t_xsection_ -> GetEntry(0);
    return 0;
 }
-
 double Analysis::crossSection()
 {
    return this -> crossSection("crossSection");
@@ -316,18 +289,15 @@ double Analysis::crossSection(const std::string & xs)
    if ( t_xsection_ == NULL ) return -1.;
    return xsections_[xs];
 }
-
 double Analysis::luminosity()
 {
 	return (nevents_ / this -> crossSection() );
 }
-
 double Analysis::luminosity(const std::string & xs)
 {
 	if ( t_xsection_ == NULL ) return -1.;
 	return (nevents_ / this -> crossSection(xs));
 }
-
 float Analysis::scaleLuminosity(const float & lumi)
 {
    float lumiScale = 1.;
@@ -338,8 +308,7 @@ float Analysis::scaleLuminosity(const float & lumi)
    return lumiScale;
 
 }
-
-void   Analysis::listCrossSections()
+void Analysis::listCrossSections()
 {
    std::cout << "=======================================================" << std::endl;
    std::cout << "  CROSS SECTIONS" << std::endl;
@@ -361,7 +330,6 @@ void   Analysis::listCrossSections()
    std::cout << std::endl;
    std::cout << std::endl;
 }
-
 FilterResults Analysis::generatorFilter(const std::string & path)
 {
    t_genfilter_  = new TChain(path.c_str());
@@ -389,7 +357,6 @@ FilterResults Analysis::generatorFilter(const std::string & path)
 
    return genfilter_;
 }
-
 void Analysis::listGeneratorFilter()
 {
    std::cout << "=======================================================" << std::endl;
@@ -413,7 +380,6 @@ void Analysis::listGeneratorFilter()
 
 
 }
-
 FilterResults Analysis::eventFilter(const std::string & path)
 {
    t_evtfilter_  = new TChain(path.c_str());
@@ -441,9 +407,6 @@ FilterResults Analysis::eventFilter(const std::string & path)
 
    return evtfilter_;
 }
-
-
-
 int Analysis::processJsonFile(const std::string & fileName)
 {
    using boost::property_tree::ptree;
@@ -468,7 +431,6 @@ int Analysis::processJsonFile(const std::string & fileName)
    }
    return 0;
 }
-
 bool Analysis::selectJson()
 {
 	bool isGood = false;
@@ -480,8 +442,6 @@ bool Analysis::selectJson()
    }
     return isGood;
 }
-
-
 void Analysis::addBtagEfficiencies(const std::string & filename)
 {
    fileBtagEff_ = new TFile(filename.c_str(),"OLD");
@@ -506,7 +466,6 @@ void Analysis::addBtagEfficiencies(const std::string & filename)
    }
 
 }
-
 float Analysis::btagEfficiency(const analysis::tools::Jet & jet, const int & rank)
 {
    float eff = 0.;
@@ -562,21 +521,16 @@ std::shared_ptr<JetResolutionInfo> Analysis::jetResolutionInfo(const std::string
    jerinfo_ = std::make_shared<JetResolutionInfo>(JetResolutionInfo{res,sf});
    return jerinfo_;
 }
-
 std::shared_ptr<PileupWeight> Analysis::pileupWeights(const std::string & f_pu)
 {
    puweights_ = std::make_shared<PileupWeight>(PileupWeight(f_pu));
    return puweights_;
 }
-
-
 std::shared_ptr<MuonIdWeight> Analysis::muonIDWeights(const std::string & f_muID )
 {
    muonIDweights_ = std::make_shared<MuonIdWeight>(MuonIdWeight(f_muID));
    return muonIDweights_;
 }
-
-
 std::shared_ptr<BTagCalibrationReader> Analysis::btagCalibration(const std::string & tagger,
                                 const std::string & filename,
                                 const std::string & wp,
@@ -612,21 +566,16 @@ std::shared_ptr<BTagCalibrationReader> Analysis::btagCalibration(const std::stri
    return btagcalibread_;
 
 }
-
-
 std::shared_ptr<BTagCalibrationReader> Analysis::btagCalibration()
 {
    return btagcalibread_;
 }
-
 std::string Analysis::fileName()
 {
    std::string filename;
    filename = boost::filesystem::basename(this->fileFullName())+boost::filesystem::extension(this->fileFullName());
    return filename ;
 }
-
-
 int Analysis::seed(const std::string & name)
 {
    int seed = 1;
@@ -639,12 +588,10 @@ int Analysis::seed(const std::string & name)
 
    return seed;
 }
-
 void Analysis::config(std::shared_ptr<Config> cfg)
 {
    config_ = cfg;
 }
-
 double Analysis::prefiringWeight(const int & var)
 {
    double w = prefw_;
@@ -656,3 +603,26 @@ double Analysis::prefiringWeight(const int & var)
    return w;
 
 }
+void Analysis::tag(const std::string & t)
+{
+   std::cout << "Tag " << t << " has been defined." << std::endl ;
+   tag_ = t;
+}
+std::string Analysis::tag()    { return tag_ ;      }
+int   Analysis::numberEvents() { return nevents_;   }
+int   Analysis::size()         { return nevents_;   }
+int   Analysis::event()        { return event_;     }
+int   Analysis::run()          { return run_  ;     }
+int   Analysis::lumiSection()  { return lumi_ ;     }
+bool  Analysis::isMC()         { return is_mc_ ;    }
+int   Analysis::nPileup()      { return n_pu_;      }
+float Analysis::nTruePileup()  { return n_true_pu_; }
+float Analysis::lumiPileup()   { return lumi_pu_;   }
+float Analysis::instantLumi()  { return inst_lumi_; }
+double Analysis::genWeight()   { return genWeight_; }
+double Analysis::genScale()    { return genScale_;  }
+PDF    Analysis::pdf()         { return pdf_;       }
+double Analysis::rho()         { return rho_;       }
+void Analysis::btagEfficienciesAlgo(const std::string & algo )      { btageff_algo_    = algo; }
+void Analysis::btagEfficienciesFlavour(const std::string & flavour) { btageff_flavour_ = flavour; }
+std::string Analysis::fileFullName()     { return std::string(t_event_ -> GetFile() -> GetName()) ;    }

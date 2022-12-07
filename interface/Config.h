@@ -226,6 +226,13 @@ namespace analysis {
             std::string genJetsCollection() const;
             std::string genParticlesCollection() const;
 
+         // vertices
+            std::string primaryVertexCollection() const;
+            bool        primaryVertexNotFake()    const;
+            float       primaryVertexNdofMin()    const;
+            float       primaryVertexAbsZMax()    const;
+            float       primaryVertexRhoMax()     const;
+
          // btag
             float btagWP(const std::string &) const;
 
@@ -492,7 +499,12 @@ namespace analysis {
             std::string genjetsCol_;
             std::string genpartsCol_;
 
-
+         // vertices
+            std::string primaryVtxCol_;
+            bool  primaryVtxNotFake_;
+            float primaryVtxNdofMin_;
+            float primaryVtxAbsZMax_;
+            float primaryVtxRhoMax_ ;
 
          // btag
             float btagwploose_;
