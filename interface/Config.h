@@ -82,6 +82,7 @@ namespace analysis {
             bool nlo() const;
             bool fullGenWeight() const;
             int  workflow() const;
+            std::string workflowTitle() const;
             int  index() const;
             
             std::string process() const;
@@ -343,6 +344,7 @@ namespace analysis {
             bool nlo_;
             bool fullgenweight_;
             int workflow_;
+            std::string workflow_title_;
             int index_;
 
             bool apply_correct_;

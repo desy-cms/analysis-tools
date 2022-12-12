@@ -235,6 +235,7 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          ("User.max"                     , po::value <float>                     (&max_)             -> default_value(-1.)                , "some maximum value")
          ("User.scale"                   , po::value <float>                     (&scale_)           -> default_value(-1.)                , "Overall scale for histograms")
          ("User.workflow"                , po::value <int>                       (&workflow_)        -> default_value(-1)                 , "Workflow index defined by user")
+         ("User.workflowTitle"           , po::value <std::string>               (&workflow_title_)  -> default_value("")                 , "Workflow title defined by user")
          ("User.prescale"                , po::value <int>                       (&prescale_)        -> default_value(1)                  , "Prescale factor")
          ("User.n"                       , po::value <int>                       (&n_)               -> default_value(-1)                 , "Some integer")
          ("User.index"                   , po::value <int>                       (&index_)           -> default_value(-1)                 , "Some User index for user")
@@ -473,6 +474,7 @@ bool               Config::blind()            const { return blind_; }
 bool               Config::nlo()              const { return nlo_; }
 bool               Config::fullGenWeight()    const { return fullgenweight_; }
 int                Config::workflow()         const { return workflow_; }
+std::string        Config::workflowTitle()    const { return workflow_title_; }
 int                Config::index()            const { return index_; }
 float              Config::scale()            const { return scale_; }
 std::vector<float> Config::erasLumi()         const { return eraslumi_; }

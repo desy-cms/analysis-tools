@@ -55,7 +55,7 @@ BaseAnalyser::BaseAnalyser(int argc, char * argv[])
    seed_ = analysis_ ->seed(config_->seedFile());
    
    // Workflow
-   h1_["cutflow"] = std::make_shared<TH1F>("workflow",Form("Workflow #%d",config_->workflow()), 100,0,100);
+   h1_["cutflow"] = std::make_shared<TH1F>("workflow",Form("Workflow #%d: %s",config_->workflow(),config_->workflowTitle().c_str()), 100,0,100);
       
    
    isMC_ = analysis_->isMC();
