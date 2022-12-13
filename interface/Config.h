@@ -83,6 +83,7 @@ namespace analysis {
             bool fullGenWeight() const;
             int  workflow() const;
             std::string workflowTitle() const;
+            bool btagWeight() const;
             int  index() const;
             
             std::string process() const;

@@ -472,6 +472,7 @@ bool               Config::nlo()              const { return nlo_; }
 bool               Config::fullGenWeight()    const { return fullgenweight_; }
 int                Config::workflow()         const { return workflow_; }
 std::string        Config::workflowTitle()    const { return workflow_title_; }
+bool               Config::btagWeight()       const { return cmdl_bweight_; }
 int                Config::index()            const { return index_; }
 float              Config::scale()            const { return scale_; }
 std::vector<float> Config::erasLumi()         const { return eraslumi_; }
