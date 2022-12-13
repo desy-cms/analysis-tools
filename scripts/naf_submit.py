@@ -149,9 +149,27 @@ def submission():
       events_max = args.events_max
    test = args.njobs
    
-   configMC = getConfigParameter( config, "isMC" )
-   isMC = configMC[1] == 'true'
+   ismc_cfg = True
+   isMC = False
+   issr_cfg = True
+   isSR = False
+   if args.opts:
+      opts = args.opts.split()
+      # data or mc from opts 
+      ismc_cfg = not ('--data' in opts or '--mc' in opts)
+      isMC = '--mc' in opts
+      # SR or CR from opts
+      issr_cfg = not ('--sr' in opts or '--cr' in opts)
+      isSR = '--sr' in opts
    
+   if ismc_cfg:
+      configMC = getConfigParameter( config, "isMC" )
+      isMC = configMC[1] == 'true'
+      
+   if issr_cfg:
+      configSR = getConfigParameter( config, "signalRegion" )
+      isSR = configSR[1] == 'true'
+
    if test:
       print('TEST MODE:', test, 'jobs')
    
@@ -184,6 +202,10 @@ def submission():
          
    # checking if require files exist
    if ntuples:
+      if ntuples.split(':')[0] == 'tools':
+         ntp_path = os.getenv('CMSSW_BASE')
+         ntp_path += "/src/Analysis/Tools/data/ntuples/"
+         ntuples = ntuples.replace("tools:",ntp_path)
       if not os.path.isfile(ntuples):      
          print ("Ntuples list file does not exist")
          quit()
@@ -231,6 +253,12 @@ def submission():
             replaceConfigParameter(os.path.basename(config), 'eventsMax', events_max)
          if outroot:
             replaceConfigParameter(os.path.basename(config), 'output', outroot)
+         if not ismc_cfg:
+            createConfigParameter(os.path.basename(config),'isMC')
+            replaceConfigParameter(os.path.basename(config), 'isMC', "true" if isMC else "false" )
+         if not issr_cfg:
+            createConfigParameter(os.path.basename(config),'signalRegion')
+            replaceConfigParameter(os.path.basename(config), 'signalRegion', "true" if isSR else "false" )
    
       
       splitcmd = "split.csh" + " " + str(args.nfiles) + " " + os.path.basename(ntuples)
@@ -524,8 +552,6 @@ args = parser.parse_args()
 
 dash = '  ----------------------------------------------------------------------------------------------------------'
 
-if args.opts:
-   args.opts = args.opts.replace('xx_','--')
 
 if args.dir:
    if not os.path.exists(args.dir):
