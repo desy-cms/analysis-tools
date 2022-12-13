@@ -322,6 +322,8 @@ namespace analysis {
             int cmdl_evtmax_;
             int cmdl_jer_;
             int cmdl_jec_;
+            int cmdl_wflow_;
+            std::string cmdl_wftitle_;
 
             po::options_description opt_cmd_;
             po::options_description opt_cfg_;

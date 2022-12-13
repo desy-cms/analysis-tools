@@ -41,14 +41,16 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          ("config,c",po::value<std::string>(&cfg_),"Configuration file name")
          ("nevents,n",po::value <int>(&cmdl_evtmax_)-> default_value(-100),"Maximum number of events")  
          ("ntuple_list,l",po::value <std::string>(&cmdl_inputlist_)-> default_value(""),"File with list of ntuples")  
-         ("output,o",po::value <std::string>(&outputRoot_),"Output root file")  
+         ("output,o",po::value <std::string>(&outputRoot_),"Output root file")
+         ("workflow,w",po::value <int>(&cmdl_wflow_)-> default_value(0),"Workflow number")
+         ("workflow_title",po::value <std::string>(&cmdl_wftitle_)-> default_value(""),"Workflow title")  
          ("mc",po::bool_switch(&cmdl_mc_),"Run on Monte Carlo")  
          ("data",po::bool_switch(&cmdl_data_),"Run on data (default)")  
          ("jer",po::value <int>(&jersyst_),"JER systematic variation (sigma)")  
          ("jec",po::value <int>(&jecsyst_),"JEC systematic variation (sigma)")  
          ("pileup",po::value <int>(&puweightsyst_),"Pileup weight systematic variation (sigma)")  
          ("btagweight",po::bool_switch(&cmdl_bweight_),"Apply btag weight defined in the config file")  
-         ("prefiring",po::value <int>(&prefwsyst_),"Prefiring weight systematic variation (sigma)")  
+         ("prefiring",po::value <int>(&prefwsyst_),"Prefiring weight systematic variation (sigma)") 
            ;
 
       // analysis info
@@ -234,7 +236,7 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          ("User.min"                     , po::value <float>                     (&min_)             -> default_value(-1.)                , "some minimum value")
          ("User.max"                     , po::value <float>                     (&max_)             -> default_value(-1.)                , "some maximum value")
          ("User.scale"                   , po::value <float>                     (&scale_)           -> default_value(-1.)                , "Overall scale for histograms")
-         ("User.workflow"                , po::value <int>                       (&workflow_)        -> default_value(-1)                 , "Workflow index defined by user")
+         ("User.workflow"                , po::value <int>                       (&workflow_)        -> default_value(0)                  , "Workflow index defined by user")
          ("User.workflowTitle"           , po::value <std::string>               (&workflow_title_)  -> default_value("")                 , "Workflow title defined by user")
          ("User.prescale"                , po::value <int>                       (&prescale_)        -> default_value(1)                  , "Prescale factor")
          ("User.n"                       , po::value <int>                       (&n_)               -> default_value(-1)                 , "Some integer")
@@ -324,20 +326,15 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
             std::cout << "*** ERROR *** You set both --mc and --data options!" << std::endl;
             std::exit(-1);
          }
-         if ( cmdl_data_ != cmdl_mc_ ) 
-         {
-            isMC_ = cmdl_mc_;
-         }
+         if ( cmdl_data_ != cmdl_mc_ )  isMC_ = cmdl_mc_;
          // overriding ntuples_list
-         if ( cmdl_inputlist_ != "" )
-         {
-            inputlist_ = cmdl_inputlist_;
-         }
+         if ( cmdl_inputlist_ != "" )  inputlist_ = cmdl_inputlist_;
          // opverride nevtmax_
-         if ( cmdl_evtmax_ != -100 )
-         {
-            nevtmax_ = cmdl_evtmax_;
-         }
+         if ( cmdl_evtmax_ != -100 )   nevtmax_ = cmdl_evtmax_;
+         // override workflow
+         if ( cmdl_wflow_ > 0 )        workflow_ = cmdl_wflow_;
+         // override workflow title
+         if ( cmdl_wftitle_ != "" )    workflow_title_ = cmdl_wftitle_;
 //          // override jer syst
 //          if ( cmdl_jer_ > -100 )
 //          {
