@@ -45,11 +45,13 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          ("workflow,w",po::value <int>(&cmdl_wflow_)-> default_value(0),"Workflow number")
          ("workflow_title",po::value <std::string>(&cmdl_wftitle_)-> default_value(""),"Workflow title")  
          ("mc",po::bool_switch(&cmdl_mc_),"Run on Monte Carlo")  
-         ("data",po::bool_switch(&cmdl_data_),"Run on data (default)")  
+         ("data",po::bool_switch(&cmdl_data_),"Run on data") 
+         ("sr",po::bool_switch(&cmdl_sr_),"Signal region")  
+         ("cr",po::bool_switch(&cmdl_cr_),"Control region")  
          ("jer",po::value <int>(&jersyst_),"JER systematic variation (sigma)")  
          ("jec",po::value <int>(&jecsyst_),"JEC systematic variation (sigma)")  
-         ("pileup",po::value <int>(&puweightsyst_),"Pileup weight systematic variation (sigma)")  
-         ("btagweight",po::bool_switch(&cmdl_bweight_),"Apply btag weight defined in the config file")  
+         ("pileup",po::value <int>(&puweightsyst_),"Pileup weight systematic variation (sigma)")
+         ("btagweight",po::bool_switch(&cmdl_bweight_),"Apply btag weight defined in the config file")
          ("prefiring",po::value <int>(&prefwsyst_),"Prefiring weight systematic variation (sigma)") 
            ;
 
@@ -326,6 +328,7 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
             std::cout << "*** ERROR *** You set both --mc and --data options!" << std::endl;
             std::exit(-1);
          }
+
          if ( cmdl_data_ != cmdl_mc_ )  isMC_ = cmdl_mc_;
          // overriding ntuples_list
          if ( cmdl_inputlist_ != "" )  inputlist_ = cmdl_inputlist_;
@@ -335,6 +338,13 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          if ( cmdl_wflow_ > 0 )        workflow_ = cmdl_wflow_;
          // override workflow title
          if ( cmdl_wftitle_ != "" )    workflow_title_ = cmdl_wftitle_;
+         if ( cmdl_sr_ && cmdl_cr_ )
+         {
+            std::cout << "*** ERROR *** You set both --sr and --cr options!" << std::endl;
+            std::exit(-1);
+         }
+         if ( cmdl_sr_ != cmdl_cr_ )  signalregion_ = cmdl_sr_;
+
 //          // override jer syst
 //          if ( cmdl_jer_ > -100 )
 //          {
