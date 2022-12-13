@@ -636,11 +636,15 @@ std::string Config::outputRoot() const
 { 
    // adding workflow number to the output file
    std::string outputRootWF = outputRoot_;
-   if ( workflow_ < 1 ) return outputRootWF;
+   if ( workflow_ < 1 && ! cmdl_bweight_ ) return outputRootWF;
    auto dotpos = outputRoot_.find_last_of(".");
-   std::string wf =  Form("_wf%d", workflow_);
+   std::string wf = "";
+   if ( workflow_ > 0 ) wf =  Form("_wf%d", workflow_);
+   if ( cmdl_bweight_ ) wf =  Form("%s_bweight",wf.c_str());
    if ( dotpos!= std::string::npos )
-      outputRootWF.insert(dotpos, Form("_wf%d", workflow_));
+//      outputRootWF.insert(dotpos, Form("_wf%d", workflow_));
+      outputRootWF.insert(dotpos, Form("%s", wf.c_str()));
+
    return outputRootWF ;
 }
 std::string Config::json() const { return json_ ; }
