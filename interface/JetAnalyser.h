@@ -117,6 +117,7 @@ namespace analysis {
             virtual bool selectionNJets();
             virtual bool selectionDiJetMass(const int &, const int &);
             virtual bool selectionBJet(const int &);
+            virtual bool selectionSemiBJet(const int &);
             virtual bool selectionBJetProbB(const int &);
             virtual bool selectionBJetProbBB(const int &);
             virtual bool selectionBJetProbLepB(const int &);
@@ -155,6 +156,9 @@ namespace analysis {
 //            virtual float btagEfficiency(const int &);
             /// multiple actions: apply JER and b-tag regression corrections
             virtual bool jetCorrections();
+            virtual void actionApplyJetOnlineSF();
+            virtual void applyJetOnlineSF(const int & r);
+            analysis::tools::JetTriggerEfficiencies * jte; // variable to call the function to find scale factor
 
             /// remove selected jets
             std::vector< std::shared_ptr<Jet> > removeSelectedJets(const std::vector<int> & );

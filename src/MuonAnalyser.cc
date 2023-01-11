@@ -26,6 +26,9 @@ MuonAnalyser::MuonAnalyser(int argc, char * argv[]) : BaseAnalyser(argc,argv)
    // Physics objects
    // Muons
    muonsanalysis_  = ( analysis_->addTree<Muon> ("Muons",config_->muonsCollection()) != nullptr  && config_ -> nMuonsMin() > 0 );
+   
+   if(config_->onlinemuonSF() != "" &&  config_->isMC())
+   mte = new MuonTriggerEfficiencies(config_->onlinemuonSF());
 
 }
 
@@ -33,6 +36,9 @@ MuonAnalyser::~MuonAnalyser()
 {
    // do anything here that needs to be done at desctruction time
    // (e.g. close files, deallocate resources etc.)
+   
+   if(config_->onlinemuonSF() != "" &&  config_->isMC())
+   delete mte;
 }
 
 
@@ -426,3 +432,52 @@ void MuonAnalyser::fillMuonHistograms()
    }
 
 }
+
+
+
+bool MuonAnalyser::muonCorrections()
+{
+   // muon online trigger scale factor
+
+   if (config_->onlinemuonSF() != "" &&  config_->isMC() && selectedMuons_.size()!= 0)
+   {
+      applyMuonOnlineSF(selectedMuons_[0]->pt()); // apply muon SF to the leading muon
+   }
+
+   return true;
+}
+
+
+void MuonAnalyser::applyMuonOnlineSF(const double & muonpT)
+{
+ 
+// Muon Online Corrections to be applied to MC
+
+   if ( ! muonsanalysis_ || ! config_->isMC() || selectedMuons_.size() < 1) return; //check and print error message
+   double sf = 1;
+   std::string label = "WARNING: NO Muon Online Scale factor (*** missing Scale Factor Info ***)";
+
+   if ( config_->onlinemuonSF() != "")
+   {
+      std::string bnsf = basename(config_->onlinemuonSF());
+      label = Form("Muon Online Scale Factor (%s)",bnsf.c_str());
+
+      if ( config_->onlinemuonSystematics() != 0 )
+      {
+         if (fabs(config_->onlinemuonSystematics()) == 1 || fabs(config_->onlinemuonSystematics()) == 2)
+         label = Form("Muon Online Scale Factor: (%s), syst: %+d sig",bnsf.c_str(),config_->onlinemuonSystematics());
+         else
+         {
+            std::string label = Form("WARNING: NO Muon Online Scale factor (*** missing Scale Factor Info for syst = %+d sig ***)",config_->onlinemuonSystematics());       
+            cutflow(label);
+            return;
+         }  
+      }
+   
+      sf *= mte->findSF(muonpT, config_->onlinemuonSystematics());
+      weight_ *= sf; //apply sf to event weight
+   }
+   
+   cutflow(label);
+
+}     

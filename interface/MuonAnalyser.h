@@ -81,6 +81,11 @@ namespace analysis {
             virtual void muonHistograms(const std::string &, const int & n = 1);
             virtual void fillMuonHistograms();
 
+            analysis::tools::MuonTriggerEfficiencies * mte; // variable to call the function to find scale factor
+            
+            void applyMuonOnlineSF(const double & muonpT);
+            bool muonCorrections();
+
       };
    }
 }

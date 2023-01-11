@@ -46,9 +46,11 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          ("data",po::bool_switch(&cmdl_data_),"Run on data (default)")  
          ("jer",po::value <int>(&jersyst_),"JER systematic variation (sigma)")  
          ("jec",po::value <int>(&jecsyst_),"JEC systematic variation (sigma)")  
+         ("jetsf",po::value <int>(&onljetsyst_),"Online jet scale factor systematic variation (sigma)")  
          ("pileup",po::value <int>(&puweightsyst_),"Pileup weight systematic variation (sigma)")  
          ("btagweight",po::bool_switch(&cmdl_bweight_),"Apply btag weight defined in the config file")  
          ("prefiring",po::value <int>(&prefwsyst_),"Prefiring weight systematic variation (sigma)")  
+         ("muonsf",po::value <int>(&onlmuonsyst_),"Online muon scale factor systematic variation (sigma)")  
            ;
 
       // analysis info
@@ -65,6 +67,7 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          ("Info.isMC"                    , po::value <bool>                      (&isMC_)            -> default_value(false)              ,"Flag for MC dataset")
          ("Info.fullGenWeight"           , po::value <bool>                      (&fullgenweight_)   -> default_value(false)              ,"Flag for full gen weight of MC samples, otherwise only sign")
          ("Info.signalRegion"            , po::value <bool>                      (&signalregion_)    -> default_value(true)               ,"Flag for signal region")
+         ("Info.validationRegion"        , po::value <bool>                      (&validationregion_)-> default_value(false)              ,"Flag for validation region") 
          ("Info.eventsMax"               , po::value <int>                       (&nevtmax_)         -> default_value(-1)                 , "Maximum number of events")
          ("Info.seed"                    , po::value <int>                       (&seed_)            -> default_value(-1)                 , "Seed value for random numbers");
 
@@ -74,14 +77,19 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          ("Corrections.Pileup.reweightSystematcis"  , po::value <int>            (&puweightsyst_)    -> default_value(0)                  , "Pileup weights systematic variations")
          ("Corrections.Jets.jerPtRes"    , po::value <std::string>               (&jerptres_)        -> default_value("")                 , "JER pT resolution file")
          ("Corrections.Jets.jerSF"       , po::value <std::string>               (&jersf_)           -> default_value("")                 , "JER SF file")
+         ("Corrections.Jets.onlinejetSF" , po::value <std::string>               (&onljetsf_)        -> default_value("")                 , "Jet trigger SF file")
          ("Corrections.Jets.jerSystematics" , po::value <int>                    (&jersyst_)         -> default_value(0)                  , "JER systematic variation (sigma), default = 0")
          ("Corrections.Jets.jecSystematics" , po::value <int>                    (&jecsyst_)         -> default_value(0)                  , "JEC systematic variation (sigma), default = 0")
+         ("Corrections.Jets.onlinejetSystematics" , po::value <int>              (&onljetsyst_)      -> default_value(0)                  , "Online jet scale factor systematic variation (sigma), default = 0")
          ("Corrections.BTag.SF"          , po::value <std::string>               (&btagsf_)          -> default_value("")                 , "b-tagging scale factor in CSV format")
          ("Corrections.BTag.Efficiencies1", po::value <std::string>              (&btageff_[0])      -> default_value("")                 , "b-tagging efficiencies in root file")
          ("Corrections.BTag.Efficiencies2", po::value <std::string>              (&btageff_[1])      -> default_value("")                 , "b-tagging efficiencies in root file")
          ("Corrections.BTag.Efficiencies3", po::value <std::string>              (&btageff_[2])      -> default_value("")                 , "b-tagging efficiencies in root file")
          ("Corrections.Jets.bRegression" , po::value <bool>                      (&bregression_)     -> default_value(false)              , "Apply b jet energy regression")
          ("Corrections.PrefiringWeight"  , po::value <bool>                      (&prefw_)           -> default_value(false)              , "Apply L1 prefiring weight")
+         ("Corrections.hemCorrection"    , po::value <bool>                      (&hemCorrection_)   -> default_value(false)              , "Apply HEM correction")
+         ("Corrections.Muons.onlinemuonSF" , po::value <std::string>              (&onlmuonsf_)        -> default_value("")                , "Muon trigger SF file")
+         ("Corrections.Muons.onlinemuonSystematics" , po::value <int>             (&onlmuonsyst_)      -> default_value(0)                 , "Online muon scale factor systematic variation (sigma), default = 0")
          ("Corrections.force"            , po::value <bool>                      (&apply_correct_)   -> default_value(false)              , "Apply corrections internally when above are defined");
 
       // jets
@@ -364,7 +372,9 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          if ( json_     != ""  && json_.rfind("tools:",0) == 0     )    json_.replace(0,6,calibpath+"/");
          if ( jerptres_ != ""  && jerptres_.rfind("tools:",0) == 0 )    jerptres_.replace(0,6,calibpath+"/");
          if ( jersf_    != ""  && jersf_.rfind("tools:",0) == 0    )    jersf_.replace(0,6,calibpath+"/");
-         if ( btagsf_   != ""  && btagsf_.rfind("tools:",0) == 0   )    btagsf_.replace(0,6,calibpath+"/");
+         if ( onljetsf_ != ""  && onljetsf_.rfind("tools:",0) == 0 )    onljetsf_.replace(0,6,calibpath+"/");
+         if ( onlmuonsf_ != ""  && onlmuonsf_.rfind("tools:",0) == 0 )  onlmuonsf_.replace(0,6,calibpath+"/");
+         if ( btagsf_    != ""  && btagsf_.rfind("tools:",0) == 0   )    btagsf_.replace(0,6,calibpath+"/");
          if ( btageff_[0]  != ""  && btageff_[0].rfind("tools:",0) == 0  )    btageff_[0].replace(0,6,calibpath+"/");
          if ( btageff_[1]  != ""  && btageff_[1].rfind("tools:",0) == 0  )    btageff_[1].replace(0,6,calibpath+"/");
          if ( btageff_[2]  != ""  && btageff_[2].rfind("tools:",0) == 0  )    btageff_[2].replace(0,6,calibpath+"/");
@@ -469,6 +479,7 @@ float              Config::luminosity()       const { return lumi_; }
 int                Config::nEventsMax()       const { return nevtmax_; }
 bool               Config::isMC()             const { return isMC_; }
 bool               Config::signalRegion()     const { return signalregion_; }
+bool               Config::validationRegion() const { return validationregion_; }
 bool               Config::blind()            const { return blind_; }
 bool               Config::nlo()              const { return nlo_; }
 bool               Config::fullGenWeight()    const { return fullgenweight_; }
@@ -499,11 +510,15 @@ std::string        Config::jetsId()             const { return jetsid_; }
 std::string        Config::jetsPuId()           const { return jetspuid_; }
 std::string        Config::jerPtRes()           const { return jerptres_; }
 std::string        Config::jerSF()              const { return jersf_; }
+std::string        Config::onlinejetSF()        const { return onljetsf_; }
 int                Config::jerSystematics()     const { return jersyst_; }
 int                Config::jecSystematics()     const { return jecsyst_; }
+int                Config::onlinejetSystematics() const { return onljetsyst_; }
 std::string        Config::l1tJetsCollection()  const { return l1tjetsCol_; }
 std::string        Config::btagAlgorithm()      const { return btagalgo_; }
 std::string        Config::btagScaleFactors()   const { return btagsf_; }
+std::string        Config::onlinemuonSF()        const { return onlmuonsf_; }
+int                Config::onlinemuonSystematics() const { return onlmuonsyst_; }
 std::vector<std::string> Config::jetsBtagWP()   const { return jetsbtagwp_; }
 std::vector<float> Config::jetsBtagProbB()      const { return jetsbtagprobb_; }
 std::vector<float> Config::jetsBtagProbBB()     const { return jetsbtagprobbb_; }
@@ -518,6 +533,7 @@ bool               Config::useJetsExtendedFlavour() const { return usejetsextflv
 bool               Config::doDijet()            const { return dodijet_ ; }
 int                Config::nBJetsMin()          const { return nbjetsmin_; }
 bool               Config::prefiringWeight()    const { return prefw_; }
+bool               Config::hemCorrection()    const { return hemCorrection_; }
 int                Config::prefiringWeightSystematics() const { return prefwsyst_;    }
 
 std::vector<float>  Config::jetsQGmin() const { return qgmin_; }
