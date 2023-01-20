@@ -1743,7 +1743,7 @@ void JetAnalyser::actionApplyBtagEfficiency(const int &rank, const int &model)
 
    if (!jetsanalysis_ || !isMC_)
       return;
-   std::string label = Form("Jet %d: offline btag weight applied (model %d)", rank, model);
+   // std::string label = Form("Jet %d: offline btag weight applied (model %d)", rank, model);
    int j = rank - 1;
    auto jet = selectedJets_[j];
    // Use jet 4-momentum after JER to not use b-regression
@@ -1751,7 +1751,7 @@ void JetAnalyser::actionApplyBtagEfficiency(const int &rank, const int &model)
       weight_ *= btagEfficiencies_[model - 1].efficiency(jet->extendedFlavour(), jet->jerP4().Pt(), jet->jerP4().Eta());
    else
       weight_ *= btagEfficiencies_[model - 1].efficiency(jet->flavour(), jet->jerP4().Pt(), jet->jerP4().Eta());
-   cutflow(label);
+   // cutflow(label);
 }
 
 

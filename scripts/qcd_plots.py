@@ -66,6 +66,11 @@ for i in xrange(2000,2600,150):
    xbins.append(i)
 for i in xrange(2600,3001,400):
    xbins.append(i)
+
+xbins = []   
+for i in xrange(0,3000,50):
+   xbins.append(i)
+   
 axbins = array.array('d', xbins)
 
 # -------------------------------------------------------      
@@ -480,3 +485,16 @@ def main():
 ##################
 
 main()
+
+
+# qcd_plots.py \
+# --processes=bEnriched,bEnriched \
+# --paths=results/10_btagsel/mssmhbb_fh_2018_cr,results/10_btagweight/mssmhbb_fh_2018_cr \
+# --hdirs=final_selection,final_selection \
+# --legends="btag selection","btag weight" \
+# --legend_title="2018 FH - CR" \
+# --single_vars="" \
+# --ratio="no veto/veto" \
+# --ratio_range="0.51,1.99" \
+# --x_range="200,2000" \
+# --output=mssmhbb_fh_2018_cr_bsel_x_bw

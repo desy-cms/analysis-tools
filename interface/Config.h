@@ -82,6 +82,8 @@ namespace analysis {
             bool nlo() const;
             bool fullGenWeight() const;
             int  workflow() const;
+            std::string workflowTitle() const;
+            bool btagWeight() const;
             int  index() const;
             
             std::string process() const;
@@ -321,6 +323,10 @@ namespace analysis {
             int cmdl_evtmax_;
             int cmdl_jer_;
             int cmdl_jec_;
+            int cmdl_wflow_;
+            std::string cmdl_wftitle_;
+            bool cmdl_sr_;
+            bool cmdl_cr_;
 
             po::options_description opt_cmd_;
             po::options_description opt_cfg_;
@@ -343,6 +349,7 @@ namespace analysis {
             bool nlo_;
             bool fullgenweight_;
             int workflow_;
+            std::string workflow_title_;
             int index_;
 
             bool apply_correct_;

@@ -86,7 +86,7 @@ float BTagEfficiencies::efficiency(const std::string & flavour, const float & pt
    
    if ( etabin == "" )
    {
-      std::cout << "*** warning *** eta = " << eta << " not in the valid range (|eta| < 2.2), returning eff=1" << std::endl;
+//      std::cout << "*** warning *** eta = " << eta << " not in the valid range (|eta| < 2.2), returning eff=1" << std::endl;
       return eff;
    }
    
