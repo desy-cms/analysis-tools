@@ -68,12 +68,17 @@ JetAnalyser::JetAnalyser(int argc, char *argv[]) : BaseAnalyser(argc, argv)
          flavours_.push_back("cc");
          flavours_.push_back("bb");
       }
+      
+   if(config_->onlinejetSF() != "" &&  config_->isMC())
+   jte = new JetTriggerEfficiencies(config_->onlinejetSF());
    }
    //   histograms("jet",config_->nJetsMin());
 }
 
 JetAnalyser::~JetAnalyser()
 {
+   if(config_->onlinejetSF() != "" &&  config_->isMC())
+   delete jte;
    // do anything here that needs to be done at desctruction time
    // (e.g. close files, deallocate resources etc.)
 }
@@ -875,23 +880,25 @@ bool JetAnalyser::selectionNJets()
 
 bool JetAnalyser::selectionBJet(const int &r)
 {
-   if (config_->nJetsMin() < config_->nBJetsMin() || config_->nBJetsMin() < 1 || r > config_->nBJetsMin() || (int)(config_->jetsBtagWP()).size() < config_->nBJetsMin())
-      return true;
+   if ( config_->nJetsMin() < config_->nBJetsMin() || config_->nBJetsMin() < 1 || r > config_->nBJetsMin() ||  (int)(config_->jetsBtagWP()).size() < config_->nBJetsMin() ) return true;
+   
+//   if ( ! config_->signalRegion() && r == config_->revBtagJet() ) return this->selectionNonBJet(r);
+   if ( ! config_->signalRegion() && ! config_->validationRegion() && r == config_->revBtagJet() ) return this->selectionNonBJet(r);
+   if ( ! config_->signalRegion() && config_->validationRegion() && r == config_->revBtagJet() ) return this->selectionSemiBJet(r);
+   
+   if (config_->signalRegion() && config_->validationRegion())
+   std::cout<<std::endl<<"WARNING, selected signalRegion == TRUE and validationRegion == TRUE. Running on Signal Region"<<std::endl;
 
-   if (!config_->signalRegion() && r == config_->revBtagJet())
-      return this->selectionNonBJet(r);
-
-   int j = r - 1;
-   if (config_->btagWP(config_->jetsBtagWP()[j]) < 0)
-      return true; // there is no selection here, so will not update the cutflow
-
+   int j = r-1;
+   if ( config_->btagWP(config_->jetsBtagWP()[j]) < 0 ) return true; // there is no selection here, so will not update the cutflow
+         
    bool isgood = true;
-   std::string label = Form("Jet %d: %s btag > %6.4f (%s)", r, config_->btagAlgorithm().c_str(), config_->btagWP(config_->jetsBtagWP()[j]), config_->jetsBtagWP()[j].c_str());
-
-   isgood = (btag(*selectedJets_[j], config_->btagAlgorithm()) > config_->btagWP(config_->jetsBtagWP()[j]));
-
-   cutflow(label, isgood);
-
+   std::string label = Form("Jet %d: %s btag > %6.4f (%s)",r,config_->btagAlgorithm().c_str(),config_->btagWP(config_->jetsBtagWP()[j]),config_->jetsBtagWP()[j].c_str());
+   
+   isgood = ( btag(*selectedJets_[j],config_->btagAlgorithm()) > config_->btagWP(config_->jetsBtagWP()[j]) );
+   
+   cutflow(label,isgood);
+   
    return isgood;
 }
 
@@ -910,6 +917,24 @@ bool JetAnalyser::selectionNonBJet(const int &r)
 
    cutflow(label, isgood);
 
+   return isgood;
+}
+
+bool JetAnalyser::selectionSemiBJet(const int & r )
+{
+   if ( config_->btagWP(config_->revBtagWP()) < 0 ) return true; // there is no selection here, so will not update the cutflow
+   
+   bool isgood = true;
+   int j = r-1;
+
+   std::string label = Form("Jet %d: %s %6.4f (%s) < btag < %6.4f (%s) [semi btag]",r,config_->btagAlgorithm().c_str(),config_->btagWP(config_->revBtagWP()),config_->revBtagWP().c_str(),config_->btagWP(config_->jetsBtagWP()[j]),config_->jetsBtagWP()[j].c_str());
+   
+   
+   // jet  non btag
+   isgood = ( btag(*selectedJets_[j],config_->btagAlgorithm()) > config_->btagWP(config_->revBtagWP()) &&  btag(*selectedJets_[j],config_->btagAlgorithm()) < config_->btagWP(config_->jetsBtagWP()[j]) );
+   
+   cutflow(label,isgood);
+   
    return isgood;
 }
 
@@ -1730,6 +1755,8 @@ bool JetAnalyser::jetCorrections()
    // CORRECTIONS
    // Jet energy resolution smearing
    this->actionApplyJER();
+   // Jet online trigger scale factor
+   this->actionApplyJetOnlineSF();   
    // b energy regression
    this->actionApplyBjetRegression();
 
@@ -1754,6 +1781,65 @@ void JetAnalyser::actionApplyBtagEfficiency(const int &rank, const int &model)
    // cutflow(label);
 }
 
+
+void JetAnalyser::actionApplyJetOnlineSF()
+{
+ 
+// Jet Online Corrections to be applied to MC
+
+   if ( ! jetsanalysis_ || ! config_->isMC() || selectedJets_.size() < 2) return; //check and print error message
+
+
+   std::string label = "WARNING: NO Jet Online Scale factor (*** missing Scale Factor Info and/or GenJet collection ***)";
+   
+
+   if ( config_->onlinejetSF() != "")
+   {
+      std::string bnojsf = basename(config_->onlinejetSF());
+      label = Form("Jet Online Scale Factor (%s)",bnojsf.c_str());
+
+      if ( config_->onlinejetSystematics() != 0 )
+      {
+         if (fabs(config_->onlinejetSystematics()) == 1 || fabs(config_->onlinejetSystematics()) == 2)
+         label = Form("Jet Online Scale Factor: (%s), syst: %+d sig",bnojsf.c_str(),config_->onlinejetSystematics());
+         else
+         {
+            std::string label = Form("WARNING: NO Jet Online Scale factor (*** missing Scale Factor Info for syst = %+d sig ***)",config_->onlinejetSystematics());       
+            cutflow(label);
+            return;
+         }  
+      }
+
+      this->applyJetOnlineSF(1); // apply online jet kinematic trigger efficiency scale factor on jet i
+      cutflow(Form("Jet 1: %s",label.c_str()));
+      this->applyJetOnlineSF(2); 
+      cutflow(Form("Jet 2: %s",label.c_str()));
+      return;
+   }
+   
+   cutflow(label);
+
+}     
+
+
+void JetAnalyser::applyJetOnlineSF(const int & r) 
+{
+// Jet Online Corrections to be applied to MC
+
+   int j = r-1;
+   double sf = 1;
+
+//to do: check label when no file, check when data
+
+   if ( ! jetsanalysis_ || ! config_->isMC() || selectedJets_.size() < 2) return;
+   if ( config_->onlinejetSF() == "")  return;
+
+   sf *= jte->findSF(selectedJets_[j]->eta(),selectedJets_[j]->pt(), config_->onlinejetSystematics());
+   
+   weight_ *= sf; //apply sf to event weight]
+
+   return;
+}
 
 std::vector< std::shared_ptr<Jet> > JetAnalyser::removeSelectedJets(const std::vector<int> & ranks)
 {
@@ -1821,4 +1907,23 @@ void JetAnalyser::fsrCorrections( const std::vector< std::shared_ptr<Jet> > & ma
       }
    }
    cutflow(label);
+}
+
+void JetAnalyser::HEMCorrection()
+{
+   if (config_->hemCorrection() == true && config_->isMC() && selectedJets_.size() != 0)
+   {
+      std::string label = "HEM correction";
+      // scale down the jet energy by 20 % for jets with -1.57 <phi< -0.87 and -2.5<eta<-1.3
+      for(int i = 0; i < (int)selectedJets_.size(); i++)
+      {
+         auto jet = selectedJets_[i];
+         if (jet->eta() > -2.5 && jet->eta() < -1.3 && jet->phi() > -1.57 && jet->phi() < -0.87 && jet->pt() > 15 )
+         {
+            selectedJets_[i]->p4(selectedJets_[i]->p4() *0.8);
+         }
+      }
+      cutflow(label);
+   }
+   return;
 }

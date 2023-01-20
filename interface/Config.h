@@ -77,6 +77,7 @@ namespace analysis {
             int  nEventsMax() const;
             bool isMC() const;
             bool signalRegion() const;
+            bool validationRegion() const;
             bool blind() const;
             bool override() const;
             bool nlo() const;
@@ -114,8 +115,10 @@ namespace analysis {
             std::string jetsPuId() const;
             std::string jerPtRes() const;
             std::string jerSF() const;
+            std::string onlinejetSF() const;
             int         jerSystematics() const;
             int         jecSystematics() const;
+            int         onlinejetSystematics() const;
             
             std::string l1tJetsCollection() const;
 
@@ -136,6 +139,7 @@ namespace analysis {
             bool doDijetFlavour() const;
             int nBJetsMin() const;
             bool prefiringWeight() const;
+            bool hemCorrection() const;
             int  prefiringWeightSystematics() const;
 
             std::vector<float>  jetsQGmin() const;
@@ -154,6 +158,8 @@ namespace analysis {
             float jetsPtImbalanceMin()   const;
             bool  jetsWithMuons()        const;
             float jetsMuonsDRMax()       const;
+            std::string onlinemuonSF() const;
+            int         onlinemuonSystematics() const;
 
          // muons
             std::string muonsCollection() const;
@@ -344,6 +350,7 @@ namespace analysis {
             int nevtmax_;
             bool isMC_;
             bool signalregion_;
+            bool validationregion_;
             bool blind_;
             bool override_;
             bool nlo_;
@@ -411,6 +418,12 @@ namespace analysis {
             int         jersyst_;
             // JEC systematics
             int         jecsyst_;
+            // Online Jet Trigger efficiency correction and systematics
+            std::string onljetsf_;
+            int         onljetsyst_;
+            // Online Muon Trigger efficiency correction and systematics
+            std::string onlmuonsf_;
+            int         onlmuonsyst_;
             //
             std::string l1tjetsCol_;
             //
@@ -439,6 +452,8 @@ namespace analysis {
             bool bregression_;
 
             bool prefw_;
+            
+            bool hemCorrection_;
 
 
          // muons

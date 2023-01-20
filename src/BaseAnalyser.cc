@@ -82,11 +82,12 @@ BaseAnalyser::BaseAnalyser(int argc, char * argv[])
       genpartsanalysis_  = ( analysis_->addTree<GenParticle> ("GenParticles",config_->genParticlesCollection()) != nullptr );
       // gen jets analysis
       genjetsanalysis_  = ( analysis_->addTree<GenJet> ("GenJets",config_->genJetsCollection()) != nullptr );
-
       
    }
+   
    // primary vertex analysis
-   primaryvtxanalysis_ = (analysis_->addTree<Vertex>("PrimaryVertex", config_->primaryVertexCollection()) != nullptr);
+   primaryvtxanalysis_ = ( analysis_->addTree<Vertex> ("PrimaryVertex",config_->primaryVertexCollection()) != nullptr );
+   
    // JSON for data   
    if( isData_ && config_->json() != "" ) analysis_->processJsonFile(config_->json());
    
