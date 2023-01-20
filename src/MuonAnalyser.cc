@@ -440,13 +440,20 @@ bool MuonAnalyser::muonCorrections()
    // muon online trigger scale factor
 
    if (config_->onlinemuonSF() != "" &&  config_->isMC() && selectedMuons_.size()!= 0)
-   {
-      applyMuonOnlineSF(selectedMuons_[0]->pt()); // apply muon SF to the leading muon
-   }
+   applyMuonOnlineSF(selectedMuons_[0]->pt()); // apply muon online SF according to the first muon in selectedMuons_ vector
 
    return true;
 }
 
+bool MuonAnalyser::muonCorrections(const double & muonpT)
+{
+   // muon online trigger scale factor
+
+   if (config_->onlinemuonSF() != "" &&  config_->isMC() && selectedMuons_.size()!= 0)
+   applyMuonOnlineSF(muonpT); // apply muon online SF according to the pt indicated
+
+   return true;
+}
 
 void MuonAnalyser::applyMuonOnlineSF(const double & muonpT)
 {

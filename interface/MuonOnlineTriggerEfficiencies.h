@@ -23,8 +23,8 @@ namespace analysis {
            ~MuonTriggerEfficiencies();
            
             std::map<std::string, TGraph> graphs;
-            double findSF(const float & pT, const int & sigma);
-            double pTmax=0;
+            float findSF(const float & pT, const int & sigma);
+            float pTmax=0;
            
             /// estimate the weight from a file
             //float efficiency(const std::string & flavour, const float & pt, const float & eta);

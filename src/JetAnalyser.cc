@@ -1908,3 +1908,22 @@ void JetAnalyser::fsrCorrections( const std::vector< std::shared_ptr<Jet> > & ma
    }
    cutflow(label);
 }
+
+void JetAnalyser::HEMCorrection()
+{
+   if (config_->hemCorrection() == true && config_->isMC() && selectedJets_.size() != 0)
+   {
+      std::string label = "HEM correction";
+      // scale down the jet energy by 20 % for jets with -1.57 <phi< -0.87 and -2.5<eta<-1.3
+      for(int i = 0; i < (int)selectedJets_.size(); i++)
+      {
+         auto jet = selectedJets_[i];
+         if (jet->eta() > -2.5 && jet->eta() < -1.3 && jet->phi() > -1.57 && jet->phi() < -0.87 && jet->pt() > 15 )
+         {
+            selectedJets_[i]->p4(selectedJets_[i]->p4() *0.8);
+         }
+      }
+      cutflow(label);
+   }
+   return;
+}

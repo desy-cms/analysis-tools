@@ -158,6 +158,7 @@ namespace analysis {
             virtual bool jetCorrections();
             virtual void actionApplyJetOnlineSF();
             virtual void applyJetOnlineSF(const int & r);
+            virtual void HEMCorrection();
             analysis::tools::JetTriggerEfficiencies * jte; // variable to call the function to find scale factor
 
             /// remove selected jets

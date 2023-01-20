@@ -43,14 +43,29 @@ MuonTriggerEfficiencies::~MuonTriggerEfficiencies()
 }
 
 
-double MuonTriggerEfficiencies::findSF(const float & pT, const int & sigma) 
+float MuonTriggerEfficiencies::findSF(const float & pT, const int & sigma) 
 {
    TGraph sf_graph, var_graph, nominal_graph;
 
-   pTmax = 30; //max pT [GeV] for which the SF is defind
-
-   double sf = 1;
+   std::vector <float> pTranges = {11.5, 12.5, 13.5, 18.5, 30.};
+   int pTbin = 0;
+   float sf = 1;
    std::string var = "";
+
+   float pTmax = pTranges[pTranges.size() - 1 ]; 
+
+   if (pT >= pTmax)// muons with pT > pTmax included in last bin
+   pTbin = pTranges.size() - 2;
+
+   else
+   {
+      for (int i = 0; i < int(pTranges.size()); i++)
+      {
+         if(pT > pTranges[i] && pT < pTranges[i+1] )
+         pTbin = i;
+      }
+   }
+  
 
    if (sigma == 0)
       var = "nominal";
@@ -63,18 +78,29 @@ double MuonTriggerEfficiencies::findSF(const float & pT, const int & sigma)
    }
    
    nominal_graph = graphs["nominal"];
-      
-   if (pT < pTmax)
+   double x, y, xn, yn;
+
+   if (pT <= pTmax)
    {
       sf_graph = graphs[var.c_str()];
-      sf = sf_graph.Eval(pT);
+      sf_graph.GetPoint(pTbin, x, y);
+      sf = y;
+      //sf = sf_graph.GetPoint(pTbin);
    }
    else
    {
       var_graph = graphs[var.c_str()];
-      sf = 2 * var_graph.Eval(pTmax) - nominal_graph.Eval(pTmax);// for syst take twice the variation from pT > upper range of the graph
+      var_graph.GetPoint(pTbin, x, y);
+      var_graph.GetPoint(pTbin, xn, yn);
+      sf = 2 * y - yn;// for syst take twice the variation from pT > upper range of the graph
    }
 
    return sf;
 }
 
+
+/*
+float MuonTriggerEfficiencies::findSF(const TGraph & graph, const int & sigma) 
+{
+   float
+}*/
