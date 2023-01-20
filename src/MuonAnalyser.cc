@@ -27,7 +27,7 @@ MuonAnalyser::MuonAnalyser(int argc, char * argv[]) : BaseAnalyser(argc,argv)
    // Muons
    muonsanalysis_  = ( analysis_->addTree<Muon> ("Muons",config_->muonsCollection()) != nullptr  && config_ -> nMuonsMin() > 0 );
    
-   if(config_->onlinemuonSF() != "" &&  config_->isMC())
+   if(config_->onlinemuonSF() != "" &&  config_->isMC() && ! config_->muonsVeto())
    mte = new MuonTriggerEfficiencies(config_->onlinemuonSF());
 
 }
