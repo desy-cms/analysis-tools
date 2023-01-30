@@ -487,4 +487,32 @@ void MuonAnalyser::applyMuonOnlineSF(const double & muonpT)
    
    cutflow(label);
 
-}     
+}
+
+void MuonAnalyser::actionApplyMuonOnlineSF(const int & rank)
+{
+   if (!muonsanalysis_ || !config_->isMC() || config_->muonsVeto()) // action not applicable in some cases
+      return; 
+   int m = rank-1;
+   float sf = 1.;
+   int systematic = config_->onlinemuonSystematics();
+   std::string label = "WARNING: NO Muon Online Scale factor (*** assuming SF = 1 ***)";
+
+   if (config_->onlinemuonSF() != "")
+   {
+      std::string bnsf = basename(config_->onlinemuonSF());
+      label = Form("Muon Online Scale Factor: (%s)", bnsf.c_str()); // assuming central value
+      
+      if ( systematic != 0 )
+      {
+         label = Form("Muon Online Scale Factor: (%s), syst: %+d sig", bnsf.c_str(), systematic);
+
+      }
+      auto muon_pt = selectedMuons_[m]->pt();
+      if ( abs(systematic) > 2 ) 
+         std::cout << " *** Error ***: there is no systematic variation > 2 sigma!" << std::endl;
+      sf *= mte->findSF(muon_pt, systematic);
+   }
+   weight_ *= sf; // apply sf to event weight
+   cutflow(label);
+}

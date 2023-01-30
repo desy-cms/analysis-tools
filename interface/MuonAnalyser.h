@@ -86,6 +86,7 @@ namespace analysis {
             void applyMuonOnlineSF(const double & muonpT);
             bool muonCorrections();
             bool muonCorrections(const double & muonpT);
+            void actionApplyMuonOnlineSF(const int & rank);
 
       };
    }
