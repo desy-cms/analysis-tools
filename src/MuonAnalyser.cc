@@ -438,7 +438,7 @@ bool MuonAnalyser::muonCorrections()
    // muon online trigger scale factor
 
    if (config_->onlinemuonSF() != "" &&  config_->isMC() && selectedMuons_.size()!= 0)
-   applyMuonOnlineSF(selectedMuons_[0]->pt()); // apply muon online SF according to the first muon in selectedMuons_ vector
+      applyMuonOnlineSF(selectedMuons_[0]->pt()); // apply muon online SF according to the first muon in selectedMuons_ vector
 
    return true;
 }
@@ -448,7 +448,7 @@ bool MuonAnalyser::muonCorrections(const double & muonpT)
    // muon online trigger scale factor
 
    if (config_->onlinemuonSF() != "" &&  config_->isMC() && selectedMuons_.size()!= 0)
-   applyMuonOnlineSF(muonpT); // apply muon online SF according to the pt indicated
+      applyMuonOnlineSF(muonpT); // apply muon online SF according to the pt indicated
 
    return true;
 }
@@ -509,7 +509,7 @@ void MuonAnalyser::actionApplyMuonOnlineSF(const int & rank)
       auto muon_pt = selectedMuons_[m]->pt();
       if ( abs(systematic) > 2 ) 
          std::cout << " *** Error ***: there is no systematic variation > 2 sigma!" << std::endl;
-      sf *= muon_trigger_efficiency_->findSF(muon_pt, systematic);
+      sf = muon_trigger_efficiency_->findSF(muon_pt, systematic);
    }
    weight_ *= sf; // apply sf to event weight
    cutflow(label);
