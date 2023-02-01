@@ -68,17 +68,14 @@ JetAnalyser::JetAnalyser(int argc, char *argv[]) : BaseAnalyser(argc, argv)
          flavours_.push_back("cc");
          flavours_.push_back("bb");
       }
-      
-   if(config_->onlinejetSF() != "" &&  config_->isMC())
-   jte = new JetTriggerEfficiencies(config_->onlinejetSF());
+      if(config_->onlinejetSF() != "" )
+         jet_trigger_efficiency_ = std::make_unique<JetTriggerEfficiencies>(config_->onlinejetSF());
    }
    //   histograms("jet",config_->nJetsMin());
 }
 
 JetAnalyser::~JetAnalyser()
 {
-   if(config_->onlinejetSF() != "" &&  config_->isMC())
-   delete jte;
    // do anything here that needs to be done at desctruction time
    // (e.g. close files, deallocate resources etc.)
 }
@@ -1834,12 +1831,42 @@ void JetAnalyser::applyJetOnlineSF(const int & r)
    if ( ! jetsanalysis_ || ! config_->isMC() || selectedJets_.size() < 2) return;
    if ( config_->onlinejetSF() == "")  return;
 
-   sf *= jte->findSF(selectedJets_[j]->eta(),selectedJets_[j]->pt(), config_->onlinejetSystematics());
+   sf *= jet_trigger_efficiency_->findSF(selectedJets_[j]->eta(),selectedJets_[j]->pt(), config_->onlinejetSystematics());
    
    weight_ *= sf; //apply sf to event weight]
 
    return;
 }
+
+void JetAnalyser::actionApplyJetOnlineSF(const int & r) 
+{
+// Jet Online Corrections to be applied to MC
+   if ( ! jetsanalysis_ || ! config_->isMC() ) return;
+
+   int j = r-1;
+   float sf = 1.;
+   int systematic = config_->onlinejetSystematics();
+   std::string label = "WARNING: NO Jet Online Scale factor (*** assuming SF = 1 ***)";
+//to do: check label when no file, check when data
+   if (config_->onlinejetSF() != "")
+   {
+      std::string bnsf = basename(config_->onlinejetSF());
+      label = Form("Jet Online Scale Factor: (%s)", bnsf.c_str()); // assuming central value
+      if ( systematic != 0 )
+      {
+         label = Form("Jet Online Scale Factor: (%s), syst: %+d sig", bnsf.c_str(), systematic);
+      }
+      if ( abs(systematic) > 2 ) 
+         std::cout << " *** Error ***: there is no systematic variation > 2 sigma!" << std::endl;
+
+      sf = jet_trigger_efficiency_->findSF(selectedJets_[j]->eta(),selectedJets_[j]->pt(), config_->onlinejetSystematics());
+
+   }
+   weight_ *= sf; //apply sf to event weight
+   cutflow(label);
+
+}
+
 
 std::vector< std::shared_ptr<Jet> > JetAnalyser::removeSelectedJets(const std::vector<int> & ranks)
 {
