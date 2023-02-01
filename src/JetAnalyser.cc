@@ -1851,10 +1851,10 @@ void JetAnalyser::actionApplyJetOnlineSF(const int & r)
    if (config_->onlinejetSF() != "")
    {
       std::string bnsf = basename(config_->onlinejetSF());
-      label = Form("Jet Online Scale Factor: (%s)", bnsf.c_str()); // assuming central value
+      label = Form("Jet %d: Online Scale Factor: (%s)", r, bnsf.c_str()); // assuming central value
       if ( systematic != 0 )
       {
-         label = Form("Jet Online Scale Factor: (%s), syst: %+d sig", bnsf.c_str(), systematic);
+         label = Form("Jet %d: Online Scale Factor: (%s), syst: %+d sig", r, bnsf.c_str(), systematic);
       }
       if ( abs(systematic) > 2 ) 
          std::cout << " *** Error ***: there is no systematic variation > 2 sigma!" << std::endl;
