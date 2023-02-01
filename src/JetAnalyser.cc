@@ -1838,23 +1838,23 @@ void JetAnalyser::applyJetOnlineSF(const int & r)
    return;
 }
 
-void JetAnalyser::actionApplyJetOnlineSF(const int & r) 
+void JetAnalyser::actionApplyJetOnlineSF(const int & rank) 
 {
 // Jet Online Corrections to be applied to MC
    if ( ! jetsanalysis_ || ! config_->isMC() ) return;
 
-   int j = r-1;
+   int j = rank-1;
    float sf = 1.;
    int systematic = config_->onlinejetSystematics();
-   std::string label = "WARNING: NO Jet Online Scale factor (*** assuming SF = 1 ***)";
+   std::string label = "WARNING: NO jet online scale factor (*** assuming SF = 1 ***)";
 //to do: check label when no file, check when data
    if (config_->onlinejetSF() != "")
    {
       std::string bnsf = basename(config_->onlinejetSF());
-      label = Form("Jet %d: Online Scale Factor: (%s)", r, bnsf.c_str()); // assuming central value
+      label = Form("Jet %d: online scale factor (%s)", rank, bnsf.c_str()); // assuming central value
       if ( systematic != 0 )
       {
-         label = Form("Jet %d: Online Scale Factor: (%s), syst: %+d sig", r, bnsf.c_str(), systematic);
+         label = Form("Jet %d: online scale factor syst = %+d sig (%s)", rank, systematic, bnsf.c_str());
       }
       if ( abs(systematic) > 2 ) 
          std::cout << " *** Error ***: there is no systematic variation > 2 sigma!" << std::endl;

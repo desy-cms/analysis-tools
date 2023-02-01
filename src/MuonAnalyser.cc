@@ -499,11 +499,11 @@ void MuonAnalyser::actionApplyMuonOnlineSF(const int & rank)
    if (config_->onlinemuonSF() != "")
    {
       std::string bnsf = basename(config_->onlinemuonSF());
-      label = Form("Muon Online Scale Factor: (%s)", bnsf.c_str()); // assuming central value
+      label = Form("Muon %d: online scale factor (%s)", rank, bnsf.c_str()); // assuming central value
       
       if ( systematic != 0 )
       {
-         label = Form("Muon Online Scale Factor: (%s), syst: %+d sig", bnsf.c_str(), systematic);
+         label = Form("Muon %d: online scale factor syst = %+d sig (%s) ", rank, systematic, bnsf.c_str());
 
       }
       auto muon_pt = selectedMuons_[m]->pt();
