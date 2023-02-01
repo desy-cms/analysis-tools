@@ -48,8 +48,8 @@ namespace analysis {
             std::vector< std::shared_ptr<Muon> > onlineMatchedMuons_;
 
             bool muonsanalysis_;
-
-            std::map<std::string, std::shared_ptr<BTagCalibrationReader> >bsf_reader_;
+            
+            std::unique_ptr<analysis::tools::MuonTriggerEfficiencies> muon_trigger_efficiency_; // variable to call the function to find scale factor
 
          private:
 
@@ -81,8 +81,6 @@ namespace analysis {
             virtual void muonHistograms(const std::string &, const int & n = 1);
             virtual void fillMuonHistograms();
 
-            analysis::tools::MuonTriggerEfficiencies * mte; // variable to call the function to find scale factor
-            
             void applyMuonOnlineSF(const double & muonpT);
             bool muonCorrections();
             bool muonCorrections(const double & muonpT);

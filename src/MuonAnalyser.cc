@@ -28,7 +28,7 @@ MuonAnalyser::MuonAnalyser(int argc, char * argv[]) : BaseAnalyser(argc,argv)
    muonsanalysis_  = ( analysis_->addTree<Muon> ("Muons",config_->muonsCollection()) != nullptr  && config_ -> nMuonsMin() > 0 );
    
    if(config_->onlinemuonSF() != "" &&  config_->isMC() && ! config_->muonsVeto())
-   mte = new MuonTriggerEfficiencies(config_->onlinemuonSF());
+      muon_trigger_efficiency_ = std::make_unique<MuonTriggerEfficiencies>(config_->onlinemuonSF());
 
 }
 
@@ -37,8 +37,6 @@ MuonAnalyser::~MuonAnalyser()
    // do anything here that needs to be done at desctruction time
    // (e.g. close files, deallocate resources etc.)
    
-   if(config_->onlinemuonSF() != "" &&  config_->isMC())
-   delete mte;
 }
 
 
@@ -481,7 +479,7 @@ void MuonAnalyser::applyMuonOnlineSF(const double & muonpT)
          }  
       }
    
-      sf *= mte->findSF(muonpT, config_->onlinemuonSystematics());
+      sf *= muon_trigger_efficiency_->findSF(muonpT, config_->onlinemuonSystematics());
       weight_ *= sf; //apply sf to event weight
    }
    
@@ -511,7 +509,7 @@ void MuonAnalyser::actionApplyMuonOnlineSF(const int & rank)
       auto muon_pt = selectedMuons_[m]->pt();
       if ( abs(systematic) > 2 ) 
          std::cout << " *** Error ***: there is no systematic variation > 2 sigma!" << std::endl;
-      sf *= mte->findSF(muon_pt, systematic);
+      sf *= muon_trigger_efficiency_->findSF(muon_pt, systematic);
    }
    weight_ *= sf; // apply sf to event weight
    cutflow(label);
