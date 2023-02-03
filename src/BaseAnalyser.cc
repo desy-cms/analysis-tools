@@ -109,6 +109,14 @@ BaseAnalyser::BaseAnalyser(int argc, char * argv[])
       }
    }
    this -> pileupHistogram();
+
+   scale_correction_ = 1.;
+   if ( config_->scaleFilename() != "" && config_->scaleParameter() != "" )
+   {
+      scale_data_ = readParameterDataCSVFile(config_->scaleFilename());
+      if ( ! scale_data_.empty() )
+         scale_correction_ = scale_data_[config_->scaleParameter()][0];
+   }
 }
 
 BaseAnalyser::~BaseAnalyser()
@@ -551,4 +559,19 @@ void BaseAnalyser::fill1DHistogram(const std::string & label, const std::string 
    this->output()->cd(label.c_str());
    h1_[hist_tag]->Fill(value, weight);
    this->output()->cd();
+}
+
+void BaseAnalyser::actionApplyScaleCorrection(const std::string &title)
+{
+   if ( config_->scaleParameter() == "" || config_->scaleFilename() == "" || scale_data_.empty() ) return;
+   weight_ *= scale_correction_;
+
+   std::string label_type = "Scale correction";
+   std::string label = Form("%6.4f for parameter %s (%s)", scale_correction_, config_->scaleParameter().c_str(), basename(config_->scaleFilename()).c_str());
+   if ( title != "" ) 
+   {
+      label_type = "scale correction";
+      label = Form("%s %s: %s", title.c_str(),label_type.c_str(), label.c_str());
+   }
+   cutflow(label);
 }
