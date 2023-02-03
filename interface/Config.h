@@ -142,6 +142,9 @@ namespace analysis {
             bool hemCorrection() const;
             int  prefiringWeightSystematics() const;
 
+            std::string scaleFilename() const;
+            std::string scaleParameter() const;
+
             std::vector<float>  jetsQGmin() const;
             std::vector<float>  jetsQGmax() const;
 
@@ -431,6 +434,9 @@ namespace analysis {
             //
             std::string btagalgo_;
             std::string btagsf_;
+            //
+            std::string scale_file_;
+            std::string scale_par_;
 
 
             std::vector<std::string> jetsbtagwp_;
