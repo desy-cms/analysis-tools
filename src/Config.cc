@@ -54,7 +54,8 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          ("pileup",po::value <int>(&puweightsyst_),"Pileup weight systematic variation (sigma)")  
          ("btagweight",po::bool_switch(&cmdl_bweight_),"Apply btag weight defined in the config file")  
          ("prefiring",po::value <int>(&prefwsyst_),"Prefiring weight systematic variation (sigma)")  
-         ("muonsf",po::value <int>(&onlmuonsyst_),"Online muon scale factor systematic variation (sigma)")  
+         ("muonsf",po::value <int>(&onlmuonsyst_),"Online muon scale factor systematic variation (sigma)")
+         ("scale_parameter",po::value <std::string>(&cmdl_scale_parameter_),"Scale parameter from scaleFilename")  
            ;
 
       // analysis info
@@ -356,18 +357,20 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          }
          if ( cmdl_sr_ != cmdl_cr_ )  signalregion_ = cmdl_sr_;
 
-//          // override jer syst
-//          if ( cmdl_jer_ > -100 )
-//          {
-//             jersyst_ = cmdl_jer_;
-//          }
-//          // override jec syst
-//          if ( cmdl_jec_ > -100 )
-//          {
-//             jecsyst_ = cmdl_jec_;
-//          }
-         
-         boost::algorithm::to_lower(jetsid_);
+         if (cmdl_scale_parameter_ != "" ) scale_par_ = cmdl_scale_parameter_;
+
+            //          // override jer syst
+            //          if ( cmdl_jer_ > -100 )
+            //          {
+            //             jersyst_ = cmdl_jer_;
+            //          }
+            //          // override jec syst
+            //          if ( cmdl_jec_ > -100 )
+            //          {
+            //             jecsyst_ = cmdl_jec_;
+            //          }
+
+            boost::algorithm::to_lower(jetsid_);
          std::transform(btagalgo_.begin(), btagalgo_.end(), btagalgo_.begin(), ::tolower);
 
 //         inputlist_ = Form("%s/test/%s", toolspath.c_str(), inputlist_.c_str());

@@ -337,6 +337,8 @@ namespace analysis {
             std::string cmdl_wftitle_;
             bool cmdl_sr_;
             bool cmdl_cr_;
+            std::string cmdl_scale_parameter_;
+
 
             po::options_description opt_cmd_;
             po::options_description opt_cfg_;
