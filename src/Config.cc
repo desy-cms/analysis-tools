@@ -94,6 +94,8 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          ("Corrections.hemCorrection"    , po::value <bool>                      (&hemCorrection_)   -> default_value(false)              , "Apply HEM correction")
          ("Corrections.Muons.onlinemuonSF" , po::value <std::string>              (&onlmuonsf_)        -> default_value("")                , "Muon trigger SF file")
          ("Corrections.Muons.onlinemuonSystematics" , po::value <int>             (&onlmuonsyst_)      -> default_value(0)                 , "Online muon scale factor systematic variation (sigma), default = 0")
+         ("Corrections.Scale.file"       , po::value <std::string>               (&scale_file_)      -> default_value("")                 , "Read a CSV file containing scaling factors for a certain parameter")
+         ("Corrections.Scale.parameter"  , po::value <std::string>               (&scale_par_)       -> default_value("")                 , "Parameter of the scale factor to be applied from the scale file")
          ("Corrections.force"            , po::value <bool>                      (&apply_correct_)   -> default_value(false)              , "Apply corrections internally when above are defined");
 
       // jets
@@ -387,6 +389,7 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          if ( btageff_[0]  != ""  && btageff_[0].rfind("tools:",0) == 0  )    btageff_[0].replace(0,6,calibpath+"/");
          if ( btageff_[1]  != ""  && btageff_[1].rfind("tools:",0) == 0  )    btageff_[1].replace(0,6,calibpath+"/");
          if ( btageff_[2]  != ""  && btageff_[2].rfind("tools:",0) == 0  )    btageff_[2].replace(0,6,calibpath+"/");
+         if ( scale_file_ != "" && scale_file_.rfind("tools:",0) == 0 )       scale_file_.replace(0,6,calibpath+"/");
          if ( !cmdl_bweight_  )
          {
             btageff_[0]="";
@@ -544,8 +547,10 @@ bool               Config::useJetsExtendedFlavour() const { return usejetsextflv
 bool               Config::doDijet()            const { return dodijet_ ; }
 int                Config::nBJetsMin()          const { return nbjetsmin_; }
 bool               Config::prefiringWeight()    const { return prefw_; }
-bool               Config::hemCorrection()    const { return hemCorrection_; }
+bool               Config::hemCorrection()      const { return hemCorrection_; }
 int                Config::prefiringWeightSystematics() const { return prefwsyst_;    }
+std::string        Config::scaleFilename()      const { return scale_file_; }
+std::string        Config::scaleParameter()     const { return scale_par_; }
 
 std::vector<float>  Config::jetsQGmin() const { return qgmin_; }
 std::vector<float>  Config::jetsQGmax() const { return qgmax_; }

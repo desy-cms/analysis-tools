@@ -1,8 +1,12 @@
 #include "Analysis/Tools/interface/Utils.h"
 #include "TMath.h"
 #include "TVector2.h"
+#include <fstream>
 #include <iostream>
-
+#include <map>
+#include <sstream>
+#include <string>
+#include <vector>
 namespace analysis {
    namespace tools {
 
@@ -211,6 +215,49 @@ namespace analysis {
          return dr;
          
       }
-      
+
+      std::map<std::string, std::vector<float> > readParameterDataCSVFile(const std::string &filename)
+      {
+         std::map<std::string, std::vector<float> > csv_data;
+         std::ifstream file(filename);
+         if (file.is_open())
+         {
+            std::string line;
+            std::getline(file, line);
+
+            std::istringstream header(line);
+            // std::string title;
+            // while (std::getline(header, title, ','))
+            // {
+            //    // don't need to do anything
+            // }
+
+            while (std::getline(file, line))
+            {
+               std::istringstream row(line);
+               std::string value;
+               std::string parameter_name;
+               int i = 0;
+               while (std::getline(row>>std::ws, value, ','))
+               {
+                  if ( i == 0) // first column is the parameter name
+                  {
+                     parameter_name = value;
+                     csv_data[parameter_name] = std::vector<float>();
+                     ++i;
+                     continue;
+                  }
+                  csv_data[parameter_name].push_back(std::stod(value));
+
+                  // csv_data[it->first].push_back(std::stod(value));
+                  // csv_data[csv_data.begin()->first].push_back(std::stod(value));
+                  i++;
+               }
+            }
+            file.close();
+         }
+
+         return csv_data;
+      }
    }
 }

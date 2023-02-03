@@ -112,8 +112,11 @@ namespace analysis {
             /// emulated triggers
             std::map<std::string,bool> trg_emul_;
 
+            /// external scale data
+            std::map<std::string, std::vector<float> > scale_data_;
+            float scale_correction_;
 
-         private:
+         private :
 
             /// name of the executable
             std::string exe_;
@@ -229,6 +232,8 @@ namespace analysis {
             /// fill added histogram 
             virtual void fill1DHistogram(const std::string & label, const std::string & name, const float & value, const float & weight = 1.);
 
+            /// apply scale correction
+            void actionApplyScaleCorrection(const std::string & title="");
 
 
       };
