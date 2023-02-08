@@ -337,6 +337,7 @@ namespace analysis {
             std::string cmdl_wftitle_;
             bool cmdl_sr_;
             bool cmdl_cr_;
+            bool cmdl_vr_;
             std::string cmdl_scale_parameter_;
 
 
