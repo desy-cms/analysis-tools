@@ -358,7 +358,11 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          }
          if ( cmdl_sr_ != cmdl_cr_ )  signalregion_ = cmdl_sr_;
 
-         if ( cmdl_vr_ )              signalregion_ = false; // TODO: IMPROVE logics!
+         if (cmdl_vr_) // TODO: IMPROVE logics!
+         {
+            signalregion_ = false;
+            validationregion_ = true;
+         }
 
          if (cmdl_scale_parameter_ != "" ) scale_par_ = cmdl_scale_parameter_;
 
