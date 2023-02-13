@@ -48,6 +48,7 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          ("data",po::bool_switch(&cmdl_data_),"Run on data") 
          ("sr",po::bool_switch(&cmdl_sr_),"Signal region")  
          ("cr",po::bool_switch(&cmdl_cr_),"Control region")  
+         ("vr",po::bool_switch(&cmdl_vr_),"Validation region")  
          ("jer",po::value <int>(&jersyst_),"JER systematic variation (sigma)")  
          ("jec",po::value <int>(&jecsyst_),"JEC systematic variation (sigma)")  
          ("jetsf",po::value <int>(&onljetsyst_),"Online jet scale factor systematic variation (sigma)")  
@@ -356,6 +357,12 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
             std::exit(-1);
          }
          if ( cmdl_sr_ != cmdl_cr_ )  signalregion_ = cmdl_sr_;
+
+         if (cmdl_vr_) // TODO: IMPROVE logics!
+         {
+            signalregion_ = false;
+            validationregion_ = true;
+         }
 
          if (cmdl_scale_parameter_ != "" ) scale_par_ = cmdl_scale_parameter_;
 

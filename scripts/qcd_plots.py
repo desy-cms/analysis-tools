@@ -19,6 +19,8 @@ from rootpy.interactive import wait
 import Analysis.Tools.CMS_lumi as CMS_lumi
 import Analysis.Tools.tdrstyle as tdrstyle
 
+import numpy as np
+
 TH1.SetDefaultSumw2()
 
 #set the tdr style (why some setting don't work? using gStyle??? - not all settings work w/ gStyle???)
@@ -51,24 +53,26 @@ if( iPos==0 ): CMS_lumi.relPosX = 0.12
 
 iPeriod = 0
 
-xbins = []
+xbins_var = []
 for i in xrange(0,120,10):
-   xbins.append(i)
+   xbins_var.append(i)
 for i in xrange(120,500,20):
-   xbins.append(i)
+   xbins_var.append(i)
 for i in xrange(500,800,30):
-   xbins.append(i)
+   xbins_var.append(i)
 for i in xrange(800,1200,50):
-   xbins.append(i)
+   xbins_var.append(i)
 for i in xrange(1200,2000,100):
-   xbins.append(i)               
+   xbins_var.append(i)               
 for i in xrange(2000,2600,150):
-   xbins.append(i)
+   xbins_var.append(i)
 for i in xrange(2600,3001,400):
-   xbins.append(i)
+   xbins_var.append(i)
+
+axbins = array.array('d', xbins_var)
 
 xbins = []   
-for i in xrange(0,3000,50):
+for i in xrange(0,3000,1):
    xbins.append(i)
    
 axbins = array.array('d', xbins)
@@ -79,9 +83,22 @@ def make_plots(histos1,histos2=None,legend1=None,legend2=None,legend_title=None,
 
    global output_name
    global x_range, y_range
+   global rebin
    global iPos
    global H_ref,W_ref,H,W,T,B,L,R
    global textSize
+   
+   if rebin >= 0:
+      rb = rebin
+      if rebin == 0:
+         rb = 1
+      xbins = []   
+      for i in xrange(0,3000,rb):
+         xbins.append(i)
+      axbins = array.array('d', xbins)
+      
+   if rebin < 0:
+      axbins = array.array('d', xbins_var)
    
    flavours = ['b','c','udsg','bb','cc']
    canvas = {}
@@ -398,6 +415,7 @@ def histograms(path,process,hdir,observables,combined=False):
 def main():
    global output_name
    global x_range, y_range
+   global rebin
    global textSize
    
    global tdrStyle
@@ -427,7 +445,8 @@ def main():
    parser.add_argument("--ratio"           , dest="ratio"                            , help="ratio plots title")   
    parser.add_argument("--ratio_range"     , dest="ratio_range", default="0,2"       , help="ratio plots range")   
    parser.add_argument("--x_range"         , dest="x_range"    , default="260,2000"  , help="x-axis range")   
-   parser.add_argument("--y_range"         , dest="y_range"                          , help="x-axis range")   
+   parser.add_argument("--y_range"         , dest="y_range"                          , help="x-axis range")
+   parser.add_argument("--rebin"           , dest="rebin"      , default="0"         , help="rebin (default = no rebin")
    parser.add_argument("--output"          , dest="output"                           , help="name for output files")   
    args = parser.parse_args()
 
@@ -451,7 +470,10 @@ def main():
       output_name = args.output
    x_range = args.x_range
    y_range = args.y_range
-      
+   rebin_arg = args.rebin
+   rebin_arg=rebin_arg.replace(' ','')
+   rebin=int(rebin_arg)
+   
    legs = []   
    histos = []
    for i in range(len(files_paths)):
