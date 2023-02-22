@@ -816,19 +816,32 @@ bool JetAnalyser::selectionJetId()
 
 bool JetAnalyser::selectionJetPileupId()
 {
+   //config_->jetsPtMaxPUID
    if (!jetsanalysis_)
       return true;
 
    bool isgood = true;
    std::string label = Form("JetPileupId: %s", config_->jetsPuId().c_str());
+   if (config_->jetsPtMaxPUID() != -1)
+   label = Form("JetPileupId: %s, maximum jet PileupID pT %.1f GeV", config_->jetsPuId().c_str(),  config_->jetsPtMaxPUID());
 
    auto jet = std::begin(selectedJets_);
    while (jet != std::end(selectedJets_))
    {
-      if (!(*jet)->pileupJetIdFullId(config_->jetsPuId()))
-         jet = selectedJets_.erase(jet);
+      if(config_->jetsPtMaxPUID() != -1)
+      {
+         if (!(*jet)->pileupJetIdFullId(config_->jetsPuId(), config_->jetsPtMaxPUID()))
+            jet = selectedJets_.erase(jet);
+         else
+            ++jet;
+      }
       else
-         ++jet;
+      {
+         if (!(*jet)->pileupJetIdFullId(config_->jetsPuId()))
+            jet = selectedJets_.erase(jet);
+         else
+            ++jet;
+      }
    }
 
    isgood = (selectedJets_.size() > 0);
