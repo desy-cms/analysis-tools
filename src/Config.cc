@@ -108,7 +108,7 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          ("Jets.jets"                    , po::value <std::string>               (&jetsCol_)         -> default_value("")                 , "Name of the jets collection")
          ("Jets.id"                      , po::value <std::string>               (&jetsid_)          -> default_value("tight")            , "Jets id criteria for all jets")
          ("Jets.puId"                    , po::value <std::string>               (&jetspuid_)        -> default_value("loose")            , "Jets pileup id criteria for all jets")
-         ("Jets.ptMaxPUID"               , po::value <float>                     (&jetsptmaxPUID_)   -> default_value(50.)                , "Maximum pt of the jets to check PUID")
+         ("Jets.ptMaxPuId"               , po::value <float>                     (&jetsptmaxPUID_)   -> default_value(50.)                , "Maximum pt of the jets to check PUID")
          ("Jets.extendedFlavour"         , po::value <bool>                      (&usejetsextflv_)   -> default_value(false)              , "For splitting results accoding to jet extended flavour")
          ("Jets.n"                       , po::value <int>                       (&njets_)           -> default_value(-1)                 , "Minimum number of jets")
          ("Jets.nMin"                    , po::value <int>                       (&njetsmin_)        -> default_value(0)                  , "Minimum number of jets")
@@ -531,7 +531,7 @@ int                Config::nJets()              const { return njets_; }
 std::vector<float> Config::jetsPtMin()          const { return jetsptmin_; }
 std::vector<float> Config::jetsPtMax()          const { return jetsptmax_; }
 std::vector<float> Config::jetsEtaMax()         const { return jetsetamax_; }
-float              Config::jetsPtMaxPUID()      const { return jetsptmaxPUID_; }
+float              Config::jetsPtMaxPuId()      const { return jetsptmaxPUID_; }
 std::string        Config::jetsId()             const { return jetsid_; }
 std::string        Config::jetsPuId()           const { return jetspuid_; }
 std::string        Config::jerPtRes()           const { return jerptres_; }
