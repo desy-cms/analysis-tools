@@ -111,6 +111,7 @@ namespace analysis {
             std::vector<float> jetsPtMin() const;
             std::vector<float> jetsPtMax() const;
             std::vector<float> jetsEtaMax() const;
+            float jetsPtMaxPuId() const;
             std::string jetsId() const;
             std::string jetsPuId() const;
             std::string jerPtRes() const;
@@ -400,6 +401,7 @@ namespace analysis {
             std::vector<float> jetsetamax_;
             std::string jetsid_;
             std::string jetspuid_;
+            float jetsptmaxPUID_;
 
             std::vector<float>  qgmin_;
             std::vector<float>  qgmax_;

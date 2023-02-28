@@ -317,7 +317,7 @@ double Jet::btagSFdown(std::shared_ptr<BTagCalibrationReader> reader, const floa
 }
 
 
-bool  Jet::pileupJetIdFullId(const std::string & wp) const
+bool  Jet::pileupJetIdFullId(const std::string & wp, const float & maxpT) const
 { 
    std::string wplow = wp;
    std::transform(wplow.begin(), wplow.end(), wplow.begin(), ::tolower);
@@ -328,9 +328,9 @@ bool  Jet::pileupJetIdFullId(const std::string & wp) const
       return true;
    }
    if ( wplow == "none" ) return true;
-   if ( wplow == "loose"  && (puJetIdFullId_ & (1 << 2)) ) return true;
-   if ( wplow == "medium" && (puJetIdFullId_ & (1 << 1)) ) return true;
-   if ( wplow == "tight"  && (puJetIdFullId_ & (1 << 0)) ) return true;
+   if ( wplow == "loose"  && (puJetIdFullId_ & (1 << 2)|| (this->pt() > maxpT)) ) return true;
+   if ( wplow == "medium" && (puJetIdFullId_ & (1 << 1)|| (this->pt() > maxpT)) ) return true;
+   if ( wplow == "tight"  && (puJetIdFullId_ & (1 << 0)|| (this->pt() > maxpT)) ) return true;
    return false;
 }
 
