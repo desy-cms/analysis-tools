@@ -816,16 +816,17 @@ bool JetAnalyser::selectionJetId()
 
 bool JetAnalyser::selectionJetPileupId()
 {
+   //config_->jetsPtMaxPUID
    if (!jetsanalysis_)
       return true;
 
    bool isgood = true;
-   std::string label = Form("JetPileupId: %s", config_->jetsPuId().c_str());
+   std::string label = Form("JetPileupId: %s, jet pT < %.1f GeV", config_->jetsPuId().c_str(),  config_->jetsPtMaxPuId());
 
    auto jet = std::begin(selectedJets_);
    while (jet != std::end(selectedJets_))
    {
-      if (!(*jet)->pileupJetIdFullId(config_->jetsPuId()))
+      if (!(*jet)->pileupJetIdFullId(config_->jetsPuId(), config_->jetsPtMaxPuId()))
          jet = selectedJets_.erase(jet);
       else
          ++jet;
