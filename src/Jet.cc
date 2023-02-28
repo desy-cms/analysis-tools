@@ -334,6 +334,23 @@ bool  Jet::pileupJetIdFullId(const std::string & wp) const
    return false;
 }
 
+bool  Jet::pileupJetIdFullId(const std::string & wp, const float & maxpT) const
+{ 
+   std::string wplow = wp;
+   std::transform(wplow.begin(), wplow.end(), wplow.begin(), ::tolower);
+   if ( puJetIdFullId_ < 0 )
+   {
+      std::cout << "analysis:tools::Jet *W* Pileup Jet ID FullId is negative; the collection may not have this information." << std::endl;
+      std::cout << "                        All jets are accepted." << std::endl;
+      return true;
+   }
+   if ( wplow == "none" ) return true;
+   if ( wplow == "loose"  && (puJetIdFullId_ & (1 << 2)|| (this->pt() > 50.0)) ) return true;
+   if ( wplow == "medium" && (puJetIdFullId_ & (1 << 1)|| (this->pt() > 50.0)) ) return true;
+   if ( wplow == "tight"  && (puJetIdFullId_ & (1 << 0)|| (this->pt() > 50.0)) ) return true;
+   return false;
+}
+
 float Jet::offlineBtagWeight()                          const { return offBtagWeight_;   }
 
 TLorentzVector Jet::jerP4() const { return jerp4_; }

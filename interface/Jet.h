@@ -133,6 +133,7 @@ namespace analysis {
             float pileupJetIdFullDiscriminant() const;
             int pileupJetIdFullId() const;
             bool pileupJetIdFullId(const std::string & wp) const;
+            bool pileupJetIdFullId(const std::string & wp, const float & maxpT) const;
             
             /// b-jet regression
             float bRegCorr() const;
