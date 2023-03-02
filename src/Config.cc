@@ -59,6 +59,8 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          ("scale_parameter",po::value <std::string>(&cmdl_scale_parameter_),"Scale parameter from scaleFilename")  
            ;
 
+// TODO: analysis type from the command line
+
       // analysis info
       opt_cfg_.add_options()
          ("Info.ntuplesList"             , po::value <std::string>               (&inputlist_)       -> default_value("rootFileList.txt") ,"File with list of ntuples")
@@ -68,7 +70,8 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          ("Info.json"                    , po::value <std::string>               (&json_)            -> default_value("")                 ,"JSON file for data")
          ("Info.output"                  , po::value <std::string>               (&outputRoot_)      -> default_value("histograms.root")  ,"Output root file")
          ("Info.seedFile"                , po::value <std::string>               (&seedfile_)        -> default_value("no_seed.txt")      ,"File with seed value for random numbers")
-         ("Info.blindAnalysis"           , po::value <bool>                      (&blind_)           -> default_value(false)              ,"Flag for blind analysis")
+         ("Info.analysisType"            , po::value <std::string>               (&analysis_type_)   -> default_value("FH")               ,"Type of analysis, e.g. FH= full hadronic")
+         ("Info.blindAnalysis"           , po::value <bool>                      (&blind_)           -> default_value(true)               ,"Flag for blind analysis")
          ("Info.nloMC"                   , po::value <bool>                      (&nlo_)             -> default_value(false)              ,"Flag for NLO MC samples")
          ("Info.isMC"                    , po::value <bool>                      (&isMC_)            -> default_value(false)              ,"Flag for MC dataset")
          ("Info.fullGenWeight"           , po::value <bool>                      (&fullgenweight_)   -> default_value(false)              ,"Flag for full gen weight of MC samples, otherwise only sign")
@@ -518,6 +521,7 @@ int                Config::pileupWeightSystematics()    const { return puweights
 
 std::string        Config::process()          const { return process_; }
 std::string        Config::eventsDir()        const { return eventsdir_; }
+std::string        Config::analysisType()     const { return analysis_type_; }
 
 // analysis control
 bool               Config::override()          const { return override_; }

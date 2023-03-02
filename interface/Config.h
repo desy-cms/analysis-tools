@@ -89,6 +89,7 @@ namespace analysis {
             
             std::string process() const;
             std::string eventsDir() const;
+            std::string analysisType() const;
 
             std::string seedFile() const;
             int seed() const;
@@ -353,6 +354,7 @@ namespace analysis {
             std::string eventsdir_;
             std::string xsectiontree_;
             std::string xsectiontype_;
+            std::string analysis_type_;
             float xsection_;
             float lumi_;
             int nevtmax_;
