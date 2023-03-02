@@ -91,6 +91,8 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          ("Corrections.BTag.Efficiencies1", po::value <std::string>              (&btageff_[0])      -> default_value("")                 , "b-tagging efficiencies in root file")
          ("Corrections.BTag.Efficiencies2", po::value <std::string>              (&btageff_[1])      -> default_value("")                 , "b-tagging efficiencies in root file")
          ("Corrections.BTag.Efficiencies3", po::value <std::string>              (&btageff_[2])      -> default_value("")                 , "b-tagging efficiencies in root file")
+         ("Corrections.BTag.Efficiencies4", po::value <std::string>              (&btageff_[3])      -> default_value("")                 , "b-tagging efficiencies in root file")
+
          ("Corrections.Jets.bRegression" , po::value <bool>                      (&bregression_)     -> default_value(false)              , "Apply b jet energy regression")
          ("Corrections.PrefiringWeight"  , po::value <bool>                      (&prefw_)           -> default_value(false)              , "Apply L1 prefiring weight")
          ("Corrections.hemCorrection"    , po::value <bool>                      (&hemCorrection_)   -> default_value(false)              , "Apply HEM correction")
@@ -397,16 +399,13 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          if ( onljetsf_ != ""  && onljetsf_.rfind("tools:",0) == 0 )    onljetsf_.replace(0,6,calibpath+"/");
          if ( onlmuonsf_ != ""  && onlmuonsf_.rfind("tools:",0) == 0 )  onlmuonsf_.replace(0,6,calibpath+"/");
          if ( btagsf_    != ""  && btagsf_.rfind("tools:",0) == 0   )    btagsf_.replace(0,6,calibpath+"/");
-         if ( btageff_[0]  != ""  && btageff_[0].rfind("tools:",0) == 0  )    btageff_[0].replace(0,6,calibpath+"/");
-         if ( btageff_[1]  != ""  && btageff_[1].rfind("tools:",0) == 0  )    btageff_[1].replace(0,6,calibpath+"/");
-         if ( btageff_[2]  != ""  && btageff_[2].rfind("tools:",0) == 0  )    btageff_[2].replace(0,6,calibpath+"/");
+         for ( int i = 0; i < 4; i++ )
+            {
+               if ( btageff_[i]  != ""  && btageff_[i].rfind("tools:",0) == 0  )    btageff_[i].replace(0,6,calibpath+"/");
+               if (!cmdl_bweight_) btageff_[i]="";
+            }
          if ( scale_file_ != "" && scale_file_.rfind("tools:",0) == 0 )       scale_file_.replace(0,6,calibpath+"/");
-         if ( !cmdl_bweight_  )
-         {
-            btageff_[0]="";
-            btageff_[1]="";
-            btageff_[2]="";
-         }
+
          if ( puweight_ != ""  && puweight_.rfind("tools:",0) == 0 )    puweight_.replace(0,6,calibpath+"/");
 
          eventinfo_     =  Form("%s/%s/%s" , process_.c_str(), eventsdir_.c_str() , eventinfo_.c_str()      );

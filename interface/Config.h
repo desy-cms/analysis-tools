@@ -548,7 +548,7 @@ namespace analysis {
             float btagwpxxx_;
             int nbjetsmin_;
             // btag efficiency
-            std::string btageff_[3];
+            std::string btageff_[4];
 
 
          // general
