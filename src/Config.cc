@@ -56,7 +56,8 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          ("btagweight",po::bool_switch(&cmdl_bweight_),"Apply btag weight defined in the config file")  
          ("prefiring",po::value <int>(&prefwsyst_),"Prefiring weight systematic variation (sigma)")  
          ("muonsf",po::value <int>(&onlmuonsyst_),"Online muon scale factor systematic variation (sigma)")
-         ("scale_parameter",po::value <std::string>(&cmdl_scale_parameter_),"Scale parameter from scaleFilename")  
+         ("scale_parameter",po::value <std::string>(&cmdl_scale_parameter_),"Scale parameter from scaleFilename")
+         ("atype",po::value<std::string>(&cmdl_atype_)-> default_value(""),"Analysis type, e.g. FH (full hadronic")
            ;
 
 // TODO: analysis type from the command line
@@ -372,21 +373,12 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
 
          if (cmdl_scale_parameter_ != "" ) scale_par_ = cmdl_scale_parameter_;
 
-            //          // override jer syst
-            //          if ( cmdl_jer_ > -100 )
-            //          {
-            //             jersyst_ = cmdl_jer_;
-            //          }
-            //          // override jec syst
-            //          if ( cmdl_jec_ > -100 )
-            //          {
-            //             jecsyst_ = cmdl_jec_;
-            //          }
+         // override analysis type from command line
+         if ( cmdl_atype_ != "" ) analysis_type_ = cmdl_atype_;
 
-            boost::algorithm::to_lower(jetsid_);
+         boost::algorithm::to_lower(jetsid_);
          std::transform(btagalgo_.begin(), btagalgo_.end(), btagalgo_.begin(), ::tolower);
 
-//         inputlist_ = Form("%s/test/%s", toolspath.c_str(), inputlist_.c_str());
          samplename_ = "";
          if ( inputlist_.rfind("tools:",0) == 0 )
          {
