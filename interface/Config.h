@@ -342,9 +342,9 @@ namespace analysis {
             bool cmdl_vr_;
             std::string cmdl_scale_parameter_;
             std::string cmdl_atype_;
+            bool cmdl_unblind_;
 
-
-            po::options_description opt_cmd_;
+                po::options_description opt_cmd_;
             po::options_description opt_cfg_;
 
          // analysis control

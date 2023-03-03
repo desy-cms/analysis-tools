@@ -58,6 +58,7 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          ("muonsf",po::value <int>(&onlmuonsyst_),"Online muon scale factor systematic variation (sigma)")
          ("scale_parameter",po::value <std::string>(&cmdl_scale_parameter_),"Scale parameter from scaleFilename")
          ("atype",po::value<std::string>(&cmdl_atype_)-> default_value(""),"Analysis type, e.g. FH (full hadronic")
+         ("unblind",po::bool_switch(&cmdl_unblind_),"Unblind analysis")
            ;
 
 // TODO: analysis type from the command line
@@ -375,6 +376,9 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
 
          // override analysis type from command line
          if ( cmdl_atype_ != "" ) analysis_type_ = cmdl_atype_;
+
+         // override blind
+         if ( cmdl_unblind_ ) blind_ = not(cmdl_unblind_);
 
          boost::algorithm::to_lower(jetsid_);
          std::transform(btagalgo_.begin(), btagalgo_.end(), btagalgo_.begin(), ::tolower);
