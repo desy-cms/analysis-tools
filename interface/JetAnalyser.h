@@ -60,7 +60,7 @@ namespace analysis {
             
             std::vector<std::string> flavours_;
             
-            BTagEfficiencies btagEfficiencies_[3];
+            BTagEfficiencies btagEfficiencies_[4];
             
             
          

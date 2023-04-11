@@ -42,7 +42,7 @@ JetAnalyser::JetAnalyser(int argc, char *argv[]) : BaseAnalyser(argc, argv)
       bsf_reader_["tight"] = analysis_->btagCalibration(config_->btagAlgorithm(), config_->btagScaleFactors(), "tight");
    }
 
-   for (int mb = 0; mb < 3; ++mb)
+   for (int mb = 0; mb < 4; ++mb)
    {
       if (config_->btagEfficiencies(mb + 1) != "")
       {
