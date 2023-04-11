@@ -89,6 +89,7 @@ namespace analysis {
             
             std::string process() const;
             std::string eventsDir() const;
+            std::string analysisType() const;
 
             std::string seedFile() const;
             int seed() const;
@@ -340,9 +341,10 @@ namespace analysis {
             bool cmdl_cr_;
             bool cmdl_vr_;
             std::string cmdl_scale_parameter_;
+            std::string cmdl_atype_;
+            bool cmdl_unblind_;
 
-
-            po::options_description opt_cmd_;
+                po::options_description opt_cmd_;
             po::options_description opt_cfg_;
 
          // analysis control
@@ -353,6 +355,7 @@ namespace analysis {
             std::string eventsdir_;
             std::string xsectiontree_;
             std::string xsectiontype_;
+            std::string analysis_type_;
             float xsection_;
             float lumi_;
             int nevtmax_;
