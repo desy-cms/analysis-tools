@@ -56,8 +56,12 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          ("btagweight",po::bool_switch(&cmdl_bweight_),"Apply btag weight defined in the config file")  
          ("prefiring",po::value <int>(&prefwsyst_),"Prefiring weight systematic variation (sigma)")  
          ("muonsf",po::value <int>(&onlmuonsyst_),"Online muon scale factor systematic variation (sigma)")
-         ("scale_parameter",po::value <std::string>(&cmdl_scale_parameter_),"Scale parameter from scaleFilename")  
+         ("scale_parameter",po::value <std::string>(&cmdl_scale_parameter_),"Scale parameter from scaleFilename")
+         ("atype",po::value<std::string>(&cmdl_atype_)-> default_value(""),"Analysis type, e.g. FH (full hadronic")
+         ("unblind",po::bool_switch(&cmdl_unblind_),"Unblind analysis")
            ;
+
+// TODO: analysis type from the command line
 
       // analysis info
       opt_cfg_.add_options()
@@ -68,7 +72,8 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          ("Info.json"                    , po::value <std::string>               (&json_)            -> default_value("")                 ,"JSON file for data")
          ("Info.output"                  , po::value <std::string>               (&outputRoot_)      -> default_value("histograms.root")  ,"Output root file")
          ("Info.seedFile"                , po::value <std::string>               (&seedfile_)        -> default_value("no_seed.txt")      ,"File with seed value for random numbers")
-         ("Info.blindAnalysis"           , po::value <bool>                      (&blind_)           -> default_value(false)              ,"Flag for blind analysis")
+         ("Info.analysisType"            , po::value <std::string>               (&analysis_type_)   -> default_value("FH")               ,"Type of analysis, e.g. FH= full hadronic")
+         ("Info.blindAnalysis"           , po::value <bool>                      (&blind_)           -> default_value(true)               ,"Flag for blind analysis")
          ("Info.nloMC"                   , po::value <bool>                      (&nlo_)             -> default_value(false)              ,"Flag for NLO MC samples")
          ("Info.isMC"                    , po::value <bool>                      (&isMC_)            -> default_value(false)              ,"Flag for MC dataset")
          ("Info.fullGenWeight"           , po::value <bool>                      (&fullgenweight_)   -> default_value(false)              ,"Flag for full gen weight of MC samples, otherwise only sign")
@@ -91,6 +96,8 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          ("Corrections.BTag.Efficiencies1", po::value <std::string>              (&btageff_[0])      -> default_value("")                 , "b-tagging efficiencies in root file")
          ("Corrections.BTag.Efficiencies2", po::value <std::string>              (&btageff_[1])      -> default_value("")                 , "b-tagging efficiencies in root file")
          ("Corrections.BTag.Efficiencies3", po::value <std::string>              (&btageff_[2])      -> default_value("")                 , "b-tagging efficiencies in root file")
+         ("Corrections.BTag.Efficiencies4", po::value <std::string>              (&btageff_[3])      -> default_value("")                 , "b-tagging efficiencies in root file")
+
          ("Corrections.Jets.bRegression" , po::value <bool>                      (&bregression_)     -> default_value(false)              , "Apply b jet energy regression")
          ("Corrections.PrefiringWeight"  , po::value <bool>                      (&prefw_)           -> default_value(false)              , "Apply L1 prefiring weight")
          ("Corrections.hemCorrection"    , po::value <bool>                      (&hemCorrection_)   -> default_value(false)              , "Apply HEM correction")
@@ -367,21 +374,15 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
 
          if (cmdl_scale_parameter_ != "" ) scale_par_ = cmdl_scale_parameter_;
 
-            //          // override jer syst
-            //          if ( cmdl_jer_ > -100 )
-            //          {
-            //             jersyst_ = cmdl_jer_;
-            //          }
-            //          // override jec syst
-            //          if ( cmdl_jec_ > -100 )
-            //          {
-            //             jecsyst_ = cmdl_jec_;
-            //          }
+         // override analysis type from command line
+         if ( cmdl_atype_ != "" ) analysis_type_ = cmdl_atype_;
 
-            boost::algorithm::to_lower(jetsid_);
+         // override blind
+         if ( cmdl_unblind_ ) blind_ = not(cmdl_unblind_);
+
+         boost::algorithm::to_lower(jetsid_);
          std::transform(btagalgo_.begin(), btagalgo_.end(), btagalgo_.begin(), ::tolower);
 
-//         inputlist_ = Form("%s/test/%s", toolspath.c_str(), inputlist_.c_str());
          samplename_ = "";
          if ( inputlist_.rfind("tools:",0) == 0 )
          {
@@ -397,16 +398,13 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          if ( onljetsf_ != ""  && onljetsf_.rfind("tools:",0) == 0 )    onljetsf_.replace(0,6,calibpath+"/");
          if ( onlmuonsf_ != ""  && onlmuonsf_.rfind("tools:",0) == 0 )  onlmuonsf_.replace(0,6,calibpath+"/");
          if ( btagsf_    != ""  && btagsf_.rfind("tools:",0) == 0   )    btagsf_.replace(0,6,calibpath+"/");
-         if ( btageff_[0]  != ""  && btageff_[0].rfind("tools:",0) == 0  )    btageff_[0].replace(0,6,calibpath+"/");
-         if ( btageff_[1]  != ""  && btageff_[1].rfind("tools:",0) == 0  )    btageff_[1].replace(0,6,calibpath+"/");
-         if ( btageff_[2]  != ""  && btageff_[2].rfind("tools:",0) == 0  )    btageff_[2].replace(0,6,calibpath+"/");
+         for ( int i = 0; i < 4; i++ )
+            {
+               if ( btageff_[i]  != ""  && btageff_[i].rfind("tools:",0) == 0  )    btageff_[i].replace(0,6,calibpath+"/");
+               if (!cmdl_bweight_) btageff_[i]="";
+            }
          if ( scale_file_ != "" && scale_file_.rfind("tools:",0) == 0 )       scale_file_.replace(0,6,calibpath+"/");
-         if ( !cmdl_bweight_  )
-         {
-            btageff_[0]="";
-            btageff_[1]="";
-            btageff_[2]="";
-         }
+
          if ( puweight_ != ""  && puweight_.rfind("tools:",0) == 0 )    puweight_.replace(0,6,calibpath+"/");
 
          eventinfo_     =  Form("%s/%s/%s" , process_.c_str(), eventsdir_.c_str() , eventinfo_.c_str()      );
@@ -519,6 +517,7 @@ int                Config::pileupWeightSystematics()    const { return puweights
 
 std::string        Config::process()          const { return process_; }
 std::string        Config::eventsDir()        const { return eventsdir_; }
+std::string        Config::analysisType()     const { return analysis_type_; }
 
 // analysis control
 bool               Config::override()          const { return override_; }

@@ -42,7 +42,7 @@ JetAnalyser::JetAnalyser(int argc, char *argv[]) : BaseAnalyser(argc, argv)
       bsf_reader_["tight"] = analysis_->btagCalibration(config_->btagAlgorithm(), config_->btagScaleFactors(), "tight");
    }
 
-   for (int mb = 0; mb < 3; ++mb)
+   for (int mb = 0; mb < 4; ++mb)
    {
       if (config_->btagEfficiencies(mb + 1) != "")
       {
@@ -1061,7 +1061,7 @@ void JetAnalyser::fillJetHistograms(const std::string &label)
             h1_[Form("eta_jet%d%d_%s", j + 1, k + 1, label.c_str())]->Fill(c_ij.eta(), weight_);
             h1_[Form("phi_jet%d%d_%s", j + 1, k + 1, label.c_str())]->Fill(c_ij.phi() * 180. / acos(-1.), weight_);
 
-            if (config_->isMC() || !config_->signalRegion())
+            if (config_->isMC() || !config_->signalRegion() ||  !config_->blind() )
             {
                h1_[Form("m_jet%d%d_%s", j + 1, k + 1, label.c_str())]->Fill(c_ij.m(), weight_);
             }
