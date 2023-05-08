@@ -150,6 +150,9 @@ namespace analysis {
             std::vector<float>  jetsQGmin() const;
             std::vector<float>  jetsQGmax() const;
 
+            int tagJet() const;
+            int probeJet() const;
+
 
 
          // jet-jet
@@ -419,6 +422,9 @@ namespace analysis {
             float jetsptimbalmin_;
             bool  jetswithmuons_;
             float jetsmuonsdrmax_;
+
+            int jet_tag_;
+            int jet_probe_;
 
             // muon-muons
             float muonsdrmin_;

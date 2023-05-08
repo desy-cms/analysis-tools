@@ -127,7 +127,9 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          ("Jets.dPhiMin"                 , po::value <float>                     (&jetsdphimin_)     -> default_value(-1.)                , "Minimum delta phi between jets")
          ("Jets.dPhiMax"                 , po::value <float>                     (&jetsdphimax_)     -> default_value(-1.)                , "Maximum delta phi between jets")
          ("Jets.muonsdRMax"              , po::value <float>                     (&jetsmuonsdrmax_)  -> default_value(0.4)                , "Maximum delta R between a jet and a muon")
-         ("Jets.withMuons"               , po::value <bool>                      (&jetswithmuons_)   -> default_value(false)              , "Flag to associate muons to jets");
+         ("Jets.withMuons"               , po::value <bool>                      (&jetswithmuons_)   -> default_value(false)              , "Flag to associate muons to jets")
+         ("Jets.tag"                     , po::value <int>                       (&jet_tag_)         -> default_value(1)                  , "Rank of tag jet")
+         ("Jets.probe"                   , po::value <int>                       (&jet_probe_)       -> default_value(2)                  , "Rank of probe jet");
 
       // histograms
       opt_cfg_.add_options()
@@ -565,6 +567,9 @@ std::string        Config::scaleParameter()     const { return scale_par_; }
 
 std::vector<float>  Config::jetsQGmin() const { return qgmin_; }
 std::vector<float>  Config::jetsQGmax() const { return qgmax_; }
+
+int                 Config::tagJet()   const { return jet_tag_; }
+int                 Config::probeJet() const { return jet_probe_; }
 
 // jet-jet
 float Config::jetsDetaMax()         const { return jetsdetamax_; }
