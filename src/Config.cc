@@ -128,8 +128,8 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          ("Jets.dPhiMax"                 , po::value <float>                     (&jetsdphimax_)     -> default_value(-1.)                , "Maximum delta phi between jets")
          ("Jets.muonsdRMax"              , po::value <float>                     (&jetsmuonsdrmax_)  -> default_value(0.4)                , "Maximum delta R between a jet and a muon")
          ("Jets.withMuons"               , po::value <bool>                      (&jetswithmuons_)   -> default_value(false)              , "Flag to associate muons to jets")
-         ("Jets.tag"                     , po::value <int>                       (&jet_tag_)         -> default_value(1)                  , "Rank of tag jet")
-         ("Jets.probe"                   , po::value <int>                       (&jet_probe_)       -> default_value(2)                  , "Rank of probe jet");
+         ("Jets.probe"                   , po::value <int>                       (&jet_probe_)       -> default_value(1)                  , "Rank of probe jet")
+         ("Jets.tag"                     , po::value <int>                       (&jet_tag_)         -> default_value(2)                  , "Rank of tag jet");
 
       // histograms
       opt_cfg_.add_options()
@@ -264,6 +264,7 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          ("User.workflow"                , po::value <int>                       (&workflow_)        -> default_value(0)                  , "Workflow index defined by user")
          ("User.workflowTitle"           , po::value <std::string>               (&workflow_title_)  -> default_value("")                 , "Workflow title defined by user")
          ("User.prescale"                , po::value <int>                       (&prescale_)        -> default_value(1)                  , "Prescale factor")
+         ("User.processId"               , po::value <int>                       (&process_id_)      -> default_value(-1)                 , "User-defined process ID")
          ("User.n"                       , po::value <int>                       (&n_)               -> default_value(-1)                 , "Some integer")
          ("User.index"                   , po::value <int>                       (&index_)           -> default_value(-1)                 , "Some User index for user")
          ("User.float"                   , po::value<std::vector<float> >        (&vfloat_)          ->multitoken()                       , "Float vector")
@@ -675,6 +676,7 @@ int   Config::prescale()   const { return prescale_; }
 int   Config::n()          const { return n_;   }
 float Config::min()        const { return min_; }
 float Config::max()        const { return max_; }
+int   Config::processId()  const { return process_id_; }
 
 // Histograms
 bool  Config::histogramJetsRegionSplit() const { return histjets_rsplit_ ; }
