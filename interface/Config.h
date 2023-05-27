@@ -273,7 +273,8 @@ namespace analysis {
             int n() const;
             float min() const;
             float max() const;
-
+            int processId() const;
+            
          // histograms
             bool histogramJetsRegionSplit() const;
             bool histogramJetsPerFlavour() const;
@@ -395,6 +396,7 @@ namespace analysis {
             int n_;
             float min_;
             float max_;
+            int process_id_;
 
 
          // jets
