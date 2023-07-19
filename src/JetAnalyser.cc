@@ -1316,6 +1316,7 @@ float JetAnalyser::actionApplyBtagSF(const int &r, const bool &global_weight)
 
    if (!config_->isMC() || config_->btagScaleFactors() == "")
       return sf; // will not apply btag SF
+
    if (!config_->signalRegion() && r == config_->revBtagJet())
       return sf;
 
@@ -1839,6 +1840,7 @@ void JetAnalyser::applyJetOnlineSF(const int & r)
    return;
 }
 
+
 void JetAnalyser::actionApplyJetOnlineSF(const int & rank) 
 {
 // Jet Online Corrections to be applied to MC
@@ -1867,6 +1869,72 @@ void JetAnalyser::actionApplyJetOnlineSF(const int & rank)
    cutflow(label);
 
 }
+
+
+
+void JetAnalyser::actionApplyBtagOnlineSF(const std::vector<int> & ranks)
+{
+ 
+// Btag Online Corrections to be applied to MC
+   auto matched_ranks = this->onlineBJetMatching(ranks);
+   
+
+   if ( ! jetsanalysis_ || ! config_->isMC() || selectedJets_.size() < 2) return; 
+   std::string label = "WARNING: NO Btag Online Scale factor (*** missing Scale Factor Info and/or GenJet collection ***)";
+   
+
+   if ( config_->onlinebtagSF() != "")
+   {
+      std::string bnobsf = basename(config_->onlinebtagSF());
+      label = Form("Online Btag Scale Factor (%s)",bnobsf.c_str());
+
+      if ( config_->onlinebtagSystematics() != 0 )
+      {
+         if (fabs(config_->onlinebtagSystematics()) == 1 || fabs(config_->onlinebtagSystematics()) == 2)
+         label = Form("Online Btag Scale Factor: (%s), syst: %+d sig",bnobsf.c_str(),config_->onlinebtagSystematics());
+         else
+         {
+            std::string label = Form("WARNING: NO Online Btag Scale factor (*** missing Scale Factor Info for syst = %+d sig ***)",config_->onlinebtagSystematics());       
+            cutflow(label);
+            return;
+         }  
+      }
+
+
+      this->applyBtagOnlineSF(matched_ranks[0]); // apply online jet kinematic trigger efficiency scale factor on jet i
+      cutflow(Form("Jet %d: %s",matched_ranks[0],label.c_str()));
+      this->applyBtagOnlineSF(matched_ranks[1]); 
+      cutflow(Form("Jet %d: %s",matched_ranks[1],label.c_str()));
+      return;
+   }
+   
+   cutflow(label);
+
+}
+
+void JetAnalyser::applyBtagOnlineSF(const int & r) 
+{
+// Jet Online Corrections to be applied to MC
+
+   int j = r-1;
+   double sf = 1;
+
+//to do: check label when no file, check when data
+
+   if ( ! jetsanalysis_ || ! config_->isMC() || selectedJets_.size() < 2) return;
+   if ( config_->onlinebtagSF() == "")  return;
+
+   sf *= btag_trigger_efficiency_->findSF(selectedJets_[j]->pt(), config_->onlinebtagSystematics());
+   
+   //std::cout<<std::endl<<"At applyBtagOnlineSF function"<<std::endl;
+   //std::cout<<"sf is "<<sf<<std::endl;
+
+   weight_ *= sf; //apply sf to event weight
+
+   return;
+}
+
+
 
 
 std::vector< std::shared_ptr<Jet> > JetAnalyser::removeSelectedJets(const std::vector<int> & ranks)

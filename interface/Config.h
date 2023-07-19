@@ -103,6 +103,9 @@ namespace analysis {
 
             std::string pileupWeights() const;
             int         pileupWeightSystematics() const;
+            
+            std::vector<std::string>  muonIDWeights() const;
+            int          muonIDWeightSystematics() const;
 
          // jets
             std::string jetsCollection() const;
@@ -118,9 +121,11 @@ namespace analysis {
             std::string jerPtRes() const;
             std::string jerSF() const;
             std::string onlinejetSF() const;
+            std::string onlinebtagSF() const;
             int         jerSystematics() const;
             int         jecSystematics() const;
             int         onlinejetSystematics() const;
+            int         onlinebtagSystematics() const;
             
             std::string l1tJetsCollection() const;
 
@@ -384,6 +389,9 @@ namespace analysis {
 
             std::string puweight_;
             int puweightsyst_;
+            
+            std::vector<std::string> muonIDweight_;
+            int muonIDweightsyst_;
 
             int prefwsyst_;
 
@@ -433,6 +441,9 @@ namespace analysis {
             // Online Jet Trigger efficiency correction and systematics
             std::string onljetsf_;
             int         onljetsyst_;
+            // Online Btag efficiency correction and systematics
+            std::string onlbtagsf_;
+            int         onlbtagsyst_;
             // Online Muon Trigger efficiency correction and systematics
             std::string onlmuonsf_;
             int         onlmuonsyst_;
