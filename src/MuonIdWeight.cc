@@ -17,7 +17,7 @@ MuonIdWeight::MuonIdWeight()
 }
 
 // Main constructor
-MuonIdWeight::MuonIdWeight(const std::string & fname )
+MuonIdWeight::MuonIdWeight(const std::string & fname ) 
 {
    TH2D * tmp;
    std::shared_ptr<TFile> f = std::make_shared<TFile>(fname.c_str(),"old");
@@ -47,6 +47,12 @@ MuonIdWeight::MuonIdWeight(const std::string & fname )
    if ( ! histos_[2] ) 
       std::cout << "WARNING - MuonIdWeight::MuonIdWeight | Histogram weight_2up not found. Weight = 1" << std::endl;
 }
+/*
+MuonIdWeight::MuonIdWeight(const std::string & fname ) // TO DO class constructor with multiple files
+{
+   //TODO
+}
+*/
 
 MuonIdWeight::~MuonIdWeight()
 {
@@ -54,14 +60,13 @@ MuonIdWeight::~MuonIdWeight()
    // (e.g. close files, deallocate resources etc.)
 }
 
-
 //
 // member functions
 //
 // ------------ method called for each event  ------------
 
 // output tree
-float MuonIdWeight::weight(const float & pt, const float & eta , const int & var)
+float MuonIdWeight::weight(const float & pt, const float & eta , const int & var) //TO DO: update
 {
    float weight = 1.;
    if ( ! histos_[0] ) return weight;

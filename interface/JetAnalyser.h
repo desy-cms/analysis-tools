@@ -159,8 +159,11 @@ namespace analysis {
             virtual void actionApplyJetOnlineSF();
             virtual void applyJetOnlineSF(const int & r);
             virtual void actionApplyJetOnlineSF(const int & r);
+            virtual void actionApplyBtagOnlineSF(const std::vector<int> & ranks);
+            virtual void applyBtagOnlineSF(const int & r);
             virtual void HEMCorrection();
-            std::unique_ptr<analysis::tools::JetTriggerEfficiencies> jet_trigger_efficiency_; // variable to call the function to find scale factor
+            std::unique_ptr<analysis::tools::JetTriggerEfficiencies> jet_trigger_efficiency_; // variable to call the function to find jet online scale factor
+            std::unique_ptr<analysis::tools::BtagTriggerEfficiencies> btag_trigger_efficiency_; // variable to call the function to find online btag scale factor
 
             /// remove selected jets
             std::vector< std::shared_ptr<Jet> > removeSelectedJets(const std::vector<int> & );

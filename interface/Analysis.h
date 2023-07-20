@@ -44,6 +44,7 @@
 #include "Analysis/Tools/interface/PileupWeight.h"
 #include "Analysis/Tools/interface/MuonIdWeight.h"
 #include "Analysis/Tools/interface/JetOnlineTriggerEfficiencies.h"
+#include "Analysis/Tools/interface/OnlineBtagTriggerEfficiencies.h"
 #include "Analysis/Tools/interface/MuonOnlineTriggerEfficiencies.h"
 
 #include "Analysis/Tools/interface/Config.h"

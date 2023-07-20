@@ -52,7 +52,9 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          ("jer",po::value <int>(&jersyst_),"JER systematic variation (sigma)")  
          ("jec",po::value <int>(&jecsyst_),"JEC systematic variation (sigma)")  
          ("jetsf",po::value <int>(&onljetsyst_),"Online jet scale factor systematic variation (sigma)")  
+         ("onlbtagsf",po::value <int>(&onlbtagsyst_),"Online btag scale factor systematic variation (sigma)")  
          ("pileup",po::value <int>(&puweightsyst_),"Pileup weight systematic variation (sigma)")  
+         ("muonID",po::value <int>(&muonIDweightsyst_),"Muon ID weight systematic variation (sigma)")  
          ("btagweight",po::bool_switch(&cmdl_bweight_),"Apply btag weight defined in the config file")  
          ("prefiring",po::value <int>(&prefwsyst_),"Prefiring weight systematic variation (sigma)")  
          ("muonsf",po::value <int>(&onlmuonsyst_),"Online muon scale factor systematic variation (sigma)")
@@ -92,6 +94,8 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          ("Corrections.Jets.jerSystematics" , po::value <int>                    (&jersyst_)         -> default_value(0)                  , "JER systematic variation (sigma), default = 0")
          ("Corrections.Jets.jecSystematics" , po::value <int>                    (&jecsyst_)         -> default_value(0)                  , "JEC systematic variation (sigma), default = 0")
          ("Corrections.Jets.onlinejetSystematics" , po::value <int>              (&onljetsyst_)      -> default_value(0)                  , "Online jet scale factor systematic variation (sigma), default = 0")
+         ("Corrections.BTag.onlinebtagSF" , po::value <std::string>              (&onlbtagsf_)       -> default_value("")                 , "Online btag SF file")
+         ("Corrections.BTag.onlinebtagSystematics" , po::value <int>             (&onlbtagsyst_)     -> default_value(0)                  , "Online btag scale factor systematic variation (sigma), default = 0")
          ("Corrections.BTag.SF"          , po::value <std::string>               (&btagsf_)          -> default_value("")                 , "b-tagging scale factor in CSV format")
          ("Corrections.BTag.Efficiencies1", po::value <std::string>              (&btageff_[0])      -> default_value("")                 , "b-tagging efficiencies in root file")
          ("Corrections.BTag.Efficiencies2", po::value <std::string>              (&btageff_[1])      -> default_value("")                 , "b-tagging efficiencies in root file")
@@ -101,8 +105,10 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          ("Corrections.Jets.bRegression" , po::value <bool>                      (&bregression_)     -> default_value(false)              , "Apply b jet energy regression")
          ("Corrections.PrefiringWeight"  , po::value <bool>                      (&prefw_)           -> default_value(false)              , "Apply L1 prefiring weight")
          ("Corrections.hemCorrection"    , po::value <bool>                      (&hemCorrection_)   -> default_value(false)              , "Apply HEM correction")
-         ("Corrections.Muons.onlinemuonSF" , po::value <std::string>              (&onlmuonsf_)        -> default_value("")                , "Muon trigger SF file")
-         ("Corrections.Muons.onlinemuonSystematics" , po::value <int>             (&onlmuonsyst_)      -> default_value(0)                 , "Online muon scale factor systematic variation (sigma), default = 0")
+         ("Corrections.Muons.IDweight"  ,  po::value <std::vector<std::string>>  (&muonIDweight_)    -> multitoken()                      , "Root or JSON files containing muonID weights")
+         ("Corrections.Muons.IDweightSystematcis"  , po::value <int>             (&muonIDweightsyst_) -> default_value(0)                 , "Muon ID weights systematic variations")
+         ("Corrections.Muons.onlinemuonSF" , po::value <std::string>             (&onlmuonsf_)        -> default_value("")                , "Muon trigger SF file")
+         ("Corrections.Muons.onlinemuonSystematics" , po::value <int>            (&onlmuonsyst_)      -> default_value(0)                 , "Online muon scale factor systematic variation (sigma), default = 0")
          ("Corrections.Scale.file"       , po::value <std::string>               (&scale_file_)      -> default_value("")                 , "Read a CSV file containing scaling factors for a certain parameter")
          ("Corrections.Scale.parameter"  , po::value <std::string>               (&scale_par_)       -> default_value("")                 , "Parameter of the scale factor to be applied from the scale file")
          ("Corrections.force"            , po::value <bool>                      (&apply_correct_)   -> default_value(false)              , "Apply corrections internally when above are defined");
@@ -513,6 +519,8 @@ std::vector<float> Config::erasLumi()         const { return eraslumi_; }
 std::vector<std::string> Config::eras()       const { return eras_; }
 std::string        Config::pileupWeights()    const { return puweight_; }
 int                Config::pileupWeightSystematics()    const { return puweightsyst_; }
+std::vector<std::string> Config::muonIDWeights()    const { return muonIDweight_; }
+int                Config::muonIDWeightSystematics()    const { return muonIDweightsyst_; }
 
 
 std::string        Config::process()          const { return process_; }
@@ -538,6 +546,8 @@ std::string        Config::jerSF()              const { return jersf_; }
 std::string        Config::onlinejetSF()        const { return onljetsf_; }
 int                Config::jerSystematics()     const { return jersyst_; }
 int                Config::jecSystematics()     const { return jecsyst_; }
+std::string        Config::onlinebtagSF()        const { return onlbtagsf_; }
+int                Config::onlinebtagSystematics() const { return onlbtagsyst_; }
 int                Config::onlinejetSystematics() const { return onljetsyst_; }
 std::string        Config::l1tJetsCollection()  const { return l1tjetsCol_; }
 std::string        Config::btagAlgorithm()      const { return btagalgo_; }
