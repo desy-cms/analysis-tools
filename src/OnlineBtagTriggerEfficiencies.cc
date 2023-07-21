@@ -24,7 +24,7 @@ BtagTriggerEfficiencies::BtagTriggerEfficiencies(const std::string & filename)
 
    f = new TFile(filename.c_str(),"READ");
    
-   std::string var[5] = {"nominal","1s_up","1s_down","2s_up","2s_down"};
+   std::string var[5] = {"nominal","+1sigma","-1sigma","+2sigma","-2sigma"};
    std::string funct_name;
    
 
@@ -32,7 +32,7 @@ BtagTriggerEfficiencies::BtagTriggerEfficiencies(const std::string & filename)
    {
       for(int j = 0; j<5; j++)
       {
-         funct_name = Form("onlineBtagTriggerScaleFactor_%s",var[j].c_str());
+         funct_name = Form("SF_%s",var[j].c_str());
          functions[var[j].c_str()] = *((TF1*)f -> Get(funct_name.c_str()));
       }
    }
@@ -52,6 +52,7 @@ double BtagTriggerEfficiencies::findSF(const float & pT, const int & sigma)
 {
    TF1 sf_function, var_funct, nominal_funct;
    double sf = 1;
+   
    std::string var = "";
 
    if (sigma == 0)
@@ -59,9 +60,9 @@ double BtagTriggerEfficiencies::findSF(const float & pT, const int & sigma)
    else
    {
       if (sigma > 0)
-      var = Form("%ds_up",int(fabs(sigma)));
+      var = Form("+%dsigma",int(fabs(sigma)));
       if (sigma < 0)
-      var = Form("%ds_down",int(fabs(sigma)));
+      var = Form("-%dsigma",int(fabs(sigma)));
    }
    
    nominal_funct = functions["nominal"];
@@ -79,4 +80,3 @@ double BtagTriggerEfficiencies::findSF(const float & pT, const int & sigma)
 
    return sf;
 }
-

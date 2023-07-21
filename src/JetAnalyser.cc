@@ -70,6 +70,8 @@ JetAnalyser::JetAnalyser(int argc, char *argv[]) : BaseAnalyser(argc, argv)
       }
       if(config_->onlinejetSF() != "" )
          jet_trigger_efficiency_ = std::make_unique<JetTriggerEfficiencies>(config_->onlinejetSF());
+      if(config_->onlinebtagSF() != "" )
+         btag_trigger_efficiency_ = std::make_unique<BtagTriggerEfficiencies>(config_->onlinebtagSF());
    }
    //   histograms("jet",config_->nJetsMin());
 }
@@ -1877,7 +1879,7 @@ void JetAnalyser::actionApplyBtagOnlineSF(const std::vector<int> & ranks)
  
 // Btag Online Corrections to be applied to MC
    auto matched_ranks = this->onlineBJetMatching(ranks);
-   
+   for(int t = 0; t<int(matched_ranks.size()); t++)
 
    if ( ! jetsanalysis_ || ! config_->isMC() || selectedJets_.size() < 2) return; 
    std::string label = "WARNING: NO Btag Online Scale factor (*** missing Scale Factor Info and/or GenJet collection ***)";
@@ -1905,6 +1907,7 @@ void JetAnalyser::actionApplyBtagOnlineSF(const std::vector<int> & ranks)
       cutflow(Form("Jet %d: %s",matched_ranks[0],label.c_str()));
       this->applyBtagOnlineSF(matched_ranks[1]); 
       cutflow(Form("Jet %d: %s",matched_ranks[1],label.c_str()));
+
       return;
    }
    
@@ -1926,9 +1929,6 @@ void JetAnalyser::applyBtagOnlineSF(const int & r)
 
    sf *= btag_trigger_efficiency_->findSF(selectedJets_[j]->pt(), config_->onlinebtagSystematics());
    
-   //std::cout<<std::endl<<"At applyBtagOnlineSF function"<<std::endl;
-   //std::cout<<"sf is "<<sf<<std::endl;
-
    weight_ *= sf; //apply sf to event weight
 
    return;
