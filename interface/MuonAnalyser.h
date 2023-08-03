@@ -25,7 +25,6 @@
 #include <string>
 //
 #include "Analysis/Tools/interface/BaseAnalyser.h"
-#include "Analysis/Tools/interface/Analysis.h"
 //
 // class declaration
 //
@@ -44,7 +43,6 @@ namespace analysis {
 
             // ----------member data ---------------------------
          protected:
-            std::shared_ptr<Analysis> analysis_; // Analysis objects
             std::vector< std::shared_ptr<Muon> > muons_;
             std::vector< std::shared_ptr<Muon> > selectedMuons_;
             std::vector< std::shared_ptr<Muon> > onlineMatchedMuons_;
@@ -53,10 +51,11 @@ namespace analysis {
 
             /// muon ID weight
             std::shared_ptr<MuonIdWeight> muonIDweights_;
-            /// muon ID weight label
             std::string muonIDw_label_;
-            
-            std::unique_ptr<analysis::tools::MuonTriggerEfficiencies> muon_trigger_efficiency_; // variable to call the function to find scale factor
+            float getmuonIDWeight(const float & pT, const float & eta, const int & var) const;
+
+             // variable to call the function to find scale factor
+            std::unique_ptr<analysis::tools::MuonTriggerEfficiencies> muon_trigger_efficiency_;
 
          private:
 
@@ -65,7 +64,6 @@ namespace analysis {
             std::vector< std::shared_ptr<Muon> > onlineMatchedMuons();
             std::vector< std::shared_ptr<Muon> > muons();
             float btag(const Muon & , const std::string & );
-            float getmuonIDWeight(const float & pT, const float & eta, const int & var) const;
 
             // Sets
 
@@ -76,7 +74,6 @@ namespace analysis {
 //            virtual bool selectionMuon();
             virtual bool selectionMuonId();
             virtual bool selectionNMuons();
-            
 
             /// Given the rankings r1 and r2 of two jets, it returns whether the jets passes the delta_R selection; the threshold delta is passed by the configuration file
             virtual bool selectionMuonDr(const int & r1, const int & r2);
