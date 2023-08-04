@@ -53,29 +53,41 @@ if( iPos==0 ): CMS_lumi.relPosX = 0.12
 
 iPeriod = 0
 
-xbins_var = []
-for i in xrange(0,120,10):
-   xbins_var.append(i)
-for i in xrange(120,500,20):
-   xbins_var.append(i)
-for i in xrange(500,800,30):
-   xbins_var.append(i)
-for i in xrange(800,1200,50):
-   xbins_var.append(i)
-for i in xrange(1200,2000,100):
-   xbins_var.append(i)               
-for i in xrange(2000,2600,150):
-   xbins_var.append(i)
-for i in xrange(2600,3001,400):
-   xbins_var.append(i)
+def variable_binning_mass():
+   xbins_var = []
+   for i in xrange(0,120,10):
+      xbins_var.append(i)
+   for i in xrange(120,500,20):
+      xbins_var.append(i)
+   for i in xrange(500,800,30):
+      xbins_var.append(i)
+   for i in xrange(800,1200,50):
+      xbins_var.append(i)
+   for i in xrange(1200,2000,100):
+      xbins_var.append(i)               
+   for i in xrange(2000,2600,150):
+      xbins_var.append(i)
+   for i in xrange(2600,3001,400):
+      xbins_var.append(i)
 
-axbins = array.array('d', xbins_var)
+   return xbins_var
 
-xbins = []   
-for i in xrange(0,3000,1):
-   xbins.append(i)
-   
-axbins = array.array('d', xbins)
+def variable_binning_pt():
+   xbins_var = []
+   for i in xrange(0,120,10):
+      xbins_var.append(i)
+   for i in xrange(120,500,20):
+      xbins_var.append(i)
+   for i in xrange(500,800,30):
+      xbins_var.append(i)
+   for i in xrange(800,1200,50):
+      xbins_var.append(i)
+   for i in xrange(1200,1501,100):
+      xbins_var.append(i)               
+
+
+   return xbins_var
+
 
 # -------------------------------------------------------      
 
@@ -88,17 +100,12 @@ def make_plots(histos1,histos2=None,legend1=None,legend2=None,legend_title=None,
    global H_ref,W_ref,H,W,T,B,L,R
    global textSize
    
-   if rebin >= 0:
-      rb = rebin
-      if rebin == 0:
-         rb = 1
-      xbins = []   
-      for i in xrange(0,3000,rb):
-         xbins.append(i)
-      axbins = array.array('d', xbins)
+   # dealing with rebinning for variable binning
+   if combined:
+      axbins = array.array('d', variable_binning_mass())
+   else:
+      axbins = array.array('d', variable_binning_pt())
       
-   if rebin < 0:
-      axbins = array.array('d', xbins_var)
    
    flavours = ['b','c','udsg','bb','cc']
    canvas = {}
@@ -130,7 +137,9 @@ def make_plots(histos1,histos2=None,legend1=None,legend2=None,legend_title=None,
    
    if not histos2:
       ratio = False
-      
+   
+   output = TFile.Open('{}_pt_jet.root'.format(output_name),'recreate')
+
    for var, value1 in histos1.iteritems():
       canvas[var]  = {}
       ratioplots[var]   = {}
@@ -156,8 +165,11 @@ def make_plots(histos1,histos2=None,legend1=None,legend2=None,legend_title=None,
             if var == 'pt_jet' or var == 'm_jet':
                canvas[var][obj][flv].SetLogy()
                hmax_sf = 2.
-            if var == 'm_jet':
-               histos1_rb[var][obj][flv] = histos1[var][obj][flv].Rebin(len(axbins)-1,'{}{}'.format(var,obj),axbins)
+            if var == 'm_jet' or var == 'pt_jet':
+               if rebin < 0:
+                  histos1_rb[var][obj][flv] = histos1[var][obj][flv].Rebin(len(axbins)-1,'{}{}'.format(var,obj),axbins)
+               else:
+                  histos1_rb[var][obj][flv] = histos1[var][obj][flv].Rebin(rebin)               
                h1 = histos1_rb[var][obj][flv]
 #               h1 = histos1[var][obj][flv]
 #               h1.Rebin(25)
@@ -169,8 +181,12 @@ def make_plots(histos1,histos2=None,legend1=None,legend2=None,legend_title=None,
             h2 = None
             prep_histogram(h1,title=legend1)
             if histos2:
-               if var == 'm_jet':
-                  histos2_rb[var][obj][flv] = histos2[var][obj][flv].Rebin(len(axbins)-1,'{}{}'.format(var,obj),axbins)
+               if var == 'm_jet' or var == 'pt_jet':
+                  if rebin < 0:
+                     histos2_rb[var][obj][flv] = histos2[var][obj][flv].Rebin(len(axbins)-1,'{}{}'.format(var,obj),axbins)
+                  else:
+                     histos2_rb[var][obj][flv] = histos2[var][obj][flv].Rebin(rebin)
+
                   h2 = histos2_rb[var][obj][flv]
 #                  h2 = histos2[var][obj][flv]
 #                  h2.Rebin(25)
@@ -228,9 +244,18 @@ def make_plots(histos1,histos2=None,legend1=None,legend2=None,legend_title=None,
                h1.Write()
                h2.Write()
                output.Close()
+
+            if 'pt_jet' in h1.GetName():
+               h1.GetXaxis().UnZoom()
+               h1.Write()
+               if h2:
+                  h2.GetXaxis().UnZoom()
+                  h2.Write()
             
-            
-#   wait()
+   output.Close()ex
+         
+   wait()
+
             
 # ------------------------------------------------------- 
  
@@ -317,9 +342,7 @@ def mod_ratioplots(rp, canvas,title=None,legend_title=None):
    legend.SetTextSize(0.04)
    
    return legend
-   
 
-   
 # ------------------------------------------------------- 
  
 def prep_canvas(canvas,legend_title=None):
@@ -343,10 +366,8 @@ def prep_canvas(canvas,legend_title=None):
    
    return legend
 
-
 # ------------------------------------------------------- 
- 
-    
+  
 def prep_histogram(h,title=None,color=kBlack):
    xmin,xmax = get_range(x_range)
    h.GetXaxis().SetRangeUser(xmin,xmax)
@@ -380,7 +401,7 @@ def prep_histogram(h,title=None,color=kBlack):
 
 # ------------------------------------------------------- 
      
-def histograms(path,process,hdir,observables,combined=False):
+def histograms(path,process,hdir,observables,flavours=[],combined=False):
    # combined means objects of the observable are combined, eg dijets m_jet12 is the mass of jet1 and jet2 combined
    process_list = [process]
    if process == 'bEnriched':
@@ -389,11 +410,11 @@ def histograms(path,process,hdir,observables,combined=False):
    nobjs = []
    for i,p in enumerate(process_list):
       proc = Process(p,path)
-      ah = AnalysisHistograms(process=proc,hdir=hdir,observables=observables)
+      ah = AnalysisHistograms(process=proc,hdir=hdir,observables=observables,flavours=flavours)
       ah.readTH1(lumi_scale=True,combined=combined)
       proc_histos.append(ah.histograms())
       nobjs.append(len(ah.objects()))
-      
+
    
    histos = proc_histos[0]
    if process == 'bEnriched':
@@ -430,6 +451,7 @@ def main():
    textSize = 0.05
       
    obs1 = ['pt_jet','eta_jet','phi_jet']
+   obs1 = ['pt_jet']
    obs2 = ['m_jet']
    flavours = ['b','c','udsg','bb','cc']
    # From the command line
@@ -447,7 +469,8 @@ def main():
    parser.add_argument("--x_range"         , dest="x_range"    , default="260,2000"  , help="x-axis range")   
    parser.add_argument("--y_range"         , dest="y_range"                          , help="x-axis range")
    parser.add_argument("--rebin"           , dest="rebin"      , default="0"         , help="rebin (default = no rebin")
-   parser.add_argument("--output"          , dest="output"                           , help="name for output files")   
+   parser.add_argument("--output"          , dest="output"                           , help="name for output files")
+   parser.add_argument("--flavours"        , dest="flavours"   , action='store_true' , help="split in flavours") 
    args = parser.parse_args()
 
    # Check and manipulate arguments   
@@ -457,12 +480,17 @@ def main():
    if not args.svars and not args.cvars:
       print('No variables to be plotted')
       quit()
+   # retrieve processes from command line
    processes = args.processes.split(',')
+   # default files paths
    files_paths = ['.']
    if args.paths:
+      # retrieve files paths from command line
       files_paths = args.paths.split(',')
+   # default histograms directories in the root file
    hdirs = ['/']
    if args.hdirs:
+      # retrieve hdirs from the command line
       hdirs = args.hdirs.split(',')
    
    # GLOBALS
@@ -473,33 +501,39 @@ def main():
    rebin_arg = args.rebin
    rebin_arg=rebin_arg.replace(' ','')
    rebin=int(rebin_arg)
+   rebin = 1 if rebin in range(0,2) else rebin
+
    
-   legs = []   
-   histos = []
-   for i in range(len(files_paths)):
-      legs.append(None)
-      histos.append({})
-      if args.svars:
-         histos[i]['single']   = histograms(path=files_paths[i],process=processes[i],hdir=hdirs[i],observables=args.svars,combined=False)
-      if args.cvars:
-         histos[i]['combined'] = histograms(path=files_paths[i],process=processes[i],hdir=hdirs[i],observables=args.cvars,combined=True)
-      
+   legends = []
+   # retrieve legends from command line
    if args.legs:
-      legs = args.legs.split(',')
-      
-   # SINGLE HISTOGRAM
+      legends = args.legs.split(',')
+   histos = []
+   # retrieve histograms from files
+   for i in range(len(files_paths)):
+      if not args.legs: 
+         legends.append(None)
+      histos.append({})
+      ## single object variables, e.g. pt_1
+      if args.svars:
+         histos[i]['single']   = histograms(path=files_paths[i],process=processes[i],hdir=hdirs[i],observables=args.svars,flavours=flavours,combined=False)
+      ## combined objects variables, e.g. m12
+      if args.cvars:
+         histos[i]['combined'] = histograms(path=files_paths[i],process=processes[i],hdir=hdirs[i],observables=args.cvars,flavours=flavours,combined=True)
+   
+   # SINGLE HISTOGRAM, i.e. no comparison
    if len(files_paths) == 1:
       if args.svars:
-         make_plots(histos1=histos[0]['single']  , legend1=legs[0], legend_title=args.leg_title, combined=False, ratio=args.ratio, flavour=False)
+         make_plots(histos1=histos[0]['single']  , legend1=legends[0], legend_title=args.leg_title, combined=False, ratio=args.ratio, flavour=args.flavours)
       if args.cvars:
-         make_plots(histos1=histos[0]['combined'], legend1=legs[0], legend_title=args.leg_title, combined=True , ratio=args.ratio, flavour=False)
+         make_plots(histos1=histos[0]['combined'], legend1=legends[0], legend_title=args.leg_title, combined=True , ratio=args.ratio, flavour=args.flavours)
          
-   # COMPARISON OF 2 HISTOGRAMS
+   # COMPARISON OF 2 HISTOGRAMS, ratio plot shown
    if len(files_paths) == 2:
       if args.svars:
-         make_plots(histos1=histos[0]['single']  , histos2=histos[1]['single']  ,legend1=legs[0], legend2=legs[1], legend_title=args.leg_title, combined=False, ratio=args.ratio, ratio_range=args.ratio_range, flavour=False)
+         make_plots(histos1=histos[0]['single']  , histos2=histos[1]['single']  ,legend1=legends[0], legend2=legends[1], legend_title=args.leg_title, combined=False, ratio=args.ratio, ratio_range=args.ratio_range, flavour=args.flavours)
       if args.cvars:
-         make_plots(histos1=histos[0]['combined'], histos2=histos[1]['combined'],legend1=legs[0], legend2=legs[1], legend_title=args.leg_title, combined=True , ratio=args.ratio, ratio_range=args.ratio_range, flavour=False)
+         make_plots(histos1=histos[0]['combined'], histos2=histos[1]['combined'],legend1=legends[0], legend2=legends[1], legend_title=args.leg_title, combined=True , ratio=args.ratio, ratio_range=args.ratio_range, flavour=args.flavours)
    
 
    

@@ -155,6 +155,9 @@ namespace analysis {
             std::vector<float>  jetsQGmin() const;
             std::vector<float>  jetsQGmax() const;
 
+            int tagJet() const;
+            int probeJet() const;
+
 
 
          // jet-jet
@@ -275,7 +278,8 @@ namespace analysis {
             int n() const;
             float min() const;
             float max() const;
-
+            int processId() const;
+            
          // histograms
             bool histogramJetsRegionSplit() const;
             bool histogramJetsPerFlavour() const;
@@ -400,6 +404,7 @@ namespace analysis {
             int n_;
             float min_;
             float max_;
+            int process_id_;
 
 
          // jets
@@ -427,6 +432,9 @@ namespace analysis {
             float jetsptimbalmin_;
             bool  jetswithmuons_;
             float jetsmuonsdrmax_;
+
+            int jet_tag_;
+            int jet_probe_;
 
             // muon-muons
             float muonsdrmin_;
