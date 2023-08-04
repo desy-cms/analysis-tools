@@ -52,7 +52,8 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          ("jer",po::value <int>(&jersyst_),"JER systematic variation (sigma)")  
          ("jec",po::value <int>(&jecsyst_),"JEC systematic variation (sigma)")  
          ("jetsf",po::value <int>(&onljetsyst_),"Online jet scale factor systematic variation (sigma)")  
-         ("onlbtagsf",po::value <int>(&onlbtagsyst_),"Online btag scale factor systematic variation (sigma)")  
+         ("onlbtagsf",po::value <int>(&onlbtagsyst_),"Online btag scale factor systematic variation (sigma)")
+         ("btagsyst",po::value <int>(&btagsf_syst_),"Offline btag scale factor systematic variation (sigma)")
          ("pileup",po::value <int>(&puweightsyst_),"Pileup weight systematic variation (sigma)")  
          ("muonID",po::value <int>(&muonIDweightsyst_),"Muon ID weight systematic variation (sigma)")  
          ("btagweight",po::bool_switch(&cmdl_bweight_),"Apply btag weight defined in the config file")  
@@ -97,6 +98,7 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          ("Corrections.BTag.onlinebtagSF" , po::value <std::string>              (&onlbtagsf_)       -> default_value("")                 , "Online btag SF file")
          ("Corrections.BTag.onlinebtagSystematics" , po::value <int>             (&onlbtagsyst_)     -> default_value(0)                  , "Online btag scale factor systematic variation (sigma), default = 0")
          ("Corrections.BTag.SF"          , po::value <std::string>               (&btagsf_)          -> default_value("")                 , "b-tagging scale factor in CSV format")
+         ("Corrections.BTag.offlineSystematics", po::value <int>                 (&btagsf_syst_)     -> default_value(0)                  , "b-tagging scale factor systematic variation (sigma), default = 0")
          ("Corrections.BTag.Efficiencies1", po::value <std::string>              (&btageff_[0])      -> default_value("")                 , "b-tagging efficiencies in root file")
          ("Corrections.BTag.Efficiencies2", po::value <std::string>              (&btageff_[1])      -> default_value("")                 , "b-tagging efficiencies in root file")
          ("Corrections.BTag.Efficiencies3", po::value <std::string>              (&btageff_[2])      -> default_value("")                 , "b-tagging efficiencies in root file")
@@ -556,6 +558,7 @@ int                Config::onlinejetSystematics() const { return onljetsyst_; }
 std::string        Config::l1tJetsCollection()  const { return l1tjetsCol_; }
 std::string        Config::btagAlgorithm()      const { return btagalgo_; }
 std::string        Config::btagScaleFactors()   const { return btagsf_; }
+int                Config::btagSystematics()    const { return btagsf_syst_; }
 std::string        Config::onlinemuonSF()        const { return onlmuonsf_; }
 int                Config::onlinemuonSystematics() const { return onlmuonsyst_; }
 std::vector<std::string> Config::jetsBtagWP()   const { return jetsbtagwp_; }
