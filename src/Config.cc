@@ -406,6 +406,7 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          if ( jersf_    != ""  && jersf_.rfind("tools:",0) == 0    )    jersf_.replace(0,6,calibpath+"/");
          if ( onljetsf_ != ""  && onljetsf_.rfind("tools:",0) == 0 )    onljetsf_.replace(0,6,calibpath+"/");
          if ( onlmuonsf_ != ""  && onlmuonsf_.rfind("tools:",0) == 0 )  onlmuonsf_.replace(0,6,calibpath+"/");
+         if ( onlbtagsf_ != ""  && onlbtagsf_.rfind("tools:",0) == 0 )    onlbtagsf_.replace(0,6,calibpath+"/");
          if ( btagsf_    != ""  && btagsf_.rfind("tools:",0) == 0   )    btagsf_.replace(0,6,calibpath+"/");
          for ( int i = 0; i < 4; i++ )
             {
@@ -746,6 +747,5 @@ float        Config::triggerEmulatePFJetsEtaMax() const { return pfjetemuletamax
 // User vectors
 std::vector<float> Config::vectorFloat()  const { return vfloat_ ; }
 std::vector<int>   Config::vectorInt()    const { return vint_   ; }
-
 
 
