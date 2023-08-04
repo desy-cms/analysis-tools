@@ -1269,8 +1269,8 @@ ScaleFactors JetAnalyser::btagSF(const int &r, const std::string &wp)
    ScaleFactors sf;
    int j = r - 1;
    sf.nominal = selectedJets_[j]->btagSF(bsf_reader_[wp]);
-   sf.up = selectedJets_[j]->btagSFup(bsf_reader_[wp]);
-   sf.down = selectedJets_[j]->btagSFdown(bsf_reader_[wp]);
+   sf.up = selectedJets_[j]->btagSFup(bsf_reader_[wp]);      // nominal + uncert(up)
+   sf.down = selectedJets_[j]->btagSFdown(bsf_reader_[wp]);  // nominal + uncert(down)
 
    return sf;
 }
@@ -1322,14 +1322,25 @@ float JetAnalyser::actionApplyBtagSF(const int &r, const bool &global_weight)
    if (!config_->signalRegion() && r == config_->revBtagJet())
       return sf;
 
+   auto syst = config_->btagSystematics();
+
    int j = r - 1;
    std::string label = Form("Jet %d: btag SF applied (%s %s WP)", r, config_->btagAlgorithm().c_str(), config_->jetsBtagWP()[j].c_str());
+   if ( syst != 0 )
+      label = Form("Jet %d: btag SF syst (%d sigma) applied (%s %s WP)", r, syst, config_->btagAlgorithm().c_str(), config_->jetsBtagWP()[j].c_str());
 
    if (config_->jetsBtagWP()[j] == "xxx")
       label = Form("Jet %d: btag SF = 1 applied (%s %s WP)", r, config_->btagAlgorithm().c_str(), config_->jetsBtagWP()[j].c_str());
 
    if (global_weight || config_->jetsBtagWP()[j] != "xxx")
-      sf = this->btagSF(r, config_->jetsBtagWP()[j]).nominal;
+   {
+      float sf_nominal = this->btagSF(r, config_->jetsBtagWP()[j]).nominal;
+      float uncert_up = fabs(this->btagSF(r, config_->jetsBtagWP()[j]).up - sf_nominal);
+      float uncert_down = fabs(sf_nominal - this->btagSF(r, config_->jetsBtagWP()[j]).down);
+
+      float uncert_factor = (syst == 0) ? 0 : ((syst > 0) ? uncert_up : uncert_down);
+      sf = sf_nominal + syst * uncert_factor;
+   }
 
    weight_ *= sf;
 
