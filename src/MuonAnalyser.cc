@@ -28,7 +28,10 @@ MuonAnalyser::MuonAnalyser(int argc, char * argv[]) : BaseAnalyser(argc,argv)
    muonsanalysis_  = ( analysis_->addTree<Muon> ("Muons",config_->muonsCollection()) != nullptr  && config_ -> nMuonsMin() > 0 );
    
    if(config_->onlinemuonSF() != "" &&  config_->isMC() && ! config_->muonsVeto())
+   {
       muon_trigger_efficiency_ = std::make_unique<MuonTriggerEfficiencies>(config_->onlinemuonSF());
+      muonIDweights_ = std::make_unique<MuonIdWeight>(config_->muonIDWeights());
+   }
 
 }
 
@@ -510,6 +513,46 @@ void MuonAnalyser::actionApplyMuonOnlineSF(const int & rank)
       if ( abs(systematic) > 2 ) 
          std::cout << " *** Error ***: there is no systematic variation > 2 sigma!" << std::endl;
       sf = muon_trigger_efficiency_->findSF(muon_pt, systematic);
+   }
+   weight_ *= sf; // apply sf to event weight
+   cutflow(label);
+}
+
+
+void MuonAnalyser::actionApplyMuonIDSF(const int & rank)
+{
+   if (!muonsanalysis_ || !config_->isMC() || config_->muonsVeto()) // action not applicable in some cases
+      return; 
+   int m = rank-1;
+   float sf = 1.;
+   int systematic = config_->muonIDWeightSystematics(); 
+
+   std::string label = "WARNING: NO Muon ID Scale factor (*** assuming SF = 1 ***)";
+
+   if (config_->muonIDWeights().size() != 0)
+   {
+      label = Form("Muon %d: ID scale factor ", rank);
+      
+      if ( systematic == 0)
+      {
+         for(unsigned int f = 0; f < config_->muonIDWeights().size(); f++)
+         {
+            std::string bnsf = basename(config_->muonIDWeights()[f]);
+            if (f == 0)
+            label += "("; 
+            label += Form("%s", bnsf.c_str());
+            if (f != config_->muonIDWeights().size()-1)
+            label += ",";
+            else
+            label += ")";
+         }
+      }
+      
+      if ( systematic != 0 ) {label = Form("Muon %d: ID scale factor syst = %+d sig ", rank, systematic);}
+      
+      auto muon_pt = selectedMuons_[m]->pt();
+      auto muon_eta = selectedMuons_[m]->eta();
+      sf = muonIDweights_->findSF(muon_pt, muon_eta, systematic);
    }
    weight_ *= sf; // apply sf to event weight
    cutflow(label);
