@@ -182,7 +182,7 @@ namespace analysis {
             float scaleLuminosity(const float & lumi);  // in pb-1
 
             std::shared_ptr<PileupWeight> pileupWeights(const std::string & );
-            std::shared_ptr<MuonIdWeight> muonIDWeights(const std::string & );
+            std::shared_ptr<MuonIdWeight> muonIDWeights(const std::vector<std::string> &);
 
             /// L1 prefiring weights
             double prefiringWeight(const int & var = 0);

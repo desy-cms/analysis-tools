@@ -526,9 +526,9 @@ std::shared_ptr<PileupWeight> Analysis::pileupWeights(const std::string & f_pu)
    puweights_ = std::make_shared<PileupWeight>(PileupWeight(f_pu));
    return puweights_;
 }
-std::shared_ptr<MuonIdWeight> Analysis::muonIDWeights(const std::string & f_muID )
+std::shared_ptr<MuonIdWeight> Analysis::muonIDWeights(const std::vector<std::string> & fnames_muID )
 {
-   muonIDweights_ = std::make_shared<MuonIdWeight>(MuonIdWeight(f_muID));
+   muonIDweights_ = std::make_shared<MuonIdWeight>(MuonIdWeight(fnames_muID));
    return muonIDweights_;
 }
 std::shared_ptr<BTagCalibrationReader> Analysis::btagCalibration(const std::string & tagger,

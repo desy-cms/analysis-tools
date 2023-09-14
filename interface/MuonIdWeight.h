@@ -41,7 +41,7 @@ namespace analysis {
          public:
             /// constructors
             MuonIdWeight();
-            MuonIdWeight(const std::string &);
+            MuonIdWeight(const std::vector<std::string> & fnames );
             //MuonIdWeight(const std::string &); //TO DO, read vector of files
             /// desctructor
            ~MuonIdWeight();
@@ -54,7 +54,18 @@ namespace analysis {
                
          public:
             float weight(const float & pt, const float & eta, const int & var = 0);
-            std::shared_ptr<TH2D> histogram(const int & var = 0);
+            float findSF(const float & pt, const float & eta , const int & var = 0);
+            float sf_pTmin = 100000, sf_pTmax = -1;
+            float fabs_etamax = -1;
+            std::string findfile(const float & pT);
+            std::vector <std::pair<std::pair<double,double>, std::string> > pTranges_file; //pTmin, pTmax, filename
+            std::map<std::string, TH2F> filename_sf_map;
+            std::map<std::string, TH2F> filename_unc_map;
+            //std::vector<std::pair<std::string, TH2F>> filename_sf_pairs; //filename, histograme
+            //std::vector<std::pair<std::string, TH2F>> filename_unc_pairs; //filename, histogram
+            //std::vector<TH2F>  sf_hists;
+            //std::shared_ptr<TH2D> histogram(const int & var = 0);
+            
       };
    }
 }
