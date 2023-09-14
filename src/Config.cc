@@ -107,8 +107,8 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          ("Corrections.Jets.bRegression" , po::value <bool>                      (&bregression_)     -> default_value(false)              , "Apply b jet energy regression")
          ("Corrections.PrefiringWeight"  , po::value <bool>                      (&prefw_)           -> default_value(false)              , "Apply L1 prefiring weight")
          ("Corrections.hemCorrection"    , po::value <bool>                      (&hemCorrection_)   -> default_value(false)              , "Apply HEM correction")
-         ("Corrections.Muons.IDweight"  ,  po::value <std::vector<std::string>>  (&muonIDweight_)    -> multitoken()                      , "Root or JSON files containing muonID weights")
-         ("Corrections.Muons.IDweightSystematcis"  , po::value <int>             (&muonIDweightsyst_) -> default_value(0)                 , "Muon ID weights systematic variations")
+         ("Corrections.Muons.IDweight"  ,  po::value <std::vector<std::string>>  (&muonIDweight_)    -> multitoken()                      , "Rootfiles containing muonID scale factors")
+         ("Corrections.Muons.IDweightSystematcis"  , po::value <int>             (&muonIDweightsyst_) -> default_value(0)                 , "Muon ID scale factors systematic variations")
          ("Corrections.Muons.onlinemuonSF" , po::value <std::string>             (&onlmuonsf_)        -> default_value("")                , "Muon trigger SF file")
          ("Corrections.Muons.onlinemuonSystematics" , po::value <int>            (&onlmuonsyst_)      -> default_value(0)                 , "Online muon scale factor systematic variation (sigma), default = 0")
          ("Corrections.Scale.file"       , po::value <std::string>               (&scale_file_)      -> default_value("")                 , "Read a CSV file containing scaling factors for a certain parameter")
@@ -415,6 +415,10 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
                if ( btageff_[i]  != ""  && btageff_[i].rfind("tools:",0) == 0  )    btageff_[i].replace(0,6,calibpath+"/");
                if (!cmdl_bweight_) btageff_[i]="";
             }
+         for (unsigned int i = 0; i < muonIDweight_.size(); i++)
+         {
+            if ( muonIDweight_[i]    != ""  && muonIDweight_[i].rfind("tools:",0) == 0   )    muonIDweight_[i].replace(0,6,calibpath+"/");
+         }
          if ( scale_file_ != "" && scale_file_.rfind("tools:",0) == 0 )       scale_file_.replace(0,6,calibpath+"/");
 
          if ( puweight_ != ""  && puweight_.rfind("tools:",0) == 0 )    puweight_.replace(0,6,calibpath+"/");

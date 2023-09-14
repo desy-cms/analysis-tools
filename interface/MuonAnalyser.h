@@ -56,6 +56,7 @@ namespace analysis {
 
              // variable to call the function to find scale factor
             std::unique_ptr<analysis::tools::MuonTriggerEfficiencies> muon_trigger_efficiency_;
+            //std::unique_ptr<analysis::tools::MuonIdWeight> muon_ID_weight_;
 
          private:
 
@@ -91,6 +92,7 @@ namespace analysis {
             bool muonCorrections();
             bool muonCorrections(const double & muonpT);
             void actionApplyMuonOnlineSF(const int & rank);
+            void actionApplyMuonIDSF(const int & rank);
 
       };
    }
