@@ -12,12 +12,13 @@ for the MSSM Hbb analyses one can use for developments the package
 which is currently under construction.
 
 
-* [Installation](#installation)
-* [Calibrations](#calibrations)
-* [Ntuples](#ntuples)
-* [Example](#example)
-* [NAF Submission](#naf-submission)
-* [Example Detailed Description](#example-detailed-description)
+- [Installation](#installation)
+- [Calibrations](#calibrations)
+- [Ntuples](#ntuples)
+- [Example](#example)
+- [NAF Submission](#naf-submission)
+- [Example Detailed Description](#example-detailed-description)
+- [Luminosity calculations on the NAF](#luminosity-calculations-on-the-naf)
 
 
 
@@ -356,3 +357,116 @@ for ( int i = 0 ; i < analyser.nEvents() ; ++i )
    analyser.fillJetHistograms("final");
 ...
 ```
+## Luminosity calculations on the NAF
+
+In order to use `brilcalc` on the NAF, based on the [BRIL Work Suite documentation](https://cms-service-lumi.web.cern.ch/cms-service-lumi/) and using python2 (python3 did not work(?)), do the following:
+
+```bash
+wget https://cern.ch/cmslumisw/installers/linux-64/Brilconda-1.1.7-Linux-x86_64.sh
+bash Brilconda-1.1.7-Linux-x86_64.sh -b -p /nfs/dust/cms/user/<your_naf_username>/brilconda
+```
+Replace `<your_naf_username>` by your NAF username, also below.
+
+Add the following to your shell environment, e.g. bash
+```bash
+export PATH=/nfs/dust/cms/user/<your_naf_username>/brilconda/bin:$PATH
+```
+Open a new terminal and test the command
+```bash
+brilcalc -h
+```
+If you see the help for the command, then the installation is ok and you can follow the instructions for luminosity calculations in the [BRIL Work Suite documentation](https://cms-service-lumi.web.cern.ch/cms-service-lumi/).
+
+### Scripts using brilcalc
+
+To facilitate the life of the users, some scripts are available, e.g. to calculate the luminostities of HLT paths given a certified JSON file.
+
+:warning: While analyses are not fully migrated to CMSSW releases using `python3`, namely Run2 analyses, the scripts will reside in a different branch of `analysis-tools` that may not be up-to-date with the `master`. Therefore, use it only for the luminosity calculations. Once Run2 analyses are finished, the scripts should be part of the `master` branch.
+
+In any case, the scripts should work in any machine, lxplus or naf, as long as brilcalc is installed.
+
+Usually, running brilcalc takes a while. The scripts use multithreading to help speeding up the computation.
+
+The installation, e.g. on the NAF `el8`, is done like this:
+```bash
+export SCRAM_ARCH=el8_amd64_gcc11
+cmsrel CMSSW_13_2_4
+cd CMSSW_13_2_4/src
+cmsenv
+
+git clone https://github.com/robervalwalsh/analysis-tools.git Analysis/Tools
+cd Analysis/Tools
+git checkout brilcalc
+git clone https://github.com/desy-cms/analysis-calibrations.git data/calibrations
+cd $CMSSW_BASE/src
+scram b -j4
+```
+
+The scripts are available in `Analysis/Tools/scripts`
+
+#### HLT paths luminosities
+
+The script that calculates the luminosity for HLT paths given a certified JSON is `hlt_lumi.py`
+```bash
+$ hlt_lumi.py --help
+usage: hlt_lumi.py [-h] [--json JSON] [--triggers TRIGGERS] [--normtag NORMTAG] [--unit UNIT] [--threads THREADS] [--decimals DECIMALS]
+                   [--output OUTPUT]
+
+Obtain HLT paths luminosities (brilcal)
+
+optional arguments:
+  -h, --help           show this help message and exit
+  --json JSON          Path to the Golden JSON file
+  --triggers TRIGGERS  List of triggers (comma-separated or in a text file)
+  --normtag NORMTAG    Path to the normtag file (default: /cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_PHYSICS.json)
+  --unit UNIT          Unit default: /pb)
+  --threads THREADS    Number of threads (default: 10)
+  --decimals DECIMALS  Number of decimals in results (default: 4)
+  --output OUTPUT      Output file
+
+```
+Notice that the list of triggers can be given in the command line, separated by commas, from a text file, where the list can be given one trigger per line, or comma separated. The obligatory parameters are the `--json` and `--triggers` parameters
+For example, the lumit 
+
+```bash
+cd $CMSSW_BASE/src/Analysis/Tools/test
+hlt_lumi.py \
+--json=../data/calibrations/2017/certified/Cert_Run2017CDEF_13TeV_UL2017_Collisions17_GoldenJSON.txt \
+--triggers=HLT_DoublePFJets100MaxDeta1p6_DoubleCaloBTagCSV_p33_v*,HLT_Mu12_DoublePFJets40MaxDeta1p6_DoubleCaloBTagCSV_p33_v*
+```
+where the output is a markdown table that can be redirected to an `--output` file.
+```
+| HLT Path | Recorded Luminosity [/pb] |
+| --- | ---: |
+| HLT_DoublePFJets100MaxDeta1p6_DoubleCaloBTagCSV_p33 | 36263.6748 |
+| HLT_Mu12_DoublePFJets40MaxDeta1p6_DoubleCaloBTagCSV_p33 | 36674.5111 |
+```
+
+#### Active L1 seeds
+
+In the situation where the L1 seed is an OR of triggers, one may obtain the certified JSON file containing the lumi sections where a given L1 trigger is active/inactive. The script scan all the runs in the JSON file and find the lumi sections where the L1 trigger has a prescale different from zero, i.e., the trigger is active. Prescale zero means trigger is inactive. The list of active lumi sections is compared to the JSON file and all LS where the trigger is active are kept in the final JSON.
+```bash
+$ active_l1seed_json.py --help
+usage: active_l1seed_json.py [-h] [--json JSON] [--hlt HLT] [--l1 L1] [--threads THREADS]
+
+Obtain certified LS when the L1 seed is active/inactive (brilcal)
+
+optional arguments:
+  -h, --help         show this help message and exit
+  --json JSON        Path to the Golden JSON file
+  --hlt HLT          HLT Path
+  --l1 L1            L1 Seed
+  --threads THREADS  Number of threads (default: 20)
+```
+
+For example, the MSSM Hbb full hadronic trigger in 2017
+```bash
+active_l1seed_json.py \
+--json ../data/calibrations/2017/certified/Cert_Run2017CDEF_13TeV_UL2017_Collisions17_GoldenJSON.txt \
+--hlt HLT_DoublePFJets100MaxDeta1p6_DoubleCaloBTagCSV_p33_v* \
+--l1 L1_DoubleJet100er2p3_dEta_Max1p6
+```
+The output are two files, with the certified LS where the L1 trigger was active(inactive), whose names are built from the original JSON file name:
+- `Cert_Run2017CDEF_13TeV_UL2017_Collisions17_GoldenJSON_L1Active.txt`
+- `Cert_Run2017CDEF_13TeV_UL2017_Collisions17_GoldenJSON_L1Inactive.txt`
+
