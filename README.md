@@ -19,6 +19,7 @@ which is currently under construction.
 - [NAF Submission](#naf-submission)
 - [Example Detailed Description](#example-detailed-description)
 - [Luminosity calculations on the NAF](#luminosity-calculations-on-the-naf)
+- [HLT pileup profiles and weights on the NAF](#hlt-pileup-profiles-and-weights-on-the-naf)
 
 
 
@@ -470,3 +471,16 @@ The output are two files, with the certified LS where the L1 trigger was active(
 - `Cert_Run2017CDEF_13TeV_UL2017_Collisions17_GoldenJSON_L1Active.txt`
 - `Cert_Run2017CDEF_13TeV_UL2017_Collisions17_GoldenJSON_L1Inactive.txt`
 
+## HLT pileup profiles and weights on the NAF
+
+If an HLT path is prescaled one may need to re-weight to the unprescaled data. How to do that is available in the documents below:
+- https://twiki.cern.ch/twiki/bin/view/CMS/BrilcalcQuickStart
+- https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupJSONFileforData#Pileup_for_specific_HLT_paths
+- https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupJSONFileforData#Location_of_central_pileup_JSON - for the pileup_latest.txt
+
+
+### Script for this task
+
+In order to facilitate the creation of pileup weights, a script is available. To use it follow installation instructions used for the HLT luminosity calculations [above](#luminosity-calculations-on-the-naf).
+
+The script to be used is called `hlt_pileup.py`
