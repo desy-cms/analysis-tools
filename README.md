@@ -546,3 +546,20 @@ hlt_pileup.py \
 ```
 You may also have a different list of trigger in `triggers.txt` in case you won't use the SL control triggers for the FH analysis.
 
+Here is an example of a `triggers.txt` for `2017`
+```
+HLT_DoublePFJets100MaxDeta1p6_DoubleCaloBTagCSV_p33_v*
+HLT_Mu12_DoublePFJets40MaxDeta1p6_DoubleCaloBTagCSV_p33_v*
+#
+HLT_DoublePFJets40_CaloBTagCSV_p33_v*
+HLT_DoublePFJets100_CaloBTagCSV_p33_v*
+HLT_DoublePFJets200_CaloBTagCSV_p33_v*
+HLT_DoublePFJets350_CaloBTagCSV_p33_v*
+#
+HLT_Mu12_DoublePFJets40_CaloBTagCSV_p33_v*
+HLT_Mu12_DoublePFJets100_CaloBTagCSV_p33_v*
+HLT_Mu12_DoublePFJets200_CaloBTagCSV_p33_v*
+HLT_Mu12_DoublePFJets350_CaloBTagCSV_p33_v*
+```
+
+
