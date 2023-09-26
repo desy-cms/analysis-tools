@@ -530,7 +530,7 @@ To obtain the pileup weight for the triggers in 2017, given in the `trigger.txt`
 ```bash
 cd $CMSSW_BASE/src/Analysis/Tools/test
 hlt_pileup.py \
---json ../data/calibrations/2017/certified/certified/Cert_Run2017CDEF_13TeV_UL2017_Collisions17_GoldenJSON.txt \
+--json ../data/calibrations/2017/certified/Cert_Run2017CDEF_13TeV_UL2017_Collisions17_GoldenJSON.txt \
 --triggers triggers.txt \
 --reference HLT_Mu12_DoublePFJets40MaxDeta1p6_DoubleCaloBTagCSV_p33_v* \
 --label SL
@@ -539,7 +539,7 @@ The `--reference` option specifies the reference trigger for the weights. It mus
 ```bash
 cd $CMSSW_BASE/src/Analysis/Tools/test
 hlt_pileup.py \
---json ../data/calibrations/2017/certified/certified/Cert_Run2017CDEF_13TeV_UL2017_Collisions17_GoldenJSON_L1_DoubleJet100etc_Active.txt \
+--json ../data/calibrations/2017/certified/Cert_Run2017CDEF_13TeV_UL2017_Collisions17_GoldenJSON_L1_DoubleJet100etc_Active.txt \
 --triggers triggers.txt \
 --reference HLT_DoublePFJets100MaxDeta1p6_DoubleCaloBTagCSV_p33_v* \
 --label FH
