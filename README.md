@@ -19,6 +19,7 @@ which is currently under construction.
 - [NAF Submission](#naf-submission)
 - [Example Detailed Description](#example-detailed-description)
 - [Luminosity calculations on the NAF](#luminosity-calculations-on-the-naf)
+- [HLT pileup profiles and weights on the NAF](#hlt-pileup-profiles-and-weights-on-the-naf)
 
 
 
@@ -469,4 +470,79 @@ active_l1seed_json.py \
 The output are two files, with the certified LS where the L1 trigger was active(inactive), whose names are built from the original JSON file name:
 - `Cert_Run2017CDEF_13TeV_UL2017_Collisions17_GoldenJSON_L1Active.txt`
 - `Cert_Run2017CDEF_13TeV_UL2017_Collisions17_GoldenJSON_L1Inactive.txt`
+
+## HLT pileup profiles and weights on the NAF
+
+If an HLT path is prescaled one may need to re-weight to the unprescaled data. How to do that is available in the documents below:
+- https://twiki.cern.ch/twiki/bin/view/CMS/BrilcalcQuickStart
+- https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupJSONFileforData#Pileup_for_specific_HLT_paths
+- https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupJSONFileforData#Location_of_central_pileup_JSON - for the pileup_latest.txt
+
+
+### Script for this task
+
+In order to facilitate the creation of pileup weights, a script is available. To use it follow installation instructions used for the HLT luminosity calculations [above](#luminosity-calculations-on-the-naf), meaning, use the `brilcalc` branch of Roberval's `analysis-tools`.
+
+The script to be used is called `hlt_pileup.py`
+
+```bash
+$ hlt_pileup.py --help
+usage: hlt_pileup.py [-h] --json JSON --triggers TRIGGERS [--step STEP] [--normtag NORMTAG] [--year YEAR] [--xsec XSEC] [--xsec_err XSEC_ERR] [--period PERIOD] [--max_bin MAX_BIN] [--num_bins NUM_BINS] [--threads THREADS]
+                     [--keep] [--reference REFERENCE] [--label LABEL]
+
+Obtain pileup weights for HLT paths
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --json JSON           Path to the Golden JSON file
+  --triggers TRIGGERS   List of triggers (comma-separated or in a text file)
+  --step STEP           Step to be executed
+  --normtag NORMTAG     Path to the normtag file (default: /cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_PHYSICS.json)
+  --year YEAR           Year of data taking for the pileup (default: 2017)
+  --xsec XSEC           Minimum bias cross section (default: 69200.0)
+  --xsec_err XSEC_ERR   Uncertainty on minimum bias cross section (default: 3200.0)
+  --period PERIOD       Run period (default: Run2)
+  --max_bin MAX_BIN     Maximum pileup bin (default: 100)
+  --num_bins NUM_BINS   Number of pileup bins (default: 100)
+  --threads THREADS     Number of threads (default: 10)
+  --keep                Keep the root files for each xsec variation, otherwise keep only files with merged histograms
+  --reference REFERENCE 
+                        Reference trigger for pileup weight
+  --label LABEL         Label for the weight file
+
+More information: $CMSSW_BASE/src/Analysis/Tools/scripts/hlt_pileup.py
+```
+
+This script performs various operations related to pileup analysis for 
+HLT paths. It includes steps for calculating pileup weights,
+merging histograms, and more. The script takes user-defined
+parameters via command-line arguments to customize the analysis.
+- Step 1: calculate the delivered and recorded luminosity per lumi section for given trigger path
+- Step 2: generate a new version of the pileup file
+- Step 3: calculate the pileup profiles of the given trigger path, given the min bias cross-section and its uncertainty
+- Step 4: merge histograms into a single file
+- Step 5: calculate the weights of the given trigger path given a reference path
+
+#### Example
+
+To obtain the pileup weight for the triggers in 2017, given in the `trigger.txt` file, with the golden json, run the command below. There will be several outputs for the different steps in a directory named after the given json file. The output files carry the name of the corresponding trigger. Important are the root files containing the pileup profiles and the ones containing the weights.
+
+```bash
+cd $CMSSW_BASE/src/Analysis/Tools/test
+hlt_pileup.py \
+--json ../data/calibrations/2017/certified/certified/Cert_Run2017CDEF_13TeV_UL2017_Collisions17_GoldenJSON.txt \
+--triggers triggers.txt \
+--reference HLT_Mu12_DoublePFJets40MaxDeta1p6_DoubleCaloBTagCSV_p33_v* \
+--label SL
+```
+The `--reference` option specifies the reference trigger for the weights. It must be in the `triggers.txt` list and it will only run `step 5` if defined. The `--label` option is a suffix at the end of the pileup weights file. It helps to distinguish between different conditions, e.g. different analysis certified JSON. For example, in 2017 the full hadronic trigger had a different certified data than the semi-leptonic. In such case, not only the `--json` option should be different, but also the `--reference` and `--label` options. That is,
+```bash
+cd $CMSSW_BASE/src/Analysis/Tools/test
+hlt_pileup.py \
+--json ../data/calibrations/2017/certified/certified/Cert_Run2017CDEF_13TeV_UL2017_Collisions17_GoldenJSON_L1_DoubleJet100etc_Active.txt \
+--triggers triggers.txt \
+--reference HLT_DoublePFJets100MaxDeta1p6_DoubleCaloBTagCSV_p33_v* \
+--label FH
+```
+You may also have a different list of trigger in `triggers.txt` in case you won't use the SL control triggers for the FH analysis.
 
