@@ -523,6 +523,15 @@ parameters via command-line arguments to customize the analysis.
 - Step 4: merge histograms into a single file
 - Step 5: calculate the weights of the given trigger path given a reference path
 
+N.B.: The brilcalc csv file from step 1 contains commented lines that may be a problem when running data frames. If you want you can remove them, except for the 'header', with the command
+```bash
+sed '2s/^#//; 2n; /^#/d' input.csv > output.csv
+```
+or, it you want all commented lines to be removed, including the header
+```bash
+sed '/^#/d' input.csv > output.csv
+```
+
 #### Example
 
 To obtain the pileup weight for the triggers in 2017, given in the `trigger.txt` file, with the golden json, run the command below. There will be several outputs for the different steps in a directory named after the given json file. The output files carry the name of the corresponding trigger. Important are the root files containing the pileup profiles and the ones containing the weights.
