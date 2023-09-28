@@ -407,10 +407,10 @@ The scripts are available in `Analysis/Tools/scripts`
 
 #### HLT paths luminosities
 
-The script that calculates the luminosity for HLT paths given a certified JSON is `hlt_lumi.py`
+The script that calculates the luminosity for HLT paths given a certified JSON is `lumi_hlt.py`
 ```bash
-$ hlt_lumi.py --help
-usage: hlt_lumi.py [-h] [--json JSON] [--triggers TRIGGERS] [--normtag NORMTAG] [--unit UNIT] [--threads THREADS] [--decimals DECIMALS]
+$ lumi_hlt.py --help
+usage: lumi_hlt.py [-h] [--json JSON] [--triggers TRIGGERS] [--normtag NORMTAG] [--unit UNIT] [--threads THREADS] [--decimals DECIMALS]
                    [--output OUTPUT]
 
 Obtain HLT paths luminosities (brilcal)
@@ -431,7 +431,7 @@ For example, the lumit
 
 ```bash
 cd $CMSSW_BASE/src/Analysis/Tools/test
-hlt_lumi.py \
+lumi_hlt.py \
 --json=../data/calibrations/2017/certified/Cert_Run2017CDEF_13TeV_UL2017_Collisions17_GoldenJSON.txt \
 --triggers=HLT_DoublePFJets100MaxDeta1p6_DoubleCaloBTagCSV_p33_v*,HLT_Mu12_DoublePFJets40MaxDeta1p6_DoubleCaloBTagCSV_p33_v*
 ```
@@ -483,11 +483,11 @@ If an HLT path is prescaled one may need to re-weight to the unprescaled data. H
 
 In order to facilitate the creation of pileup weights, a script is available. To use it follow installation instructions used for the HLT luminosity calculations [above](#luminosity-calculations-on-the-naf), meaning, use the `brilcalc` branch of Roberval's `analysis-tools`.
 
-The script to be used is called `hlt_pileup.py`
+The script to be used is called `pileup_hlt.py`
 
 ```bash
-$ hlt_pileup.py --help
-usage: hlt_pileup.py [-h] --json JSON --triggers TRIGGERS [--step STEP] [--normtag NORMTAG] [--year YEAR] [--xsec XSEC] [--xsec_err XSEC_ERR] [--period PERIOD] [--max_bin MAX_BIN] [--num_bins NUM_BINS] [--threads THREADS]
+$ pileup_hlt.py --help
+usage: pileup_hlt.py [-h] --json JSON --triggers TRIGGERS [--step STEP] [--normtag NORMTAG] [--year YEAR] [--xsec XSEC] [--xsec_err XSEC_ERR] [--period PERIOD] [--max_bin MAX_BIN] [--num_bins NUM_BINS] [--threads THREADS]
                      [--keep] [--reference REFERENCE] [--label LABEL]
 
 Obtain pileup weights for HLT paths
@@ -510,7 +510,7 @@ optional arguments:
                         Reference trigger for pileup weight
   --label LABEL         Label for the weight file
 
-More information: $CMSSW_BASE/src/Analysis/Tools/scripts/hlt_pileup.py
+More information: $CMSSW_BASE/src/Analysis/Tools/scripts/pileup_hlt.py
 ```
 
 This script performs various operations related to pileup analysis for 
@@ -538,7 +538,7 @@ To obtain the pileup weight for the triggers in 2017, given in the `trigger.txt`
 
 ```bash
 cd $CMSSW_BASE/src/Analysis/Tools/test
-hlt_pileup.py \
+pileup_hlt.py \
 --json ../data/calibrations/2017/certified/Cert_Run2017CDEF_13TeV_UL2017_Collisions17_GoldenJSON.txt \
 --triggers triggers.txt \
 --reference HLT_Mu12_DoublePFJets40MaxDeta1p6_DoubleCaloBTagCSV_p33_v* \
@@ -547,7 +547,7 @@ hlt_pileup.py \
 The `--reference` option specifies the reference trigger for the weights. It must be in the `triggers.txt` list and it will only run `step 5` if defined. The `--label` option is a suffix at the end of the pileup weights file. It helps to distinguish between different conditions, e.g. different analysis certified JSON. For example, in 2017 the full hadronic trigger had a different certified data than the semi-leptonic. In such case, not only the `--json` option should be different, but also the `--reference` and `--label` options. That is,
 ```bash
 cd $CMSSW_BASE/src/Analysis/Tools/test
-hlt_pileup.py \
+pileup_hlt.py \
 --json ../data/calibrations/2017/certified/Cert_Run2017CDEF_13TeV_UL2017_Collisions17_GoldenJSON_L1_DoubleJet100etc_Active.txt \
 --triggers triggers.txt \
 --reference HLT_DoublePFJets100MaxDeta1p6_DoubleCaloBTagCSV_p33_v* \
