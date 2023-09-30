@@ -91,6 +91,7 @@ namespace analysis {
 
             /// pileup weight
             std::shared_ptr<PileupWeight> puweights_;
+            bool puweights_ok_;
             
             /// pileup weight label
             std::string puw_label_;
@@ -186,6 +187,8 @@ namespace analysis {
             float pileupWeight(const float & truepu, const int & var) const;
             /// returns true number of interactions
             float trueInteractions() const;
+            /// check conditions for pileup weights is fulfilled
+            bool pileupWeightsApplicable() const;
 
             /// creates pileup histogram
             void pileupHistogram();
