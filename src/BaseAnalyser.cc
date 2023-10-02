@@ -80,12 +80,8 @@ BaseAnalyser::BaseAnalyser(int argc, char * argv[])
    // Pileup weights
    if ( puweights_ok_ )
    {
-      puweights_ = analysis_->pileupWeights(config_->pileupWeights());
+      puweights_ = analysis_->pileupWeights(config_->pileupWeights(),config_->pileupData(), isMC_);
       puw_label_ = basename(config_->pileupWeights());
-      if ( isData_ )
-      {
-         // read data pileup
-      }
    }
    else
    {
@@ -334,12 +330,40 @@ float BaseAnalyser::trueInteractions() const
 
 void BaseAnalyser::actionApplyPileupWeight(const int & var)
 {
-   if ( ! config_->isMC() ) return;
+   if ( ! puweights_ok_ ) return;
       
    if ( puweights_ )
-      weight_ *= this->pileupWeight(analysis_->nTruePileup(),var);
+   {
+      float truepu = -1;
+      if ( isMC_ )
+      {
+         truepu = analysis_->nTruePileup();
+         if ( truepu < 0 )
+         {
+            std::cout << "-w- BaseAnalyser::actionApplyPileupWeight: pileup negative!? ";
+            std::cout << "Please check! Assuming pileup weight = 1. " << std::endl;
+         }
+      }
+      else
+      {
+         truepu = puweights_->getPileupFromData(analysis_->run(),analysis_->lumiSection());
+         if ( truepu < 0 )
+         {
+            weight_ *= 1;
+            std::cout << "-w- BaseAnalyser::actionApplyPileupWeight: pileup negative ";
+            std::cout << "(run = " << analysis_->run() << ", ls = " << analysis_->lumiSection();
+            std::cout << ")!? Please check! Assuming pileup weight = 1. " << std::endl;
+         }
+         else
+         {
+            weight_ *= this->pileupWeight(truepu,var);
+         }
+      }
+   }
    else
+   {
       weight_ *= 1;
+   }
    
    if ( var != 0 )
    {

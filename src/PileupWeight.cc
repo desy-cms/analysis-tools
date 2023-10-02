@@ -19,10 +19,11 @@ PileupWeight::PileupWeight()
 }
 
 // Main constructor
-PileupWeight::PileupWeight(const std::string & puweight_name, const std::string & pudata_name )
+PileupWeight::PileupWeight(const std::string & puweight_name, const std::string & pudata_name, const bool & is_mc )
 {
    puweight_name_ = puweight_name;
    pudata_name_ = pudata_name;
+   is_mc_ = is_mc;
 
    TH1D * tmp;
    std::shared_ptr<TFile> f = std::make_shared<TFile>(puweight_name.c_str(),"old");
@@ -53,9 +54,10 @@ PileupWeight::PileupWeight(const std::string & puweight_name, const std::string 
       std::cout << "WARNING - PileupWeight::PileupWeight | Histogram weight_2up not found. Weight = 1" << std::endl;
 
 
-   if ( pudata_name != "")
+   if ( ! is_mc_ )
    {
-      df_pudata_ = std::make_shared<ROOT::RDataFrame>(ROOT::RDF::MakeCsvDataFrame(pudata_name));
+      if ( pudata_name_ != "" )
+         df_pudata_ = std::make_shared<ROOT::RDataFrame>(ROOT::RDF::MakeCsvDataFrame(pudata_name_));
    }
 }
 
@@ -77,8 +79,16 @@ float PileupWeight::weight(const float & truepu, const int & var)
    float weight = 1.;
    if ( ! puweight_histos_[0] ) return weight;
    if ( ! puweight_histos_[var] ) return weight;
+   if ( ! is_mc_ ) // For Data
+   {
+      weight = puweight_histos_[var]->Interpolate(truepu);
+      return weight;
+   }
+   // For MC
    int bin = puweight_histos_[var] -> FindBin(truepu);
    weight = puweight_histos_[var] -> GetBinContent(bin);
+   return weight;
+
    return weight;
 }
 

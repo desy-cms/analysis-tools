@@ -42,7 +42,7 @@ namespace analysis {
          public:
             /// constructors
             PileupWeight();
-            PileupWeight(const std::string & puweight_name, const std::string & pudata_name="");
+            PileupWeight(const std::string & puweight_name, const std::string & pudata_name, const bool & is_mc);
             /// desctructor
            ~PileupWeight();
            
@@ -55,6 +55,7 @@ namespace analysis {
          private:
             std::string puweight_name_;
             std::string pudata_name_;
+            bool is_mc_;
 
          public:
             float weight(const float & truepu, const int & var = 0);
