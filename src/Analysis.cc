@@ -521,9 +521,9 @@ std::shared_ptr<JetResolutionInfo> Analysis::jetResolutionInfo(const std::string
    jerinfo_ = std::make_shared<JetResolutionInfo>(JetResolutionInfo{res,sf});
    return jerinfo_;
 }
-std::shared_ptr<PileupWeight> Analysis::pileupWeights(const std::string & f_pu)
+std::shared_ptr<PileupWeight> Analysis::pileupWeights(const std::string & f_pu, const std::string & f_pu_data, const bool & is_mc)
 {
-   puweights_ = std::make_shared<PileupWeight>(PileupWeight(f_pu));
+   puweights_ = std::make_shared<PileupWeight>(PileupWeight(f_pu, f_pu_data, is_mc));
    return puweights_;
 }
 std::shared_ptr<MuonIdWeight> Analysis::muonIDWeights(const std::vector<std::string> & fnames_muID )

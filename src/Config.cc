@@ -89,6 +89,7 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
       opt_cfg_.add_options()
          ("Corrections.Pileup.reweight"  , po::value <std::string>               (&puweight_)        -> default_value("")                 , "Root file containing pileup weights")
          ("Corrections.Pileup.reweightSystematcis"  , po::value <int>            (&puweightsyst_)    -> default_value(0)                  , "Pileup weights systematic variations")
+         ("Corrections.Pileup.fromData"  , po::value <std::string>               (&pudata_)          -> default_value("")                 , "CSV file containing pileup per ls in data")
          ("Corrections.Jets.jerPtRes"    , po::value <std::string>               (&jerptres_)        -> default_value("")                 , "JER pT resolution file")
          ("Corrections.Jets.jerSF"       , po::value <std::string>               (&jersf_)           -> default_value("")                 , "JER SF file")
          ("Corrections.Jets.onlinejetSF" , po::value <std::string>               (&onljetsf_)        -> default_value("")                 , "Jet trigger SF file")
@@ -422,6 +423,8 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          if ( scale_file_ != "" && scale_file_.rfind("tools:",0) == 0 )       scale_file_.replace(0,6,calibpath+"/");
 
          if ( puweight_ != ""  && puweight_.rfind("tools:",0) == 0 )    puweight_.replace(0,6,calibpath+"/");
+         if ( pudata_ != ""  && pudata_.rfind("tools:",0) == 0 )    pudata_.replace(0,6,calibpath+"/");
+
 
          eventinfo_     =  Form("%s/%s/%s" , process_.c_str(), eventsdir_.c_str() , eventinfo_.c_str()      );
          triggerCol_    =  Form("%s/%s/%s" , process_.c_str(), eventsdir_.c_str() , triggerCol_.c_str()     );
@@ -528,6 +531,7 @@ float              Config::scale()            const { return scale_; }
 std::vector<float> Config::erasLumi()         const { return eraslumi_; }
 std::vector<std::string> Config::eras()       const { return eras_; }
 std::string        Config::pileupWeights()    const { return puweight_; }
+std::string        Config::pileupData()       const { return pudata_; }
 int                Config::pileupWeightSystematics()    const { return puweightsyst_; }
 std::vector<std::string> Config::muonIDWeights()    const { return muonIDweight_; }
 int                Config::muonIDWeightSystematics()    const { return muonIDweightsyst_; }

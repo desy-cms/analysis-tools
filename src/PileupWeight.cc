@@ -2,6 +2,8 @@
 // user include files
 #include "Analysis/Tools/interface/PileupWeight.h"
 #include "TFile.h"
+#include "ROOT/RCsvDS.hxx"
+
 
 //
 // class declaration
@@ -17,35 +19,46 @@ PileupWeight::PileupWeight()
 }
 
 // Main constructor
-PileupWeight::PileupWeight(const std::string & fname )
+PileupWeight::PileupWeight(const std::string & puweight_name, const std::string & pudata_name, const bool & is_mc )
 {
+   puweight_name_ = puweight_name;
+   pudata_name_ = pudata_name;
+   is_mc_ = is_mc;
+
    TH1D * tmp;
-   std::shared_ptr<TFile> f = std::make_shared<TFile>(fname.c_str(),"old");
+   std::shared_ptr<TFile> f = std::make_shared<TFile>(puweight_name.c_str(),"old");
    tmp = (TH1D*) f->Get("weight_2down");
-   if ( tmp )  histos_[-2] = std::make_shared<TH1D>(*tmp);
+   if ( tmp )  puweight_histos_[-2] = std::make_shared<TH1D>(*tmp);
    
    tmp = (TH1D*) f->Get("weight_1down");
-   if ( tmp )  histos_[-1] = std::make_shared<TH1D>(*tmp);
+   if ( tmp )  puweight_histos_[-1] = std::make_shared<TH1D>(*tmp);
    
    tmp = (TH1D*) f->Get("weight");
-   if ( tmp )  histos_[0] = std::make_shared<TH1D>(*tmp);
+   if ( tmp )  puweight_histos_[0] = std::make_shared<TH1D>(*tmp);
    
    tmp = (TH1D*) f->Get("weight_1up");
-   if ( tmp )  histos_[1] = std::make_shared<TH1D>(*tmp);
+   if ( tmp )  puweight_histos_[1] = std::make_shared<TH1D>(*tmp);
    
    tmp = (TH1D*) f->Get("weight_2up");
-   if ( tmp )  histos_[2] = std::make_shared<TH1D>(*tmp);
+   if ( tmp )  puweight_histos_[2] = std::make_shared<TH1D>(*tmp);
 
-   if ( ! histos_[-2] ) 
+   if ( ! puweight_histos_[-2] ) 
       std::cout << "WARNING - PileupWeight::PileupWeight | Histogram weight_2down not found. Weight = 1" << std::endl;
-   if ( ! histos_[-1] ) 
+   if ( ! puweight_histos_[-1] ) 
       std::cout << "WARNING - PileupWeight::PileupWeight | Histogram weight_1down not found. Weight = 1" << std::endl;
-   if ( ! histos_[0] ) 
+   if ( ! puweight_histos_[0] ) 
       std::cout << "WARNING - PileupWeight::PileupWeight | Histogram weight not found. Weight = 1" << std::endl;
-   if ( ! histos_[1] ) 
+   if ( ! puweight_histos_[1] ) 
       std::cout << "WARNING - PileupWeight::PileupWeight | Histogram weight_1up not found. Weight = 1" << std::endl;
-   if ( ! histos_[2] ) 
+   if ( ! puweight_histos_[2] ) 
       std::cout << "WARNING - PileupWeight::PileupWeight | Histogram weight_2up not found. Weight = 1" << std::endl;
+
+
+   if ( ! is_mc_ )
+   {
+      if ( pudata_name_ != "" )
+         df_pudata_ = std::make_shared<ROOT::RDataFrame>(ROOT::RDF::MakeCsvDataFrame(pudata_name_));
+   }
 }
 
 PileupWeight::~PileupWeight()
@@ -64,10 +77,35 @@ PileupWeight::~PileupWeight()
 float PileupWeight::weight(const float & truepu, const int & var)
 {
    float weight = 1.;
-   if ( ! histos_[0] ) return weight;
-   if ( ! histos_[var] ) return weight;
-   int bin = histos_[var] -> FindBin(truepu);
-   weight = histos_[var] -> GetBinContent(bin);
+   if ( ! puweight_histos_[0] ) return weight;
+   if ( ! puweight_histos_[var] ) return weight;
+   if ( ! is_mc_ ) // For Data
+   {
+      weight = puweight_histos_[var]->Interpolate(truepu);
+      return weight;
+   }
+   // For MC
+   int bin = puweight_histos_[var] -> FindBin(truepu);
+   weight = puweight_histos_[var] -> GetBinContent(bin);
+   return weight;
+
    return weight;
 }
 
+float PileupWeight::getPileupFromData(const int & myrun, const int & myls)
+{
+   float pileup = -1;
+   if ( pudata_name_ == "" ) return pileup;
+
+   auto selectedData = df_pudata_->Filter(
+      [=](Long64_t run, Long64_t lumi_section) {
+         return run == myrun && lumi_section == myls;
+      },
+      {"run", "lumi_section"}
+   );
+   std::vector<double> avgpuValues = *selectedData.Take<double>("avgpu");
+   if ( avgpuValues.size() == 0 ) return pileup;
+   pileup = avgpuValues[0];
+   return pileup;
+
+}

@@ -39,6 +39,7 @@ BaseAnalyser::BaseAnalyser(int argc, char * argv[])
    genpartsanalysis_ = false;
    genjetsanalysis_  = false;
    primaryvtxanalysis_ = false;
+   puweights_ok_ = false;
     
    // the heavy stuff
    config_   = std::make_shared<Config>(argc,argv);
@@ -67,16 +68,6 @@ BaseAnalyser::BaseAnalyser(int argc, char * argv[])
       // Cross sections
       if ( analysis_ -> crossSections(config_->crossSectionTree()) == 0 )
          xsection_ = analysis_->crossSection(config_->crossSectionType());
-      // Pileup weights
-      if ( config_->pileupWeights() != "" )
-      {
-         puweights_ = analysis_->pileupWeights(config_->pileupWeights());
-         puw_label_ = basename(config_->pileupWeights());
-      }
-      else
-      {
-         puw_label_ = "*** missing *** assuming puweight = 1";
-      }
 
       // gen part analysis
       genpartsanalysis_  = ( analysis_->addTree<GenParticle> ("GenParticles",config_->genParticlesCollection()) != nullptr );
@@ -84,6 +75,19 @@ BaseAnalyser::BaseAnalyser(int argc, char * argv[])
       genjetsanalysis_  = ( analysis_->addTree<GenJet> ("GenJets",config_->genJetsCollection()) != nullptr );
       
    }
+   puweights_ok_ = (isMC_ || (isData_ && config_->pileupData() != "")) && (config_->pileupWeights() != "");
+
+   // Pileup weights
+   if ( puweights_ok_ )
+   {
+      puweights_ = analysis_->pileupWeights(config_->pileupWeights(),config_->pileupData(), isMC_);
+      puw_label_ = basename(config_->pileupWeights());
+   }
+   else
+   {
+      if ( isMC_ )  puw_label_ = "*** missing *** assuming MC pileup weight = 1";
+   }
+
    
    // primary vertex analysis
    primaryvtxanalysis_ = ( analysis_->addTree<Vertex> ("PrimaryVertex",config_->primaryVertexCollection()) != nullptr );
@@ -326,12 +330,40 @@ float BaseAnalyser::trueInteractions() const
 
 void BaseAnalyser::actionApplyPileupWeight(const int & var)
 {
-   if ( ! config_->isMC() ) return;
+   if ( ! puweights_ok_ ) return;
       
    if ( puweights_ )
-      weight_ *= this->pileupWeight(analysis_->nTruePileup(),var);
+   {
+      float truepu = -1;
+      if ( isMC_ )
+      {
+         truepu = analysis_->nTruePileup();
+         if ( truepu < 0 )
+         {
+            std::cout << "-w- BaseAnalyser::actionApplyPileupWeight: pileup negative!? ";
+            std::cout << "Please check! Assuming pileup weight = 1. " << std::endl;
+         }
+      }
+      else
+      {
+         truepu = puweights_->getPileupFromData(analysis_->run(),analysis_->lumiSection());
+         if ( truepu < 0 )
+         {
+            weight_ *= 1;
+            std::cout << "-w- BaseAnalyser::actionApplyPileupWeight: pileup negative ";
+            std::cout << "(run = " << analysis_->run() << ", ls = " << analysis_->lumiSection();
+            std::cout << ")!? Please check! Assuming pileup weight = 1. " << std::endl;
+         }
+         else
+         {
+            weight_ *= this->pileupWeight(truepu,var);
+         }
+      }
+   }
    else
+   {
       weight_ *= 1;
+   }
    
    if ( var != 0 )
    {
@@ -368,6 +400,11 @@ void BaseAnalyser::fillPileupHistogram()
    
    h1_["pileup"] -> Fill(analysis_->nTruePileup());
    h1_["pileup_w"] -> Fill(analysis_->nTruePileup(),this->pileupWeight(analysis_->nTruePileup(),0));
+}
+
+bool BaseAnalyser::pileupWeightsApplicable() const
+{
+   return puweights_ok_;
 }
 
 int BaseAnalyser::cutflow()

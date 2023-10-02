@@ -29,7 +29,7 @@
 // user include files
 
 #include "TH1.h"
-
+#include <ROOT/RDataFrame.hxx>
 
 //
 // class declaration
@@ -42,18 +42,24 @@ namespace analysis {
          public:
             /// constructors
             PileupWeight();
-            PileupWeight(const std::string &);
+            PileupWeight(const std::string & puweight_name, const std::string & pudata_name, const bool & is_mc);
             /// desctructor
            ~PileupWeight();
            
             // ----------member data ---------------------------
          protected:
-            std::map<int,std::shared_ptr<TH1D> > histos_;
+            std::map<int,std::shared_ptr<TH1D> > puweight_histos_;
+            std::shared_ptr<ROOT::RDataFrame> df_pudata_;
+
                         
          private:
-               
+            std::string puweight_name_;
+            std::string pudata_name_;
+            bool is_mc_;
+
          public:
             float weight(const float & truepu, const int & var = 0);
+            float getPileupFromData(const int & , const int & );
             std::shared_ptr<TH1D> histogram(const int & var = 0);
       };
    }

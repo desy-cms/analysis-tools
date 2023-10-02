@@ -103,6 +103,7 @@ namespace analysis {
 
             std::string pileupWeights() const;
             int         pileupWeightSystematics() const;
+            std::string pileupData() const;
             
             std::vector<std::string>  muonIDWeights() const;
             int          muonIDWeightSystematics() const;
@@ -394,6 +395,8 @@ namespace analysis {
 
             std::string puweight_;
             int puweightsyst_;
+            std::string pudata_;
+            
             
             std::vector<std::string> muonIDweight_;
             int muonIDweightsyst_;

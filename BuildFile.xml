@@ -1,4 +1,5 @@
 <use name="root"/>
+<use name="rootdataframe"/>
 <use name="rootmath"/>
 <use name="rootgraphics"/>
 <use name="roofit" />
