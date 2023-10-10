@@ -1,8 +1,12 @@
 // system include files
 // user include files
+#include <iostream>
+#include <fstream>
 #include "Analysis/Tools/interface/PileupWeight.h"
 #include "TFile.h"
 #include "ROOT/RCsvDS.hxx"
+#include <boost/tokenizer.hpp>
+
 
 
 //
@@ -57,7 +61,40 @@ PileupWeight::PileupWeight(const std::string & puweight_name, const std::string 
    if ( ! is_mc_ )
    {
       if ( pudata_name_ != "" )
-         df_pudata_ = std::make_shared<ROOT::RDataFrame>(ROOT::RDF::MakeCsvDataFrame(pudata_name_));
+      {         
+         //open csv with RDataFrame (not workin on old root verions)
+         // df_pudata_ = std::make_shared<ROOT::RDataFrame>(ROOT::RDF::MakeCsvDataFrame(pudata_name_));
+
+         // open CSV and store on map         
+         std::ifstream file(pudata_name_);
+         // Ignore the first row
+         std::string first_row;
+         std::getline(file, first_row);
+         
+         std::string line;
+         while (std::getline(file, line)) {
+            // Use Boost tokenizer to split the line into tokens
+            typedef boost::tokenizer<boost::escaped_list_separator<char>> Tokenizer;
+            Tokenizer tokens(line);
+
+            auto it = tokens.begin();
+            if (it != tokens.end()) {
+                  int run = std::stoi(*it++);
+                  if (it != tokens.end()) {
+                     int ls = std::stoi(*it++);
+                     if (it != tokens.end()) {
+                        float avgpu = std::stof(*it++);
+                        m_pudata_[run][ls] = avgpu;
+                     }
+                  }        
+            } else {
+                  std::cerr << "Failed to parse line: " << line << std::endl;
+            }
+         }
+
+         file.close();
+
+      }
    }
 }
 
@@ -94,18 +131,31 @@ float PileupWeight::weight(const float & truepu, const int & var)
 
 float PileupWeight::getPileupFromData(const int & myrun, const int & myls)
 {
+
    float pileup = -1;
    if ( pudata_name_ == "" ) return pileup;
 
-   auto selectedData = df_pudata_->Filter(
-      [=](Long64_t run, Long64_t lumi_section) {
-         return run == myrun && lumi_section == myls;
-      },
-      {"run", "lumi_section"}
-   );
-   std::vector<double> avgpuValues = *selectedData.Take<double>("avgpu");
-   if ( avgpuValues.size() == 0 ) return pileup;
-   pileup = avgpuValues[0];
+   pileup = m_pudata_[myrun][myls];
+
    return pileup;
 
 }
+
+// float PileupWeight::getPileupFromDataFrame(const int & myrun, const int & myls)
+// {
+
+//    float pileup = -1;
+//    if ( pudata_name_ == "" ) return pileup;
+
+//    auto selectedData = df_pudata_->Filter(
+//       [=](Long64_t run, Long64_t lumi_section) {
+//          return run == myrun && lumi_section == myls;
+//       },
+//       {"run", "lumi_section"}
+//    );
+//    std::vector<double> avgpuValues = *selectedData.Take<double>("avgpu");
+//    if ( avgpuValues.size() == 0 ) return -1;
+//    pileup = avgpuValues[0];
+//    return pileup;
+
+// }
