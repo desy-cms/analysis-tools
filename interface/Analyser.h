@@ -56,6 +56,7 @@ namespace analysis {
          
             // ----------member data ---------------------------
          protected:
+            int num_primary_vertices_;
          
          private:
             
@@ -68,6 +69,8 @@ namespace analysis {
             virtual bool preselection();
             /// primary vertex selection
             virtual bool selectionPrimaryVertex();
+            /// number of primary vertices
+            virtual int numberOfPrimaryVertices();
       };
    }
 }

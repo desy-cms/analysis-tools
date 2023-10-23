@@ -340,8 +340,13 @@ void BaseAnalyser::actionApplyPileupWeight(const int & var)
          truepu = analysis_->nTruePileup();
          if ( truepu < 0 )
          {
+            weight_ *= 1;
             std::cout << "-w- BaseAnalyser::actionApplyPileupWeight: pileup negative!? ";
             std::cout << "Please check! Assuming pileup weight = 1. " << std::endl;
+         }
+         else
+         {
+            weight_ *= this->pileupWeight(truepu,var);
          }
       }
       else
@@ -350,9 +355,9 @@ void BaseAnalyser::actionApplyPileupWeight(const int & var)
          if ( truepu < 0 )
          {
             weight_ *= 1;
-            std::cout << "-w- BaseAnalyser::actionApplyPileupWeight: pileup negative ";
-            std::cout << "(run = " << analysis_->run() << ", ls = " << analysis_->lumiSection();
-            std::cout << ")!? Please check! Assuming pileup weight = 1. " << std::endl;
+            // std::cout << "-w- BaseAnalyser::actionApplyPileupWeight: pileup negative ";
+            // std::cout << "(run = " << analysis_->run() << ", ls = " << analysis_->lumiSection();
+            // std::cout << ")!? Please check! Assuming pileup weight = 1. " << std::endl;
          }
          else
          {
@@ -373,6 +378,7 @@ void BaseAnalyser::actionApplyPileupWeight(const int & var)
    cutflow(puw_label_);
    
    this -> fillPileupHistogram();
+
 }
 
 void BaseAnalyser::actionApplyPileupWeight()

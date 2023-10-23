@@ -49,7 +49,8 @@ namespace analysis {
             // ----------member data ---------------------------
          protected:
             std::map<int,std::shared_ptr<TH1D> > puweight_histos_;
-            std::shared_ptr<ROOT::RDataFrame> df_pudata_;
+            // std::shared_ptr<ROOT::RDataFrame> df_pudata_;
+            std::map<int, std::map<int,float> > m_pudata_;
 
                         
          private:
@@ -60,6 +61,7 @@ namespace analysis {
          public:
             float weight(const float & truepu, const int & var = 0);
             float getPileupFromData(const int & , const int & );
+            // float getPileupFromDataFrame(const int & , const int & );
             std::shared_ptr<TH1D> histogram(const int & var = 0);
       };
    }

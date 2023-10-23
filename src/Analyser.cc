@@ -44,6 +44,7 @@ bool Analyser::event(const int & i)
    analysis_->event(i);
    cutflow_ = -1;
    weight_ = 1.;  // reset weight at the beginning of the event analysis
+   num_primary_vertices_ = -1;
   
    if ( config_->sampleName() != "" ) 
       cutflow(config_->sampleName());
@@ -129,6 +130,7 @@ bool Analyser::selectionPrimaryVertex()
    if ( ! this->primaryVertexAnalysis() ) return true;
 
    auto pvs = analysis_->collection<Vertex>("PrimaryVertex");
+   num_primary_vertices_ = pvs->size();
    std::shared_ptr<Vertex> pv = std::make_shared<Vertex>(pvs->at(0));
    auto fake = pv->fake();
    auto rho  = pv->rho();
@@ -148,4 +150,9 @@ bool Analyser::selectionPrimaryVertex()
    cutflow(label, goodPV);
 
    return goodPV;
+}
+
+int Analyser::numberOfPrimaryVertices()
+{
+   return num_primary_vertices_;
 }
