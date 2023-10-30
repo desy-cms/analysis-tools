@@ -123,6 +123,7 @@ namespace analysis {
             std::string jerSF() const;
             std::string onlinejetSF() const;
             std::string onlinebtagSF() const;
+            std::string onlinebtagMuonJetSF() const;
             int         jerSystematics() const;
             int         jecSystematics() const;
             int         onlinejetSystematics() const;
@@ -456,6 +457,8 @@ namespace analysis {
             // Online Btag efficiency correction and systematics
             std::string onlbtagsf_;
             int         onlbtagsyst_;
+            std::string onlbtagsf_muonjet_;
+            int         onlbtagsyst_muonjet_;
             // Online Muon Trigger efficiency correction and systematics
             std::string onlmuonsf_;
             int         onlmuonsyst_;

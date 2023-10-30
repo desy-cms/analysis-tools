@@ -98,6 +98,7 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          ("Corrections.Jets.onlinejetSystematics" , po::value <int>              (&onljetsyst_)      -> default_value(0)                  , "Online jet scale factor systematic variation (sigma), default = 0")
          ("Corrections.BTag.onlinebtagSF" , po::value <std::string>              (&onlbtagsf_)       -> default_value("")                 , "Online btag SF file")
          ("Corrections.BTag.onlinebtagSystematics" , po::value <int>             (&onlbtagsyst_)     -> default_value(0)                  , "Online btag scale factor systematic variation (sigma), default = 0")
+         ("Corrections.BTag.onlinebtagMuonJetSF" , po::value <std::string>       (&onlbtagsf_muonjet_)       -> default_value("")                 , "Online btag SF file")
          ("Corrections.BTag.SF"          , po::value <std::string>               (&btagsf_)          -> default_value("")                 , "b-tagging scale factor in CSV format")
          ("Corrections.BTag.offlineSystematics", po::value <int>                 (&btagsf_syst_)     -> default_value(0)                  , "b-tagging scale factor systematic variation (sigma), default = 0")
          ("Corrections.BTag.Efficiencies1", po::value <std::string>              (&btageff_[0])      -> default_value("")                 , "b-tagging efficiencies in root file")
@@ -410,6 +411,7 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          if ( onljetsf_ != ""  && onljetsf_.rfind("tools:",0) == 0 )    onljetsf_.replace(0,6,calibpath+"/");
          if ( onlmuonsf_ != ""  && onlmuonsf_.rfind("tools:",0) == 0 )  onlmuonsf_.replace(0,6,calibpath+"/");
          if ( onlbtagsf_ != ""  && onlbtagsf_.rfind("tools:",0) == 0 )    onlbtagsf_.replace(0,6,calibpath+"/");
+         if ( onlbtagsf_muonjet_ != ""  && onlbtagsf_muonjet_.rfind("tools:",0) == 0 )    onlbtagsf_muonjet_.replace(0,6,calibpath+"/");
          if ( btagsf_    != ""  && btagsf_.rfind("tools:",0) == 0   )    btagsf_.replace(0,6,calibpath+"/");
          for ( int i = 0; i < 4; i++ )
             {
@@ -562,6 +564,7 @@ int                Config::jerSystematics()     const { return jersyst_; }
 int                Config::jecSystematics()     const { return jecsyst_; }
 std::string        Config::onlinebtagSF()        const { return onlbtagsf_; }
 int                Config::onlinebtagSystematics() const { return onlbtagsyst_; }
+std::string        Config::onlinebtagMuonJetSF()   const { return onlbtagsf_muonjet_; }
 int                Config::onlinejetSystematics() const { return onljetsyst_; }
 std::string        Config::l1tJetsCollection()  const { return l1tjetsCol_; }
 std::string        Config::btagAlgorithm()      const { return btagalgo_; }
