@@ -19,26 +19,25 @@ BtagTriggerEfficiencies::BtagTriggerEfficiencies()
 
 BtagTriggerEfficiencies::BtagTriggerEfficiencies(const std::string & filename)
 {
+   sf_name_ = "online_btag_scale_factors";
+   sigma_variations_ = {0,+1,-1,+2,-2};
+   sigma_variations_str_[0]  = "fit";
+   sigma_variations_str_[+1] = "fit_plus_1sigma";
+   sigma_variations_str_[-1] = "fit_minus_1sigma";
+   sigma_variations_str_[+2] = "fit_plus_2sigma";
+   sigma_variations_str_[-2] = "fit_minus_sigma";
 
-//s   TH1::AddDirectory(kFALSE);
-
-   f = new TFile(filename.c_str(),"READ");
-   
-   std::string var[5] = {"nominal","+1sigma","-1sigma","+2sigma","-2sigma"};
-   std::string funct_name;
-   
-
-   for(int i = 0; i<3; i++)
+   TFile f(filename.c_str(),"READ");
+   for(auto & var : sigma_variations_)
    {
-      for(int j = 0; j<5; j++)
-      {
-         funct_name = Form("SF_%s",var[j].c_str());
-         functions[var[j].c_str()] = *((TF1*)f -> Get(funct_name.c_str()));
-      }
+      std::string funct_name = Form("%s_%s",sf_name_.c_str(),sigma_variations_str_[var].c_str());
+      scale_factors_[var] = (TGraph*)f.Get(funct_name.c_str());
    }
+   f.Close();
+   float bin_size = scale_factors_[0]->GetX()[1] - scale_factors_[0]->GetX()[0];
+   pt_boundaries_.first = scale_factors_[0]->GetX()[0] - bin_size/2.;
+   pt_boundaries_.second = scale_factors_[0]->GetX()[scale_factors_[0]->GetN()-1] + bin_size/2.;
 
-   functions["nominal"].GetRange(xmin,xmax);
-   f->Close();
 }
 
 BtagTriggerEfficiencies::~BtagTriggerEfficiencies()
@@ -50,33 +49,19 @@ BtagTriggerEfficiencies::~BtagTriggerEfficiencies()
 
 double BtagTriggerEfficiencies::findSF(const float & pT, const int & sigma)
 {
-   TF1 sf_function, var_funct, nominal_funct;
-   double sf = 1;
-   
-   std::string var = "";
+   // scale factors must exist
+   if ( !scale_factors_[sigma] || !scale_factors_[0] ) return 1.;
 
-   if (sigma == 0)
-      var = "nominal";
-   else
-   {
-      if (sigma > 0)
-      var = Form("+%dsigma",int(fabs(sigma)));
-      if (sigma < 0)
-      var = Form("-%dsigma",int(fabs(sigma)));
-   }
-   
-   nominal_funct = functions["nominal"];
-      
-   if (pT < xmax)
-   {
-      sf_function = functions[var.c_str()];
-      sf = sf_function(pT);
-   }
-   else
-   {
-      var_funct = functions[var.c_str()];
-      sf = 2* var_funct(xmax) - nominal_funct(xmax);// for syst take twice the variation from pT > upper range of the function
-   }
+   // if pt within boundaries for any sigma variation
+   if ( ( pT >= pt_boundaries_.first &&  pT <= pt_boundaries_.second ) ) 
+      return scale_factors_[sigma]->Eval(pT);
 
-   return sf;
+   float pt_boundary = pt_boundaries_.first;
+   if ( pT > pt_boundaries_.second ) pt_boundary = pt_boundaries_.second;
+
+   // in case of uncertainty variations outside the boundaries
+   float nominal_sf = scale_factors_[0]->Eval(pt_boundary);
+   float uncertainty_sf = scale_factors_[sigma]->Eval(pt_boundary)-nominal_sf; // preserve sign; in case nominal uncertainty is zero
+   return nominal_sf + 2.*uncertainty_sf;
+
 }
