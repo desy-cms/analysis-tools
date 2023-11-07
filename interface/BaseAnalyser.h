@@ -117,6 +117,9 @@ namespace analysis {
             std::map<std::string, std::vector<float> > scale_data_;
             float scale_correction_;
 
+            /// is muon analysis
+            bool is_mouns_analysis_;
+
          private :
 
             /// name of the executable
@@ -146,6 +149,11 @@ namespace analysis {
             void cutflow(const int &);
             /// create and update cutflow entry in the cutflow histogram 
             void cutflow(const std::string & label, const bool & ok = true);
+
+            /// get is muons analysis
+            bool isMuonsAnalysis();
+            /// get is muons analysis
+            void isMuonsAnalysis(const bool &);
 
             // Actions
             /// event entry to be readout and processed

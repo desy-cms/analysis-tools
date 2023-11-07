@@ -26,6 +26,7 @@ Analyser::Analyser(int argc, char * argv[]) : BaseAnalyser(argc,argv),  // not s
                                               JetAnalyser(argc,argv),
                                               MuonAnalyser(argc,argv)
 {
+   this->isMuonsAnalysis(muonsanalysis_);
 }
 
 Analyser::~Analyser()

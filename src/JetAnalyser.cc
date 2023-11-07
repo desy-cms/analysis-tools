@@ -1950,8 +1950,15 @@ void JetAnalyser::actionApplyBtagOnlineSF(const std::vector<int> & ranks)
    std::string bnobsf_muonjet = basename(config_->onlinebtagSF());
    if ( config_->onlinebtagMuonJetSF() != "" ) label = Form("%s, %s",label.c_str(), bnobsf_muonjet.c_str());
 
-   sf1 = this->getBtagOnlineSF(matched_ranks[0],selectedJets_[matched_ranks[0]]->muon()!=0);
-   sf2 = this->getBtagOnlineSF(matched_ranks[1],selectedJets_[matched_ranks[1]]->muon()!=0);
+   bool muonjet1 = false;
+   bool muonjet2 = false;
+   if ( !config_->muonsVeto() && this->isMuonsAnalysis() ) 
+   {
+      if ( selectedJets_[matched_ranks[0]]->muon() ) muonjet1 = true;
+      if ( selectedJets_[matched_ranks[1]]->muon() ) muonjet2 = true;
+   }
+   sf1 = this->getBtagOnlineSF(matched_ranks[0],muonjet1);
+   sf2 = this->getBtagOnlineSF(matched_ranks[1],muonjet2);
 
    weight_ *= (sf1*sf2);
    cutflow(label);
@@ -1970,7 +1977,9 @@ float JetAnalyser::getBtagOnlineSF(const int & r,const bool & muonjet)
 
    sf = btag_trigger_efficiency_->findSF(selectedJets_[j]->pt(), config_->onlinebtagSystematics());
    if ( config_->onlinebtagMuonJetSF() != "" && muonjet )
+   {
       sf = btag_muonjet_trigger_efficiency_->findSF(selectedJets_[j]->pt(), config_->onlinebtagSystematics());
+   }
    
    return sf;
 }
