@@ -618,3 +618,14 @@ void BaseAnalyser::actionApplyScaleCorrection(const std::string &title)
    }
    cutflow(label);
 }
+
+/// get is muons analysis
+bool BaseAnalyser::isMuonsAnalysis()
+{
+   return is_mouns_analysis_;
+}
+/// get is muons analysis
+void BaseAnalyser::isMuonsAnalysis(const bool & is_muon_analysis)
+{
+   is_mouns_analysis_ = is_muon_analysis;
+}
