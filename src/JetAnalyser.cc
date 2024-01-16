@@ -1004,14 +1004,14 @@ bool JetAnalyser::onlineBJetMatching(const std::vector<int> & ranks, const int &
    rank_list.pop_back();
    std::string label = Form("Online b jet match (deltaR < %4.3f), at least %d of jets %s", config_->triggerMatchCaloBJetsDrMax(), nmin,rank_list.c_str());
 
-   auto matched_ranks = this->onlineBJetMatching(ranks);
+   auto matched_ranks = this->onlineBJetMatchedJets(ranks);
    isgood = (int(matched_ranks.size()) >= nmin);
    cutflow(label, isgood);
 
    return isgood;
 }
 
-std::vector<int> JetAnalyser::onlineBJetMatching(const std::vector<int> & ranks)
+std::vector<int> JetAnalyser::onlineBJetMatchedJets(const std::vector<int> & ranks)
 {
    std::vector<int> matched_ranks;
    if (config_->triggerObjectsBJets() == "")
@@ -1941,7 +1941,9 @@ void JetAnalyser::actionApplyBtagOnlineSF(const std::vector<int> & ranks)
    float sf2 = 1.;
  
 // Btag Online Corrections to be applied to MC
-   auto matched_ranks = this->onlineBJetMatching(ranks);
+   auto matched_ranks = this->onlineBJetMatchedJets(ranks);
+   auto matched_indices = matched_ranks; // access to the selected jets are by indices, for they are vectors.
+   for (int &r : matched_indices) r -= 1;
 
    // dealing with label
    std::string bnobsf = basename(config_->onlinebtagSF());
@@ -1952,10 +1954,10 @@ void JetAnalyser::actionApplyBtagOnlineSF(const std::vector<int> & ranks)
 
    bool muonjet1 = false;
    bool muonjet2 = false;
-   if ( !config_->muonsVeto() && this->isMuonsAnalysis() ) 
+   if ( !config_->muonsVeto() && this->isMuonsAnalysis() ) // for semileptonic case
    {
-      if ( selectedJets_[matched_ranks[0]]->muon() ) muonjet1 = true;
-      if ( selectedJets_[matched_ranks[1]]->muon() ) muonjet2 = true;
+      muonjet1 = (selectedJets_[matched_indices[0]]->muon() != nullptr); // must use indices or some function that takes ranks
+      muonjet2 = (selectedJets_[matched_indices[1]]->muon() != nullptr); // must use indices or some function that takes ranks
    }
    sf1 = this->getBtagOnlineSF(matched_ranks[0],muonjet1);
    sf2 = this->getBtagOnlineSF(matched_ranks[1],muonjet2);
@@ -1971,7 +1973,7 @@ float JetAnalyser::getBtagOnlineSF(const int & r,const bool & muonjet)
 
    if ( ! jetsanalysis_ || ! config_->isMC() || config_->onlinebtagSF() == "" ) return -1;
 
-   double sf = 1;
+   float sf = 1;
    int j = r-1;
 
 
