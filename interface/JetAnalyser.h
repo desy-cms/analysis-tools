@@ -132,7 +132,7 @@ namespace analysis {
             /// returns true if number of online b jet matching is fulfilled
             virtual bool onlineBJetMatching(const std::vector<int> &, const int &);
             /// returns a vector with the ranks of online b jet matching
-            virtual std::vector<int> onlineBJetMatching(const std::vector<int> &);
+            virtual std::vector<int> onlineBJetMatchedJets(const std::vector<int> &);
             /// Creates pre-defined histograms in directory 'label' for analysis with 'n' jets
             virtual void jetHistograms(const int & n, const std::string & label);
             /// Creates pre-defined histograms in directory 'label' for analysis with 'n' jets
