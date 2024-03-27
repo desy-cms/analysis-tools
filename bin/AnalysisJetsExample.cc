@@ -87,8 +87,8 @@ int main(int argc, char * argv[])
          
          // b-tag scale factors central, up and down
          double jet_bscalefactor     = jet.btagSF(bsf_reader); // OR jet.btagSF(analysis.btagCalibration()); 
-         double jet_bscalefactorup   = jet.btagSFup(bsf_reader,2); 
-         double jet_bscalefactordown = jet.btagSFdown(bsf_reader,2); 
+         double jet_bscalefactorup   = jet.btagSFup(bsf_reader,"", 2); 
+         double jet_bscalefactordown = jet.btagSFdown(bsf_reader,"", 2); 
          
       // JER 
          jet.jerInfo(*jerinfo,0.2); // this also performs matching to the added gen jets above, with delta R < 0.2 which is default and can be omitted
