@@ -124,7 +124,7 @@ namespace analysis {
             virtual bool selectionBJetProbC(const int &);
             virtual bool selectionBJetProbG(const int &);
             virtual bool selectionBJetProbLight(const int &);
-            virtual ScaleFactors btagSF(const int &, const std::string &);
+            virtual ScaleFactors btagSF(const int &, const std::string &, const std::string &);
             virtual bool selectionNonBJet(const int &);
             virtual bool onlineJetMatching(const int &);
             /// returns true if jet match to online b object for the given jet rank 

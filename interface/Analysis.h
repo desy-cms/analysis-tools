@@ -174,7 +174,7 @@ namespace analysis {
                                  const std::string & filename,
                                  const std::string & wp,
                                  const std::string & sysType="central",
-                                 const std::vector<std::string> & otherSysTypes={"up", "down"});
+                                 const std::vector<std::string> & otherSysTypes={"up","down","up_correlated","down_correlated","up_uncorrelated","down_uncorrelated"});
             
             
             std::shared_ptr<BTagCalibrationReader> btagCalibration();
