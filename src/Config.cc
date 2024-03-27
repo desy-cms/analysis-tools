@@ -54,6 +54,7 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          ("jetsf",po::value <int>(&onljetsyst_),"Online jet scale factor systematic variation (sigma)")  
          ("onlbtagsf",po::value <int>(&onlbtagsyst_),"Online btag scale factor systematic variation (sigma)")
          ("btagsyst",po::value <int>(&btagsf_syst_),"Offline btag scale factor systematic variation (sigma)")
+         ("btagsyst_type",po::value <std::string>(&btagsf_syst_type_)-> default_value(""),"Offline btag scale factor systematic variation type")
          ("pileup",po::value <int>(&puweightsyst_),"Pileup weight systematic variation (sigma)")  
          ("muonID",po::value <int>(&muonIDweightsyst_),"Muon ID weight systematic variation (sigma)")  
          ("btagweight",po::bool_switch(&cmdl_bweight_),"Apply btag weight defined in the config file")  
