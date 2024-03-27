@@ -143,8 +143,8 @@ namespace analysis {
             
             /// btag SF
             double btagSF    (std::shared_ptr<BTagCalibrationReader> reader, const std::string & flavalgo = "Hadron") const;
-            double btagSFup  (std::shared_ptr<BTagCalibrationReader> reader, const float & nsig = 1, const std::string & flavalgo = "Hadron") const;
-            double btagSFdown(std::shared_ptr<BTagCalibrationReader> reader, const float & nsig = 1, const std::string & flavalgo = "Hadron") const;
+            double btagSFup  (std::shared_ptr<BTagCalibrationReader> reader, const std::string & type = "", const float & nsig = 1, const std::string & flavalgo = "Hadron") const;
+            double btagSFdown(std::shared_ptr<BTagCalibrationReader> reader, const std::string & type = "", const float & nsig = 1, const std::string & flavalgo = "Hadron") const;
             double btagSFsys (std::shared_ptr<BTagCalibrationReader> reader, const std::string & systype  = "central", const std::string & flavalgo = "Hadron") const;
             
             /// pointer to the FSR jet

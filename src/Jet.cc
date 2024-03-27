@@ -297,19 +297,25 @@ double Jet::btagSF(std::shared_ptr<BTagCalibrationReader> reader, const std::str
 {
    return this -> btagSFsys(reader,"central",flavalgo);
 }
-double Jet::btagSFup(std::shared_ptr<BTagCalibrationReader> reader, const float & nsig, const std::string & flavalgo) const
+double Jet::btagSFup(std::shared_ptr<BTagCalibrationReader> reader, const std::string & type, const float & nsig, const std::string & flavalgo) const
 {
+   std::string suffix = "";
+   if ( type != "" ) suffix = "_"+type;
+   std::string systype = "up"+suffix;
    double sf   = this -> btagSFsys(reader,"central",flavalgo);
-   double sfup = this -> btagSFsys(reader,"up",flavalgo);
+   double sfup = this -> btagSFsys(reader,systype,flavalgo);
    double sig1 = fabs(sfup - sf);
    sfup = sf+(nsig*sig1);
    
    return sfup;
 }
-double Jet::btagSFdown(std::shared_ptr<BTagCalibrationReader> reader, const float & nsig, const std::string & flavalgo) const
+double Jet::btagSFdown(std::shared_ptr<BTagCalibrationReader> reader, const std::string & type, const float & nsig, const std::string & flavalgo) const
 {
+   std::string suffix = "";
+   if ( type != "" ) suffix = "_"+type;
+   std::string systype = "down"+suffix; 
    double sf     = this -> btagSFsys(reader,"central",flavalgo);
-   double sfdown = this -> btagSFsys(reader,"down",flavalgo);
+   double sfdown = this -> btagSFsys(reader,systype,flavalgo);
    double sig1 = fabs(sfdown - sf);
    sfdown = sf-(nsig*sig1);
    
