@@ -101,6 +101,7 @@ Config::Config(int argc, char ** argv) : opt_cmd_("Options"), opt_cfg_("Configur
          ("Corrections.BTag.onlinebtagMuonJetSF" , po::value <std::string>       (&onlbtagsf_muonjet_)       -> default_value("")                 , "Online btag SF file")
          ("Corrections.BTag.SF"          , po::value <std::string>               (&btagsf_)          -> default_value("")                 , "b-tagging scale factor in CSV format")
          ("Corrections.BTag.offlineSystematics", po::value <int>                 (&btagsf_syst_)     -> default_value(0)                  , "b-tagging scale factor systematic variation (sigma), default = 0")
+         ("Corrections.BTag.offlineSystematicsType", po::value <std::string>     (&btagsf_syst_type_)-> default_value("")                 , "b-tagging scale factor systematic variation type: empty (sum), correlated, uncorrelated, default = empty")
          ("Corrections.BTag.Efficiencies1", po::value <std::string>              (&btageff_[0])      -> default_value("")                 , "b-tagging efficiencies in root file")
          ("Corrections.BTag.Efficiencies2", po::value <std::string>              (&btageff_[1])      -> default_value("")                 , "b-tagging efficiencies in root file")
          ("Corrections.BTag.Efficiencies3", po::value <std::string>              (&btageff_[2])      -> default_value("")                 , "b-tagging efficiencies in root file")
@@ -570,6 +571,7 @@ std::string        Config::l1tJetsCollection()  const { return l1tjetsCol_; }
 std::string        Config::btagAlgorithm()      const { return btagalgo_; }
 std::string        Config::btagScaleFactors()   const { return btagsf_; }
 int                Config::btagSystematics()    const { return btagsf_syst_; }
+std::string        Config::btagSystematicsType() const { return btagsf_syst_type_; }
 std::string        Config::onlinemuonSF()        const { return onlmuonsf_; }
 int                Config::onlinemuonSystematics() const { return onlmuonsyst_; }
 std::vector<std::string> Config::jetsBtagWP()   const { return jetsbtagwp_; }

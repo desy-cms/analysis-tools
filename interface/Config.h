@@ -134,6 +134,7 @@ namespace analysis {
             std::string btagAlgorithm() const;
             std::string btagScaleFactors() const;
             int         btagSystematics() const;
+            std::string btagSystematicsType() const;
             std::vector<std::string> jetsBtagWP() const;
             std::vector<float> jetsBtagProbB() const;
             std::vector<float> jetsBtagProbBB() const;
@@ -469,6 +470,7 @@ namespace analysis {
             std::string btagalgo_;
             std::string btagsf_;
             int btagsf_syst_;
+            std::string btagsf_syst_type_;
             //
             std::string scale_file_;
             std::string scale_par_;
