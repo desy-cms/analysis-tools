@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "TFile.h" 
+#include "TGraph.h"
 #include "TCanvas.h" 
 #include "TApplication.h"
 #include "TH1.h" 
